@@ -27,12 +27,648 @@
 	<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<!--end::Global Stylesheets Bundle-->
-	<script src="
-		https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js
-		"></script>
+	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
+<script>
+let queryString = window.location.search;
+console.log(queryString);
+const paramValue = queryString.substring(1); // Removes the '?' character
+console.log(paramValue);
+const web3 = new Web3('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
+
+const contractABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "accountOwner",
+				"type": "address"
+			},
+			{
+				"internalType": "uint16",
+				"name": "_pin",
+				"type": "uint16"
+			}
+		],
+		"name": "addOwner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_required",
+				"type": "uint256"
+			}
+		],
+		"name": "changeRequirement",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "_owners",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_required",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint16",
+				"name": "_pin",
+				"type": "uint16"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "Confirmation",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "confirmTransaction",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "Deposit",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "execute",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "Execution",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "ExecutionFailure",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "OwnerAddition",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "OwnerRemoval",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "accountOwner",
+				"type": "address"
+			},
+			{
+				"internalType": "uint16",
+				"name": "_pin",
+				"type": "uint16"
+			}
+		],
+		"name": "removeOwner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "accountOwner",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			},
+			{
+				"internalType": "uint16",
+				"name": "_pin",
+				"type": "uint16"
+			}
+		],
+		"name": "replaceOwner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "required",
+				"type": "uint256"
+			}
+		],
+		"name": "RequirementChange",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "Revocation",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "revokeConfirmation",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "Submission",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "dest",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes",
+				"name": "func",
+				"type": "bytes"
+			}
+		],
+		"name": "submitTransaction",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "confirmations",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "getConfirmationCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "count",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "getConfirmations",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "_confirmations",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getOwners",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "isConfirmed",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "isOwner",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "MAX_OWNER_COUNT",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "owners",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "required",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "transactionCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "transactions",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "dest",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes",
+				"name": "func",
+				"type": "bytes"
+			},
+			{
+				"internalType": "bool",
+				"name": "executed",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+
+async function getBlockTimestamp(blockNumber) {
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    try {
+        const block = await web3.eth.getBlock(blockNumber);
+        const timestamp = await block.timestamp; // Unix timestamp of the block
+
+        // Convert Unix timestamp to milliseconds (JavaScript Date uses milliseconds)
+        const date = await new Date(Number(timestamp) * 1000);
+
+        // Format date to a readable string
+        const day = await date.getDate();
+        const monthIndex = await date.getMonth();
+        const year = await date.getFullYear();
+    
+        const suffixes = ['th', 'st', 'nd', 'rd'];
+        const relevantDigits = (day < 30) ? day % 20 : day % 30;
+        const suffix = (relevantDigits <= 3) ? suffixes[relevantDigits] : suffixes[0];
+    
+        let formattedDate = `${monthNames[monthIndex]} ${day}${suffix}, ${year}`;
+
+        return formattedDate;
+
+
+    } catch (error) {
+        console.error(`Error fetching block ${blockNumber}:`, error);
+        throw error;
+    }
+}
+
+async function decodeTransactionData(txhash, ABI) {
+    try {
+        // Get the transaction
+		const txReceipt = await web3.eth.getTransactionReceipt(txhash);
+        const inputData = txReceipt;
+		console.log('txReceipt: '+inputData)
+
+        // Decode the transaction input data
+        const decodedData = await web3.eth.abi.decodeLog(inputData);
+		// document.getElementById('logs').innerText = decodedData;
+
+        
+        // console.log(decodedData);
+    } catch (error) {
+        console.error('Error decoding transaction data:', error);
+    }
+}
+
+
+// Function to get transaction details
+async function getTransactionDetails(txhash) {
+    try {
+        const tx = await web3.eth.getTransaction(txhash);
+        console.log(tx);
+		// Get transaction receipt to find gas used
+		const txReceipt = await web3.eth.getTransactionReceipt(txhash);
+		console.log(txReceipt.logs)
+        const gasUsed = txReceipt.gasUsed;
+
+        // Calculate transaction fee (gasUsed * gasPrice)
+        const txFee = gasUsed * tx.gasPrice;
+
+        // Convert the fee to Ether from Wei
+        const txFeeInEther = web3.utils.fromWei(txFee.toString(), 'ether');
+
+	
+
+
+		document.getElementById('tx_hash').innerText = tx.hash;
+		document.getElementById('tx_to').innerText = tx.to;
+		document.getElementById('tx_from').innerText = tx.from;
+		document.getElementById('tx_fee').innerText = txFeeInEther;
+		document.getElementById('tx_value').innerText = tx.value;
+		document.getElementById('gas_price').innerText = await web3.utils.fromWei(tx.gasPrice.toString(), 'ether');
+		document.getElementById('block').innerText = tx.blockNumber;
+		document.getElementById('gas_used').innerText = gasUsed;
+		document.getElementById('timestamp').innerText = await getBlockTimestamp(tx.blockNumber);
+
+
+		const decodedData = await web3.eth.abi.decodeLog(txReceipt.logs);
+
+		console.log(decodedData);
+		// document.getElementById('logs').innerText = decodedData;
+
+
+
+
+
+
+
+    } catch (error) {
+        console.error('Error fetching transaction details:', error);
+    }
+}
+
+
+
+
+
+getTransactionDetails(paramValue);
+
+
+</script>
 
 <body id="kt_body" data-sidebar="on"
 	class="print-content-only header-fixed header-tablet-and-mobile-fixed toolbar-enabled sidebar-enabled">
@@ -482,11 +1118,11 @@
 																	<td class="fw-bolder ps-0 pt-10">
 																		<div class="d-flex align-items-center">
 																			<i
-																				class="fa fa-genderless text-success fs-1 me-2"></i>Transaction
+																				class="fa fa-genderless text-success fs-1 me-2"></i>
 																			Hash
 																		</div>
 																	</td>
-																	<td class="text-end pt-10">80</td>
+																	<td id="tx_hash" class="text-end pt-10"></td>
 
 																</tr>
 																<tr>
@@ -496,7 +1132,7 @@
 																				class="fa fa-genderless text-success fs-1 me-2"></i>To
 																		</div>
 																	</td>
-																	<td class="text-end">120</td>
+																	<td id ="tx_to" class="text-end"></td>
 
 																</tr>
 																<tr>
@@ -506,7 +1142,7 @@
 																				class="fa fa-genderless text-success fs-1 me-2"></i>From
 																		</div>
 																	</td>
-																	<td class="text-end">210</td>
+																	<td id="tx_from" class="text-end"></td>
 
 																</tr>
 																<tr>
@@ -516,7 +1152,7 @@
 																				class="fa fa-genderless text-success fs-1 me-2"></i>Value
 																		</div>
 																	</td>
-																	<td class="text-end">2</td>
+																	<td id="tx_value" class="text-end"></td>
 
 																</tr>
 																<tr>
@@ -527,7 +1163,7 @@
 																			Fee
 																		</div>
 																	</td>
-																	<td class="text-end">210</td>
+																	<td id="tx_fee" class="text-end"></td>
 
 																</tr>
 
@@ -539,9 +1175,22 @@
 																			Price
 																		</div>
 																	</td>
-																	<td class="text-end">210</td>
+																	<td id="gas_price" class="text-end"></td>
 
 																</tr>
+
+																<tr>
+																	<td class="fw-bolder ps-0">
+																		<div class="d-flex align-items-center">
+																			<i
+																				class="fa fa-genderless text-success fs-1 me-2"></i>Gas
+																			Used
+																		</div>
+																	</td>
+																	<td id="gas_used" class="text-end"></td>
+
+																</tr>
+
 
 															</tbody>
 														</table>
@@ -552,18 +1201,7 @@
 															<div class="fw-bold fs-6 mb-3">LOGS</div>
 
 															<div class="d-flex fs-6 mb-3">
-																<span class="text-end">Transaction Receipt Event Logs
-																</span>
-
-															</div>
-															<div class="d-flex fs-6 mb-3">
-																<span>Name: </span>
-
-																<span> 0xnbi43unb4387h847t3th387th</span>
-															</div>
-															<div class="d-flex fs-6 mb-3">
-																<span>Data: </span>
-																<span> 0xnbi43unb4387h847t3th387th</span>
+																<span id="logs"></span>
 															</div>
 														</div>
 													</div>
@@ -576,13 +1214,13 @@
 													<div class="border-bottom w-100 mb-16"></div>
 													<!--begin::Invoice Date-->
 													<div class="text-gray-600 fs-6 fw-bold mb-3">BLOCK</div>
-													<div class="fw-bold mb-16">12345670</div>
+													<div id="block" class="fw-bold mb-16"></div>
 													<!--end::Invoice Date-->
 													<div class="border-bottom w-100 mb-16"></div>
 
 													<!--begin::Invoice Date-->
 													<div class="text-gray-600 fs-6 fw-bold mb-3">TIMESTAMP</div>
-													<div class="fs-6 fw-bold">12 May, 2020</div>
+													<div id="timestamp" class="fs-6 fw-bold"></div>
 													<!--end::Invoice Date-->
 												</div>
 											</div>
@@ -659,7 +1297,7 @@
 	<!--begin::Global Javascript Bundle(used by all pages)-->
 	<script src="assets/plugins/global/plugins.bundle.js"></script>
 	<script src="assets/js/scripts.bundle.js"></script>
-	<script src="assets/js/custom/txn.js"></script>
+	<!-- <script src="assets/js/custom/txn.js"></script> -->
 
 	<!--end::Global Javascript Bundle-->
 	<!--begin::Page Custom Javascript(used by this page)-->

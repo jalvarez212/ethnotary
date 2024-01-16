@@ -755,7 +755,7 @@ async function processEvents(eventNames, container) {
     
     
                 <td class="text-end pe-0">
-                    <a href="./views/completetxn.html"" class="btn btn-icon btn-bg-light btn-active-primary btn-sm">
+                    <a href="./views/completetxn.html?${tx.hash}" class="btn btn-icon btn-bg-light btn-active-primary btn-sm">
                         <!--begin::Svg Icon | path: icons/duotune/arrows/arr064.svg-->
                         <span class="svg-icon svg-icon-4">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
