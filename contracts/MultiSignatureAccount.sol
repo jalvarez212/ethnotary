@@ -206,9 +206,12 @@ contract MultiSigAccount
             }
         isOwner[accountOwner] = false;
         isOwner[newOwner] = true;
+        //this can be just one replace owner event with new,old, and address sibmitting change as params.
         emit OwnerRemoval(accountOwner);
         emit OwnerAddition(newOwner);
     }
+
+    //add address that submitted the change as a param to the emit event function
 
     function changeRequirement(
         uint _required

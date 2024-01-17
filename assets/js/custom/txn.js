@@ -11,7 +11,7 @@ const Deposits = ['Deposit'];
 const Account = [ 'OwnerAddition','OwnerRemoval','RequirementChange'];
 
 const ETHERSCAN_API_KEY = '85YM7F9JQIE823T4NQS2W3ZMFRUYU6DA23'; // Replace with your Etherscan API key
-const ETHERSCAN_API_URL = 'http://api.etherscan.io/api';
+const ETHERSCAN_API_URL = 'https://api.etherscan.io/api';
 
 
 

@@ -614,13 +614,13 @@
 
 
 
-			let sender = document.createElement("div");
-			sender.classList.add('d-flex');
-			sender.classList.add('justify-content-between');
-			sender.classList.add('fs-6');
-			sender.classList.add('mb-3');
-			sender.innerHTML = `<span class="text-end">Sender: 0x` + t[1].slice(26) + `</span>`
-			container.appendChild(sender);
+			// let sender = document.createElement("div");
+			// sender.classList.add('d-flex');
+			// sender.classList.add('justify-content-between');
+			// sender.classList.add('fs-6');
+			// sender.classList.add('mb-3');
+			// sender.innerHTML = `<span class="text-end">Sender: 0x` + t[1].slice(26) + `</span>`
+			// container.appendChild(sender);
 
 
 
@@ -667,6 +667,139 @@
 
 		}
 
+		if (l == 'changeRequirement') {
+
+			t = receipt.logs['0'].data;
+
+			let container = document.getElementById('logs');
+
+
+
+
+			let sender = document.createElement("div");
+			sender.classList.add('d-flex');
+			sender.classList.add('justify-content-between');
+			sender.classList.add('fs-6');
+			sender.classList.add('mb-3');
+			sender.innerHTML = `<span class="text-end">New Requirement: ` + web3.utils.hexToNumber(t) + `</span>`
+			container.appendChild(sender);
+
+
+
+
+			let m = document.getElementById("method").innerText = 'Change Requirement';
+
+		}
+
+		if (l == 'addOwner') {
+
+			t = receipt.logs['0'].topics;
+
+			let container = document.getElementById('logs');
+
+
+
+
+			let sender = document.createElement("div");
+			sender.classList.add('d-flex');
+			sender.classList.add('justify-content-between');
+			sender.classList.add('fs-6');
+			sender.classList.add('mb-3');
+			sender.innerHTML = `<span class="text-end">New Owner: 0x` + t[1].slice(26) + `</span>`
+			container.appendChild(sender);
+
+
+
+
+			let m = document.getElementById("method").innerText = 'Owner Addition';
+
+		}
+
+		if (l == 'replaceOwner') {
+
+			t = receipt.logs['0'].topics;
+			t2 = receipt.logs['1'].topics;
+
+			let container = document.getElementById('logs');
+
+
+
+
+			let removed = document.createElement("div");
+			removed.classList.add('d-flex');
+			removed.classList.add('justify-content-between');
+			removed.classList.add('fs-6');
+			removed.classList.add('mb-3');
+			removed.innerHTML = `<span class="text-end">Owner Removed: 0x` + t[1].slice(26) + `</span>`
+			container.appendChild(removed);
+
+			let added = document.createElement("div");
+			added.classList.add('d-flex');
+			added.classList.add('justify-content-between');
+			added.classList.add('fs-6');
+			added.classList.add('mb-3');
+			added.innerHTML = `<span class="text-end">Owner Added: 0x` + t2[1].slice(26) + `</span>`
+			container.appendChild(added);
+
+
+
+
+			let m = document.getElementById("method").innerText = 'Owner Replaced';
+
+		}
+
+		if (l == 'removeOwner') {
+
+			t = receipt.logs['0'].topics;
+
+			let container = document.getElementById('logs');
+
+
+			let removed = document.createElement("div");
+			removed.classList.add('d-flex');
+			removed.classList.add('justify-content-between');
+			removed.classList.add('fs-6');
+			removed.classList.add('mb-3');
+			removed.innerHTML = `<span class="text-end">Owner Removed: 0x` + t[1].slice(26) + `</span>`
+			container.appendChild(removed);
+
+
+
+
+
+			let m = document.getElementById("method").innerText = 'Owner Removed';
+
+		}
+
+		if (l == 'revokeConfirmation') {
+
+			let container = document.getElementById('logs');
+
+
+
+
+			// let sender = document.createElement("div");
+			// sender.classList.add('d-flex');
+			// sender.classList.add('justify-content-between');
+			// sender.classList.add('fs-6');
+			// sender.classList.add('mb-3');
+			// sender.innerHTML = `<span class="text-end">Sender: 0x` + t[1].slice(26) + `</span>`
+			// container.appendChild(sender);
+
+
+
+			let txnId = document.createElement("div");
+			txnId.classList.add('d-flex');
+			txnId.classList.add('justify-content-between');
+			txnId.classList.add('fs-6');
+			txnId.classList.add('mb-3');
+			txnId.innerHTML = `<span class="text-end">Txn Id: ` + web3.utils.hexToNumber(t[2]) + `</span>`
+			container.appendChild(txnId);
+
+			let m = document.getElementById("method").innerText = 'Revoke Txn';
+
+		}
+
 
 
 
@@ -689,7 +822,6 @@
 		}
 	}
 
-
 	// Function to get transaction details
 	async function getTransactionDetails(txhash) {
 		try {
@@ -702,10 +834,6 @@
 
 			// Convert the fee to Ether from Wei
 			const txFeeInEther = web3.utils.fromWei(txFee.toString(), 'ether');
-
-
-
-
 			document.getElementById('tx_hash').innerText = tx.hash;
 			document.getElementById('tx_to').innerText = tx.to;
 			document.getElementById('tx_from').innerText = tx.from;
@@ -715,9 +843,6 @@
 			document.getElementById('block').innerText = tx.blockNumber;
 			document.getElementById('gas_used').innerText = gasUsed;
 			document.getElementById('timestamp').innerText = await getBlockTimestamp(tx.blockNumber);
-
-
-
 
 		} catch (error) {
 			console.error('Error fetching transaction details:', error);
