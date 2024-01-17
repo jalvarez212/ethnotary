@@ -35,6 +35,7 @@ contract MultiSigAccount
 
     event Confirmation(address indexed sender, uint indexed transactionId);
     event Revocation(address indexed sender, uint indexed transactionId);
+    //ad sender and txn id to submission event
     event Submission(uint indexed transactionId);
     event Execution(uint indexed transactionId);
     event ExecutionFailure(uint indexed transactionId);
@@ -230,6 +231,7 @@ contract MultiSigAccount
             Transaction storage txn = transactions[transactionId];
             txn.executed = true;
             _call(txn.dest, txn.value, txn.func);
+            //add txn.dest, txn.value, and txn.func to the emit event
             emit Execution(transactionId);
         }
         else {
@@ -300,6 +302,7 @@ contract MultiSigAccount
             id: transactionId
         });
         transactionCount += 1;
+        //i don't think this event is needed or find a way to only call one of confirm or submit
         emit Submission(transactionId);
     }
 
