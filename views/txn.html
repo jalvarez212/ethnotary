@@ -30,6 +30,609 @@
 	<!--end::Global Stylesheets Bundle-->
 	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
 </head>
+<script>
+
+	const contractAddress = '0x189bA69e5ECf5914D14Cc051C4D8d1A10Bb767e5';
+
+	const contractABI = [
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "accountOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"name": "addOwner",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "_required",
+					"type": "uint256"
+				}
+			],
+			"name": "changeRequirement",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address[]",
+					"name": "_owners",
+					"type": "address[]"
+				},
+				{
+					"internalType": "uint256",
+					"name": "_required",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"stateMutability": "payable",
+			"type": "constructor"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "Confirmation",
+			"type": "event"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "confirmTransaction",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				}
+			],
+			"name": "Deposit",
+			"type": "event"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "execute",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "Execution",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "ExecutionFailure",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				}
+			],
+			"name": "OwnerAddition",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				}
+			],
+			"name": "OwnerRemoval",
+			"type": "event"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "accountOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"name": "removeOwner",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "accountOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"name": "replaceOwner",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "required",
+					"type": "uint256"
+				}
+			],
+			"name": "RequirementChange",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "Revocation",
+			"type": "event"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "revokeConfirmation",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "Submission",
+			"type": "event"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "dest",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes",
+					"name": "func",
+					"type": "bytes"
+				}
+			],
+			"name": "submitTransaction",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"stateMutability": "payable",
+			"type": "receive"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "confirmations",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "getConfirmationCount",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "count",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "getConfirmations",
+			"outputs": [
+				{
+					"internalType": "address[]",
+					"name": "_confirmations",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "getOwners",
+			"outputs": [
+				{
+					"internalType": "address[]",
+					"name": "",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "isConfirmed",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "isOwner",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "MAX_OWNER_COUNT",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "owner",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "owners",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "required",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "transactionCount",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "transactions",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "dest",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes",
+					"name": "func",
+					"type": "bytes"
+				},
+				{
+					"internalType": "bool",
+					"name": "executed",
+					"type": "bool"
+				},
+				{
+					"internalType": "uint256",
+					"name": "id",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		}
+	];
+
+	// Initialize Web3. Replace 'YourProviderURL' with your Ethereum node provider URL
+	const web3 = new Web3('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
+
+	// Create contract instance
+	const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+
+
+
+
+	async function getTransaction(contractAddress, abi, transactionId) {
+
+		try {
+			// Call the transactions mapping
+			const tx = await contract.methods.transactions(transactionId).call();
+			console.log(tx)
+			document.getElementById('dest').innerText = tx.dest;
+			document.getElementById('value').innerText = tx.value;
+			document.getElementById('confirmed').innerText = tx.executed;
+			document.getElementById('payload').innerText = tx.func;
+			document.getElementById('txnId').innerText = tx.id;
+			//return transaction;
+		} catch (error) {
+			console.error("Error fetching transaction:", error);
+			throw error;
+		}
+	}
+
+
+	const transactionId = 1; // Example transaction ID
+
+	// Provide the ABI of MultiSigAccount contract
+	getTransaction(contractAddress, contractABI, transactionId)
+
+
+	// Function to get transaction details
+	async function getTransactionDetails(txhash) {
+		try {
+			const tx = await getTransaction(txhash);
+
+
+			// Convert the fee to Ether from Wei
+			document.getElementById('dest').innerText = tx.dest;
+			document.getElementById('value').innerText = tx.value;
+			document.getElementById('confirmed').innerText = tx.executed;
+			document.getElementById('payload').innerText = tx.payload;
+			document.getElementById('txnId').innerText = tx.id;
+
+
+		} catch (error) {
+			console.error('Error fetching transaction details:', error);
+		}
+	}
+
+
+	async function getConfirmationCount(contractAddress, abi, transactionId) {
+
+
+		try {
+			// Call the transactions mapping
+			const tx = await contract.methods.getConfirmations(transactionId).call();
+			console.log(tx)
+		} catch (error) {
+			console.error("Error fetching transaction:", error);
+			throw error;
+		}
+	}
+
+	getConfirmationCount(contractAddress, contractABI, transactionId)
+
+
+
+</script>
 <!--end::Head-->
 <!--begin::Body-->
 
@@ -43,7 +646,8 @@
 			<!--begin::Aside-->
 			<div id="kt_aside" class="aside bg-info" data-kt-drawer="true" data-kt-drawer-name="aside"
 				data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true"
-				data-kt-drawer-width="70px" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_sidebar_toggler">
+				data-kt-drawer-width="70px" data-kt-drawer-direction="start"
+				data-kt-drawer-toggle="#kt_sidebar_toggler">
 				<!--begin::Primary-->
 				<div class="aside-primary d-flex flex-column align-items-center flex-row-auto">
 					<!--begin::Logo-->
@@ -111,7 +715,7 @@
 
 								<!--begin::Item-->
 								<li class="nav-item mb-1" title="Account Settings" data-bs-toggle="tooltip"
-								data-bs-dismiss="click" data-bs-placement="right">
+									data-bs-dismiss="click" data-bs-placement="right">
 									<a href="./views/accountsettings.html"
 										class="nav-link h-40px w-40px h-lg-50px w-lg-50px btn btn-custom btn-icon btn-color-white"
 										role="tab">
@@ -437,12 +1041,10 @@
 							<!--begin::Nav-->
 							<div class="d-flex align-items-center flex-nowrap text-nowrap overflow-auto py-1">
 								<a href="./index1.html" class="btn btn-active-accent fw-bolder">Home</a>
-								<a href="./views/wizard.html"
-									class="btn btn-active-accent fw-bolder ms-3">Wizard</a>
+								<a href="./views/wizard.html" class="btn btn-active-accent fw-bolder ms-3">Wizard</a>
 								<a href="./views/accountsettings.html"
 									class="btn btn-active-accent fw-bolder ms-3">Settings</a>
-								<a href="#"
-									class="btn btn-active-accent fw-bolder ms-3">Docs</a>
+								<a href="#" class="btn btn-active-accent fw-bolder ms-3">Docs</a>
 							</div>
 							<!--end::Nav-->
 						</div>
@@ -485,7 +1087,7 @@
 																				class="fa fa-genderless text-success fs-1 me-2"></i>Destination
 																		</div>
 																	</td>
-																	<td class="text-end pt-10">80</td>
+																	<td id="dest" class="text-end pt-10"></td>
 
 																</tr>
 																<tr>
@@ -495,7 +1097,7 @@
 																				class="fa fa-genderless text-success fs-1 me-2"></i>Value
 																		</div>
 																	</td>
-																	<td class="text-end">120</td>
+																	<td class="text-end" id="value"></td>
 
 																</tr>
 																<tr>
@@ -505,20 +1107,10 @@
 																				class="fa fa-genderless text-success fs-1 me-2"></i>Payload
 																		</div>
 																	</td>
-																	<td class="text-end">210</td>
+																	<td class="text-end" id="payload"></td>
 
 																</tr>
-																<tr>
-																	<td class="fw-bolder ps-0">
-																		<div class="d-flex align-items-center">
-																			<i
-																				class="fa fa-genderless text-success fs-1 me-2"></i>Transaction
-																			ID
-																		</div>
-																	</td>
-																	<td class="text-end">2</td>
 
-																</tr>
 																<tr>
 																	<td class="fw-bolder ps-0">
 																		<div class="d-flex align-items-center">
@@ -526,7 +1118,7 @@
 																				class="fa fa-genderless text-success fs-1 me-2"></i>Confirmed
 																		</div>
 																	</td>
-																	<td class="text-end">210</td>
+																	<td class="text-end" id="confirmed"></td>
 
 																</tr>
 
@@ -559,8 +1151,8 @@
 													<div class="border-bottom w-100 mb-16"></div>
 
 													<!--begin::Invoice Date-->
-													<div class="text-gray-600 fs-6 fw-bold mb-3">CREATION DATE</div>
-													<div class="fs-6 fw-bold">12 May, 2020</div>
+													<div class="text-gray-600 fs-6 fw-bold mb-3">Transaction Id</div>
+													<div class="fs-6 fw-bold" id="txnId"></div>
 													<!--end::Invoice Date-->
 												</div>
 											</div>
@@ -627,7 +1219,7 @@
 		<!--end::Page-->
 	</div>
 	<!--end::Root-->
-	
+
 	<!--end::Drawers-->
 	<!--begin::Scrolltop-->
 	<div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
@@ -650,7 +1242,7 @@
 	<!--begin::Global Javascript Bundle(used by all pages)-->
 	<script src="./assets/plugins/global/plugins.bundle.js"></script>
 	<script src="./assets/js/scripts.bundle.js"></script>
-	<script src="./assets/js/custom/txn.js"></script>
+	<!-- <script src="./assets/js/custom/txn.js"></script> -->
 
 	<!--end::Global Javascript Bundle-->
 	<!--begin::Page Custom Javascript(used by this page)-->
