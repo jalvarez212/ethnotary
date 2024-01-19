@@ -31,6 +31,8 @@
 	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
 </head>
 <script>
+	let queryString = window.location.search;
+	const paramValue = queryString.substring(1); // Removes the '?' character
 
 	const contractAddress = '0x189bA69e5ECf5914D14Cc051C4D8d1A10Bb767e5';
 
@@ -575,10 +577,11 @@
 		try {
 			// Call the transactions mapping
 			const tx = await contract.methods.transactions(transactionId).call();
+			const isConfirmed = await contract.methods.isConfirmed(transactionId).call();
 			console.log(tx)
 			document.getElementById('dest').innerText = tx.dest;
 			document.getElementById('value').innerText = tx.value;
-			document.getElementById('confirmed').innerText = tx.executed;
+			document.getElementById('confirmed').innerText = isConfirmed;
 			document.getElementById('payload').innerText = tx.func;
 			document.getElementById('txnId').innerText = tx.id;
 			//return transaction;
@@ -589,10 +592,10 @@
 	}
 
 
-	const transactionId = 1; // Example transaction ID
+
 
 	// Provide the ABI of MultiSigAccount contract
-	getTransaction(contractAddress, contractABI, transactionId)
+	getTransaction(contractAddress, contractABI, paramValue)
 
 
 	// Function to get transaction details
@@ -621,14 +624,32 @@
 		try {
 			// Call the transactions mapping
 			const tx = await contract.methods.getConfirmations(transactionId).call();
-			console.log(tx)
+			const count = await contract.methods.getConfirmationCount(transactionId).call();
+			const required = await contract.methods.required(transactionId).call();
+			console.log(count)
+			document.getElementById('count').innerText = count;
+			document.getElementById('required').innerText = required + ' confirmations needed';
+
+			tx.forEach(function (x) {
+				let d = document.createElement('div');
+				d.classList.add('d-flex');
+				d.classList.add('justify-content-between');
+				d.classList.add('fs-6');
+				d.classList.add('mb-3');
+
+				d.style.marginTop = "5%";
+
+				d.innerHTML = `<span class="text-end">${x}</span>`;
+				document.getElementById('confirmationsContainer').append(d)							
+			})
+
 		} catch (error) {
 			console.error("Error fetching transaction:", error);
 			throw error;
 		}
 	}
 
-	getConfirmationCount(contractAddress, contractABI, transactionId)
+	getConfirmationCount(contractAddress, contractABI, paramValue)
 
 
 
@@ -1128,16 +1149,10 @@
 													<div class="border-bottom w-100 mt-7 mb-13"></div>
 													<div class="d-flex flex-column flex-md-row">
 														<div class="d-flex flex-column mb-10 mb-md-0">
-															<div class="fw-bold fs-6 mb-3">CONFIRMATIONS:</div>
+															<div class="fw-bold fs-6 mb-3" id="confirmationsContainer">CONFIRMATIONS: </div>
+															<br> </br>
 
-															<div class="d-flex justify-content-between fs-6 mb-3">
-																<span
-																	class="text-end">0xnbi43unb4387h847t3th387th</span>
-															</div>
-															<div class="d-flex justify-content-between fs-6">
-																<span
-																	class="text-end">0xnbi43unb4387h847t3th387th</span>
-															</div>
+
 														</div>
 													</div>
 												</div>
@@ -1145,8 +1160,8 @@
 													<!--begin::Total Amount-->
 													<div class="fs-3 fw-bolder text-muted mb-3">TOTAL CONFIRMATIONS
 													</div>
-													<div class="fs-2x fw-bolder">2</div>
-													<div class="text-muted fw-bold mb-16">2 confirmations needed</div>
+													<div class="fs-2x fw-bolder" id="count"></div>
+													<div class="text-muted fw-bold mb-16" id="required"></div>
 													<!--end::Total Amount-->
 													<div class="border-bottom w-100 mb-16"></div>
 

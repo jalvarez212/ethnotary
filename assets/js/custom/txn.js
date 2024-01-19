@@ -898,7 +898,7 @@ async function processPending(promise, container) {
 				<span class="text-muted fw-bold d-block mt-1 fs-7" style="font-size: 12px;">${status}</span>
 			</td>
 			<td class="text-end pe-0">
-				<a href="./views/txn.html?${tx.hash}" class="btn btn-icon btn-bg-light btn-active-primary btn-sm">
+				<a href="./views/txn.html?${tx.id}" class="btn btn-icon btn-bg-light btn-active-primary btn-sm">
 					<!--begin::Svg Icon | path: icons/duotune/arrows/arr064.svg-->
 					<span class="svg-icon svg-icon-4">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
