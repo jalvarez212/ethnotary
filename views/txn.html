@@ -29,13 +29,7 @@
 	<link href="./assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<!--end::Global Stylesheets Bundle-->
 	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
-	<script src="https://unpkg.com/@walletconnect/web3-provider/dist/umd/index.min.js"></script>
-	<script src="https://unpkg.com/@walletconnect/client@latest/dist/umd/index.min.js"></script>
 	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
-
-
-
-
 	<script src="assets/js/bundle.js"></script>
 </head>
 
@@ -44,106 +38,94 @@
 <script type="text/javascript">
 	// Ensure ethers is available in the global scope
 	const ethers = window.ethers;
+	const MMSDK = new MetaMaskSDK.MetaMaskSDK(
+		dappMetadata = {
+			name: "ethnotary",
+			url: "ethnotary.io",
+		}
+		// Other options
+	)
+	const coinbaseWallet = new CoinbaseWalletSDK({
+		appName: 'ethnotary',
+		appLogoUrl: 'ethnotary.io',
+		darkMode: false
+	})
+
 
 	// Function to connect to the user's Ethereum wallet
 	async function connectMetaMask() {
 		if (typeof window.ethereum !== 'undefined') {
+			try {
+				const ethereum = MMSDK.getProvider()
 
-			if (window.ethereum.isMetaMask == true) {
-				try {
+				ethereum.request({ method: 'eth_requestAccounts' })
 
-					connectBrowserWallet();
-
-				}
-				catch (error) {
-					console.error('There is an issue connecting you MetaMask wallet:', error);
-				}
-
+			}
+			catch (error) {
+				console.error('User denied account access or an error occurred:', error);
 
 			}
 
 		}
 		else {
-
-
-			const MMSDK = await new MetaMaskSDK.MetaMaskSDK(
-				dappMetadata = {
-					name: "ethnotary",
-					url: "ethnotary.io",
-				}
-				// Other options
-			)
-			// Because init process of the MetaMaskSDK is async.
-			setTimeout(() => {
-				const ethereum = MMSDK.getProvider()
-
-				ethereum.request({ method: 'eth_requestAccounts' })
-			}, 100)
-
-
+			alert('This browser is not web3 enabled, please use a different browser.')
 
 		}
 	}
 
 	// Function to connect to the user's Ethereum wallet
-	async function connectBrowserWallet() {
-		if (typeof window.ethereum !== 'undefined') {
-			try {
-				// Request account access
-				await window.ethereum.request({ method: 'eth_requestAccounts' });
+	async function connectOKXWallet() {
+		try{
 
-				// Create a Web3 Provider
-				const provider = new ethers.providers.Web3Provider(window.ethereum);
+			window.okxwallet.request({ method: 'eth_requestAccounts' });
 
-				// Get the signer
-				const signer = provider.getSigner();
 
-				// Get the user's Ethereum address
-				const address = await signer.getAddress();
-				console.log('Connected address:', address);
-
-				ethereum.request({ method: 'eth_requestAccounts' }).then(response => {
-					const accounts = response;
-					console.log(`User's address is ${accounts[0]}`)
-
-					// Optionally, have the default account set for web3.js
-					web3.eth.defaultAccount = accounts[0]
-				})
-
-				// You can now interact with the blockchain
-			} catch (error) {
-				console.error('User denied account access or an error occurred:', error);
-			}
-		} else {
-			console.log('Ethereum wallet is not available');
 		}
+		catch (error){
+			window.open('https://www.okx.com/download');
+
+		}
+
 	}
 	// Function to connect to the user's Ethereum wallet
 	async function connectCoinbase() {
+
+		try {
+			const ethereum = await coinbaseWallet.makeWeb3Provider('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '5');
+			ethereum.request({ method: 'eth_requestAccounts' }).then(response => {
+				const accounts = response;
+				console.log(`User's address is ${accounts[0]}`)
+
+				// Optionally, have the default account set for web3.js
+				web3.eth.defaultAccount = accounts[0]
+			})
+
+
+		} catch (error) {
+			console.error('User denied account access or an error occurred:', error);
+		}
+
+	}
+
+	async function connectOtherWallet(){
 		if (typeof window.ethereum !== 'undefined') {
 			try {
-				const coinbaseWallet = new CoinbaseWalletSDK({
-					appName: 'ethnotary',
-					appLogoUrl: 'ethnotary.io',
-					darkMode: false
-				})
+				window.ethereum.request({ method: 'eth_requestAccounts' })
 
-				const ethereum = await coinbaseWallet.makeWeb3Provider('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '5');
-				ethereum.request({ method: 'eth_requestAccounts' }).then(response => {
-					const accounts = response;
-					console.log(`User's address is ${accounts[0]}`)
-
-					// Optionally, have the default account set for web3.js
-					web3.eth.defaultAccount = accounts[0]
-				})
-
-
-			} catch (error) {
-				console.error('User denied account access or an error occurred:', error);
 			}
-		} else {
-			console.log('Ethereum wallet is not available');
+			catch (error) {
+				console.error('User denied account access or an error occurred:', error);
+
+			}
+
 		}
+		else {
+			alert('This browser is not web3 enabled, please use a different browser.')
+
+		}
+
+
+
 	}
 
 	// Call the function on a button click or some other interaction
@@ -814,6 +796,7 @@
 </script>
 <!--end::Head-->
 <!--begin::Body-->
+<w3m-connect-button />
 
 <body id="kt_body" data-sidebar="on"
 	class="print-content-only header-fixed header-tablet-and-mobile-fixed toolbar-enabled sidebar-enabled">
@@ -1046,7 +1029,7 @@
 									</div>
 									<!--begin::Row-->
 									<div class="row row-cols-2 g-0">
-										<a href="#"
+										<a onclick="connectOtherWallet()"
 											class="border-bottom border-end text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
 
@@ -1064,7 +1047,7 @@
 												</svg></span>
 											<!--end::Svg Icon-->
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Browser Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Other Wallet</span>
 										</a>
 										<a id="coinbase" onclick="connectCoinbase()"
 											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
@@ -1076,15 +1059,15 @@
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">Coinbase Wallet</span>
 										</a>
-										<a href="#"
+										<a onclick="connectOKXWallet()"
 											class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/finance/fin009.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="./assets/media/svg/walletconnect.svg" />
+													src="./assets/media/svg/OKX_Logo.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">WalletConnect</span>
+											<span class="fw-bolder fs-6 d-block pt-3">OKX Wallet</span>
 										</a>
 										<a id="metamask" onclick="connectMetaMask()"
 											class="col text-center py-10 btn btn-active-color-primary rounded-0">
