@@ -50,15 +50,14 @@
 		appLogoUrl: 'ethnotary.io',
 		darkMode: false
 	})
-
+let wallet;
 
 	// Function to connect to the user's Ethereum wallet
 	async function connectMetaMask() {
 		if (typeof window.ethereum !== 'undefined') {
 			try {
-				const ethereum = MMSDK.getProvider()
+				MMSDK.sdkProvider.request({ method: 'eth_requestAccounts' })
 
-				ethereum.request({ method: 'eth_requestAccounts' })
 
 			}
 			catch (error) {
@@ -94,33 +93,33 @@
 			const ethereum = await coinbaseWallet.makeWeb3Provider('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '5');
 			ethereum.request({ method: 'eth_requestAccounts' }).then(response => {
 				const accounts = response;
-				console.log(`User's address is ${accounts[0]}`)
+				console.log(`User's address is ${accounts[0]}`);
 
 				// Optionally, have the default account set for web3.js
-				web3.eth.defaultAccount = accounts[0]
+				web3.eth.defaultAccount = accounts[0];
 			})
 
 
 		} catch (error) {
-			console.error('User denied account access or an error occurred:', error);
+			alert('User denied account access or an error occurred, please refresh browser and try again.');
 		}
 
 	}
 
-	async function connectOtherWallet(){
-		if (typeof window.ethereum !== 'undefined') {
+	async function connectPhantomWallet(){
+		if (typeof window.phantom !== 'undefined') {
 			try {
-				window.ethereum.request({ method: 'eth_requestAccounts' })
+				window.phantom.ethereum.request({method: 'eth_requestAccounts' })
 
 			}
 			catch (error) {
-				console.error('User denied account access or an error occurred:', error);
+				alert('User denied account access or an error occurred, please refresh browser and try again.');
 
 			}
 
 		}
 		else {
-			alert('This browser is not web3 enabled, please use a different browser.')
+			window.open('https://phantom.app/', '_blank');
 
 		}
 
@@ -1029,25 +1028,16 @@
 									</div>
 									<!--begin::Row-->
 									<div class="row row-cols-2 g-0">
-										<a onclick="connectOtherWallet()"
+										<a onclick="connectPhantomWallet()"
 											class="border-bottom border-end text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
 
-											<!--begin::Svg Icon | path: assets/media/icons/duotune/general/gen025.svg-->
-											<span class="svg-icon svg-icon-3x me-n1"><svg
-													xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-													viewBox="0 0 24 24" fill="none">
-													<rect x="2" y="2" width="9" height="9" rx="2" fill="black" />
-													<rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2"
-														fill="black" />
-													<rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2"
-														fill="black" />
-													<rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2"
-														fill="black" />
-												</svg></span>
+											<span class="svg-icon svg-icon-3x me-n1">
+												<img style="width: 30px; height: 30px;" alt="Logo"
+													src="./assets/media/svg/Phantom_SVG_Icon.svg" />
+											</span>
 											<!--end::Svg Icon-->
-											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Other Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Phantom Wallet</span>
 										</a>
 										<a id="coinbase" onclick="connectCoinbase()"
 											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
