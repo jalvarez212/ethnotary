@@ -31,12 +31,14 @@
 	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
 	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
 	<script src="assets/js/bundle.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
 </head>
-
 
 
 <script type="text/javascript">
 	// Ensure ethers is available in the global scope
+
+
 	const ethers = window.ethers;
 	const MMSDK = new MetaMaskSDK.MetaMaskSDK(
 		dappMetadata = {
@@ -50,13 +52,25 @@
 		appLogoUrl: 'ethnotary.io',
 		darkMode: false
 	})
-let wallet;
+	let wallet;
 
 	// Function to connect to the user's Ethereum wallet
 	async function connectMetaMask() {
 		if (typeof window.ethereum !== 'undefined') {
 			try {
-				MMSDK.sdkProvider.request({ method: 'eth_requestAccounts' })
+				const mmwallet = MMSDK.sdkProvider.request({ method: 'eth_requestAccounts' })
+
+				console.log(mmwallet)
+
+				mmwallet.request({ method: 'eth_requestAccounts' }).then(response => {
+					const accounts = response;
+					console.log(`User's address is ${accounts[0]}`);
+
+					// Optionally, have the default account set for web3.js
+					web3.eth.defaultAccount = accounts[0];
+				})
+
+
 
 
 			}
@@ -74,13 +88,13 @@ let wallet;
 
 	// Function to connect to the user's Ethereum wallet
 	async function connectOKXWallet() {
-		try{
+		try {
 
 			window.okxwallet.request({ method: 'eth_requestAccounts' });
 
 
 		}
-		catch (error){
+		catch (error) {
 			window.open('https://www.okx.com/download');
 
 		}
@@ -90,8 +104,8 @@ let wallet;
 	async function connectCoinbase() {
 
 		try {
-			const ethereum = await coinbaseWallet.makeWeb3Provider('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '5');
-			ethereum.request({ method: 'eth_requestAccounts' }).then(response => {
+			const cbwallet = await coinbaseWallet.makeWeb3Provider('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '5');
+			cbwallet.request({ method: 'eth_requestAccounts' }).then(response => {
 				const accounts = response;
 				console.log(`User's address is ${accounts[0]}`);
 
@@ -106,10 +120,10 @@ let wallet;
 
 	}
 
-	async function connectPhantomWallet(){
+	async function connectPhantomWallet() {
 		if (typeof window.phantom !== 'undefined') {
 			try {
-				window.phantom.ethereum.request({method: 'eth_requestAccounts' })
+				window.phantom.ethereum.request({ method: 'eth_requestAccounts' })
 
 			}
 			catch (error) {
@@ -127,8 +141,9 @@ let wallet;
 
 	}
 
-	// Call the function on a button click or some other interaction
-	// connectWallet();
+
+
+
 </script>
 <script>
 
@@ -786,13 +801,53 @@ let wallet;
 	}
 
 
-	getConfirmationCount(contractAddress, contractABI, paramValue)
+	getConfirmationCount(contractAddress, contractABI, paramValue);
+
+	const confirm = 'confirmTransaction';
+	const revoke = ['revokeConfirmation'];
+	const execute = ['execute'];
+	const methodArguments = 3;
+
+	let msa = new web3.eth.Contract(contractABI, contractAddress);
+
+	let confirmCallData = msa.methods.confirmTransaction(methodArguments).encodeABI()
+	let revokeCallData = msa.methods.revokeConfirmation(methodArguments).encodeABI()
+
+	let executeCallData = msa.methods.execute(methodArguments).encodeABI()
+
+
+
+
+
+
+
+
+	let txnObj = {
+		to: contractAddress,
+		data: functionCallData,
+		gasLimit: "21000000",
+		maxFeePerGas: "3000",
+		maxPriorityFeePerGas: "100",
+
+	};
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 </script>
+
+
+
 <!--end::Head-->
 <!--begin::Body-->
 <w3m-connect-button />
@@ -1316,7 +1371,7 @@ let wallet;
 												<button type="button"
 													class="btn btn-light-danger fw-bolder fs-6 me-3 px-6 my-1"
 													id="revoke">Revoke</button>
-												<button type="button"
+												<button type="button" id="execute"
 													class="btn bg-gray-800 text-white text-hover-gray-800 bg-hover-gray-200 fw-bolder fs-6 ms-sm-auto my-1 px-6">Send</button>
 											</div>
 										</div>
@@ -1402,16 +1457,74 @@ let wallet;
 	let c = document.getElementById('confirm');
 	c.addEventListener('click', function () {
 
-		checkWalletConnection(1).then(isConnected => {
-			if (isConnected) {
-				console.log('Wallet is connected and on the correct network.');
-			} else {
-				console.log('Wallet is not connected or on the wrong network.');
-			}
-		});
+		ethereum.request({
+			method: 'eth_sendTransaction',
+			// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
+			params: [
+				{
+					to: contractAddress,
+					from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
+					data: confirmCallData,
+					gasLimit: '21000000',
+					maxFeePerGas: '3000',
+					maxPriorityFeePerGas: '100',
+					gas: '90000',
+
+				},
+			],
+		})
+			.then((txHash) => console.log(txHash))
+			.catch((error) => console.error(error));
+	})
+
+	let r = document.getElementById('revoke');
+	r.addEventListener('click', function () {
+
+		ethereum.request({
+			method: 'eth_sendTransaction',
+			// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
+			params: [
+				{
+					to: contractAddress,
+					from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
+					data: revokeCallData,
+					gasLimit: '21000000',
+					maxFeePerGas: '3000',
+					maxPriorityFeePerGas: '100',
+					gas: '90000',
+
+				},
+			],
+		})
+			.then((txHash) => console.log(txHash))
+			.catch((error) => console.error(error));
+	})
+
+	let e = document.getElementById('execute');
+	e.addEventListener('click', function () {
+
+		ethereum.request({
+			method: 'eth_sendTransaction',
+			// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
+			params: [
+				{
+					to: contractAddress,
+					from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
+					data: executeCallData,
+					gasLimit: '21000000',
+					maxFeePerGas: '3000',
+					maxPriorityFeePerGas: '100',
+					gas: '90000',
+
+				},
+			],
+		})
+			.then((txHash) => console.log(txHash))
+			.catch((error) => console.error(error));
 	})
 
 </script>
+
 <!--end::Body-->
 
 </html>
