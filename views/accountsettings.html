@@ -29,6 +29,549 @@
 	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
 	<!--end::Global Stylesheets Bundle-->
 </head>
+
+<script>
+
+
+	const contractAddress = '0x189bA69e5ECf5914D14Cc051C4D8d1A10Bb767e5';
+
+	const contractABI = [
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "accountOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"name": "addOwner",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "_required",
+					"type": "uint256"
+				}
+			],
+			"name": "changeRequirement",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address[]",
+					"name": "_owners",
+					"type": "address[]"
+				},
+				{
+					"internalType": "uint256",
+					"name": "_required",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"stateMutability": "payable",
+			"type": "constructor"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "Confirmation",
+			"type": "event"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "confirmTransaction",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				}
+			],
+			"name": "Deposit",
+			"type": "event"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "execute",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "Execution",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "ExecutionFailure",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				}
+			],
+			"name": "OwnerAddition",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				}
+			],
+			"name": "OwnerRemoval",
+			"type": "event"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "accountOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"name": "removeOwner",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "accountOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"name": "replaceOwner",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "required",
+					"type": "uint256"
+				}
+			],
+			"name": "RequirementChange",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "Revocation",
+			"type": "event"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "revokeConfirmation",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "Submission",
+			"type": "event"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "dest",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes",
+					"name": "func",
+					"type": "bytes"
+				}
+			],
+			"name": "submitTransaction",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"stateMutability": "payable",
+			"type": "receive"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "confirmations",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "getConfirmationCount",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "count",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "getConfirmations",
+			"outputs": [
+				{
+					"internalType": "address[]",
+					"name": "_confirmations",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "getOwners",
+			"outputs": [
+				{
+					"internalType": "address[]",
+					"name": "",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "isConfirmed",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "isOwner",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "MAX_OWNER_COUNT",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "owner",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "owners",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "required",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "transactionCount",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "transactions",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "dest",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes",
+					"name": "func",
+					"type": "bytes"
+				},
+				{
+					"internalType": "bool",
+					"name": "executed",
+					"type": "bool"
+				},
+				{
+					"internalType": "uint256",
+					"name": "id",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		}
+	];
+
+	// Initialize Web3. Replace 'YourProviderURL' with your Ethereum node provider URL
+	const web3 = new Web3('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
+
+
+
+
+
+
+
+
+</script>
 <!--end::Head-->
 <!--begin::Body-->
 
@@ -111,7 +654,7 @@
 
 								<!--begin::Item-->
 								<li class="nav-item mb-1" title="Account Settings" data-bs-toggle="tooltip"
-								data-bs-dismiss="click" data-bs-placement="right">
+									data-bs-dismiss="click" data-bs-placement="right">
 									<a href="./views/accountsettings.html"
 										class="nav-link h-40px w-40px h-lg-50px w-lg-50px btn btn-custom btn-icon btn-color-white"
 										role="tab">
@@ -221,6 +764,7 @@
 						<!--begin::Right-->
 						<div class="d-flex align-items-center">
 
+							
 							<!--begin::Wallet-->
 							<div class="ms-1 ms-lg-6">
 								<div class="btn btn-icon btn-sm btn-active-bg-accent" data-kt-menu-trigger="click"
@@ -247,10 +791,10 @@
 								<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold w-300px"
 									data-kt-menu="true">
 									<div class="menu-content fw-bold d-flex align-items-center bgi-no-repeat bgi-position-y-top rounded-top"
-										style="background-image:url('assets/media//misc/dropdown-header-bg.jpg')">
+										style="background-image:url('./assets/media//misc/dropdown-header-bg.jpg')">
 										<div class="symbol symbol-45px mx-5 py-5">
 											<span class="symbol-label align-items-end">
-												<img alt="Logo" src="assets/media/icons/duotune/arrows/arr076.svg"
+												<img alt="Logo" src="./assets/media/icons/duotune/arrows/arr076.svg"
 													class="mh-35px" style="margin-bottom: auto;
 													margin-top: auto;" />
 											</span>
@@ -262,52 +806,43 @@
 									</div>
 									<!--begin::Row-->
 									<div class="row row-cols-2 g-0">
-										<a href="#"
+										<a onclick="connectPhantomWallet()"
 											class="border-bottom border-end text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
 
-											<!--begin::Svg Icon | path: assets/media/icons/duotune/general/gen025.svg-->
-											<span class="svg-icon svg-icon-3x me-n1"><svg
-													xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-													viewBox="0 0 24 24" fill="none">
-													<rect x="2" y="2" width="9" height="9" rx="2" fill="black" />
-													<rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2"
-														fill="black" />
-													<rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2"
-														fill="black" />
-													<rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2"
-														fill="black" />
-												</svg></span>
+											<span class="svg-icon svg-icon-3x me-n1">
+												<img style="width: 30px; height: 30px;" alt="Logo"
+													src="./assets/media/svg/Phantom_SVG_Icon.svg" />
+											</span>
 											<!--end::Svg Icon-->
-											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Browser Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Phantom Wallet</span>
 										</a>
-										<a href="#"
+										<a id="coinbase" onclick="connectCoinbase()"
 											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img style="width: 30px; height: 30px;" alt="Logo"
-													src="assets/media/svg/coinbase.svg" />
+													src="./assets/media/svg/coinbase.svg" />
 											</span>
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">Coinbase Wallet</span>
 										</a>
-										<a href="#"
+										<a onclick="connectOKXWallet()"
 											class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/finance/fin009.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="assets/media/svg/walletconnect.svg" />
+													src="./assets/media/svg/OKX_Logo.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">WalletConnect</span>
+											<span class="fw-bolder fs-6 d-block pt-3">OKX Wallet</span>
 										</a>
-										<a href="#"
+										<a id="metamask" onclick="connectMetaMask()"
 											class="col text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/arrows/arr077.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="assets/media/svg/metamask.svg" />
+													src="./assets/media/svg/metamask.svg" />
 
 											</span>
 											<!--end::Svg Icon-->
@@ -436,8 +971,7 @@
 							<!--begin::Nav-->
 							<div class="d-flex align-items-center flex-nowrap text-nowrap overflow-auto py-1">
 								<a href="./index1.html" class="btn btn-active-accent fw-bolder">Home</a>
-								<a href="./views/wizard.html"
-									class="btn btn-active-accent fw-bolder ms-3">Wizard</a>
+								<a href="./views/wizard.html" class="btn btn-active-accent fw-bolder ms-3">Wizard</a>
 								<a href="./views/accountsettings.html"
 									class="btn btn-active-accent active fw-bolder ms-3">Settings</a>
 								<a href="#" class="btn btn-active-accent fw-bolder ms-3">Docs</a>
@@ -479,23 +1013,23 @@
 
 													<input type="text"
 														class="form-control form-control-lg form-control-solid" value=""
-														placeholder="Type Address" />
+														placeholder="Type Address" id="address1" />
 												</div>
 												<br>
 												<div class="mb-10">
 													<input type="password"
 														class="form-control form-control-lg form-control-solid"
-														name="cccvv" placeholder="Enter Pin" value="" />
+														name="cccvv" placeholder="Enter Pin" value="" id="pin1"/>
 													<span class="form-text text-muted">Please enter your pin set during
 														account creation.</span>
 												</div>
 												<br>
 												<div class="row">
 													<div class="col-lg-9">
-														<button type="button"
+														<button type="button" id="addOwner"
 															class="btn btn-light-primary fw-bold btn-sm">Add
 															Owner</button>
-														<button type="button"
+														<button type="button" id="removeOwner"
 															class="btn btn-light-danger fw-bold btn-sm">Remove
 															Owner</button>
 
@@ -520,14 +1054,14 @@
 
 													<input type="text"
 														class="form-control form-control-lg form-control-solid" value=""
-														placeholder="Existing Owner" />
+														placeholder="Existing Owner" id="exisitngOwner" />
 												</div>
 												<br>
 												<div class="input-group input-group-lg input-group-solid">
 
 													<input type="text"
 														class="form-control form-control-lg form-control-solid" value=""
-														placeholder="New Owner" />
+														placeholder="New Owner" id="newOwner" />
 
 												</div>
 
@@ -535,7 +1069,7 @@
 												<div class="mb-10">
 													<input type="password"
 														class="form-control form-control-lg form-control-solid"
-														name="Pin" placeholder="Enter Pin" value="" />
+														name="Pin" placeholder="Enter Pin" value="" id="pin2" />
 													<span class="form-text text-muted">Please enter your pin set during
 														account creation.</span>
 
@@ -545,7 +1079,7 @@
 
 												<div class="row">
 													<div class="col-lg-9">
-														<button type="button"
+														<button type="button" id="replaceOwner"
 															class="btn btn-light-primary fw-bold btn-sm">Replace
 															Owner</button>
 
@@ -569,20 +1103,20 @@
 												<div class="mb-10">
 													<input type="number"
 														class="form-control form-control-lg form-control-solid"
-														name="ccmonth" placeholder="# of confirmations" value="" />
+														name="ccmonth" placeholder="# of confirmations" value="" id="requirement" />
 													<span class="form-text text-muted">Enter the number of confimations
 														a transaction needs before it can be execute.</span>
 												</div>
 												<div class="mb-10">
 													<input type="password"
 														class="form-control form-control-lg form-control-solid"
-														name="cccvv" placeholder="Enter Pin" value="" />
+														name="cccvv" placeholder="Enter Pin" value="" id="pin3" />
 													<span class="form-text text-muted">Please enter your pin set during
 														your account creation.</span>
 												</div>
 
-												<button type="button"
-													class="btn btn-light-primary fw-bold btn-sm">Change
+												<button type="button" class="btn btn-light-primary fw-bold btn-sm"
+													id="changeRequirement">Change
 													Requirement</button>
 												<div class="form-text">If the wallet requesting change is a valid owner
 													and correct pin is entered, the transactions will be published to
@@ -662,7 +1196,266 @@
 	<!--begin::Global Javascript Bundle(used by all pages)-->
 	<script src="assets/plugins/global/plugins.bundle.js"></script>
 	<script src="assets/js/scripts.bundle.js"></script>
-	<script src="assets/js/custom/txn.js"></script>
+	<!-- <script src="assets/js/custom/txn.js"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
+	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+	<script src="assets/js/bundle.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
+
+	<script type="text/javascript">
+		// Ensure ethers is available in the global scope
+	
+	
+		const ethers = window.ethers;
+		const MMSDK = new MetaMaskSDK.MetaMaskSDK(
+			dappMetadata = {
+				name: "ethnotary",
+				url: "ethnotary.io",
+			}
+			// Other options
+		)
+		const coinbaseWallet = new CoinbaseWalletSDK({
+			appName: 'ethnotary',
+			appLogoUrl: 'ethnotary.io',
+			darkMode: false
+		})
+		let wallet;
+	
+		// Function to connect to the user's Ethereum wallet
+		async function connectMetaMask() {
+			if (typeof window.ethereum !== 'undefined') {
+				try {
+					const mmwallet = MMSDK.sdkProvider.request({ method: 'eth_requestAccounts' })
+	
+					console.log(mmwallet)
+	
+					mmwallet.request({ method: 'eth_requestAccounts' }).then(response => {
+						const accounts = response;
+						console.log(`User's address is ${accounts[0]}`);
+	
+						// Optionally, have the default account set for web3.js
+						web3.eth.defaultAccount = accounts[0];
+					})
+	
+	
+	
+	
+				}
+				catch (error) {
+					console.error('User denied account access or an error occurred:', error);
+	
+				}
+	
+			}
+			else {
+				alert('This browser is not web3 enabled, please use a different browser.')
+	
+			}
+		}
+	
+		// Function to connect to the user's Ethereum wallet
+		async function connectOKXWallet() {
+			try {
+	
+				window.okxwallet.request({ method: 'eth_requestAccounts' });
+	
+	
+			}
+			catch (error) {
+				window.open('https://www.okx.com/download');
+	
+			}
+	
+		}
+		// Function to connect to the user's Ethereum wallet
+		async function connectCoinbase() {
+	
+			try {
+				const cbwallet = await coinbaseWallet.makeWeb3Provider('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '5');
+				cbwallet.request({ method: 'eth_requestAccounts' }).then(response => {
+					const accounts = response;
+					console.log(`User's address is ${accounts[0]}`);
+	
+					// Optionally, have the default account set for web3.js
+					web3.eth.defaultAccount = accounts[0];
+				})
+	
+	
+			} catch (error) {
+				alert('User denied account access or an error occurred, please refresh browser and try again.');
+			}
+	
+		}
+	
+		async function connectPhantomWallet() {
+			if (typeof window.phantom !== 'undefined') {
+				try {
+					window.phantom.ethereum.request({ method: 'eth_requestAccounts' })
+	
+				}
+				catch (error) {
+					alert('User denied account access or an error occurred, please refresh browser and try again.');
+	
+				}
+	
+			}
+			else {
+				window.open('https://phantom.app/', '_blank');
+	
+			}
+	
+	
+	
+		}
+	
+	
+	
+	
+	</script>
+	<script>
+
+		// Create contract instance
+		let settings = new web3.eth.Contract(contractABI, contractAddress);
+
+		// let removeOwner = settings.methods.removeOwner(methodArguments).encodeABI()
+
+		// let replaceOwner = settings.methods.replaceOwner(methodArguments).encodeABI()
+		// let changeRequirement = settings.methods.changeRequirement(methodArguments).encodeABI()
+		let ao = document.getElementById('addOwner');
+		ao.addEventListener('click', function () {
+
+			let rawAddress = document.getElementById('address1').value;
+			let address = web3.utils.toChecksumAddress(rawAddress);
+			console.log(address);
+			let pin = document.getElementById('pin1').value;
+			console.log(pin);
+
+			let s = web3.utils.isAddress(address);
+			console.log(s)
+			let addOwner = settings.methods.addOwner(address, pin).encodeABI();
+			console.log(addOwner)
+
+			ethereum.request({
+				method: 'eth_sendTransaction',
+				// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
+				params: [
+					{
+						from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
+						to: contractAddress,
+						data: addOwner,
+						gasLimit: '21000000',
+						maxFeePerGas: '3000',
+						maxPriorityFeePerGas: '100',
+						gas: '90000',
+
+					},
+				],
+			})
+				.then((txHash) => console.log(txHash))
+				.catch((error) => console.log(error));
+		})
+
+		let ro = document.getElementById('removeOwner');
+		ro.addEventListener('click', function () {
+
+
+			let rawAddress = document.getElementById('address1').value;
+			let address = web3.utils.toChecksumAddress(rawAddress);
+			console.log(address);
+			let pin = document.getElementById('pin1').value;
+			console.log(pin);
+
+			let s = web3.utils.isAddress(address);
+			console.log(s)
+			let removeOwner = settings.methods.removeOwner(address, pin).encodeABI();
+			console.log(removeOwner)
+
+			ethereum.request({
+				method: 'eth_sendTransaction',
+				// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
+				params: [
+					{
+						to: contractAddress,
+						from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
+						data: removeOwner,
+						gasLimit: '21000000',
+						maxFeePerGas: '3000',
+						maxPriorityFeePerGas: '100',
+						gas: '90000',
+
+					},
+				],
+			})
+				.then((txHash) => console.log(txHash))
+				.catch((error) => console.error(error));
+		})
+
+		let re = document.getElementById('replaceOwner');
+		re.addEventListener('click', function () {
+
+
+			let rawAddress1 = document.getElementById('exisitngOwner').value;
+			let address1 = web3.utils.toChecksumAddress(rawAddress1);
+			console.log(address1);
+			let rawAddress2 = document.getElementById('newOwner').value;
+			let address2 = web3.utils.toChecksumAddress(rawAddress2);
+			console.log(address2);
+			let pin = document.getElementById('pin2').value;
+			console.log(pin);
+
+			let replaceOwner = settings.methods.replaceOwner(address1, address2, pin).encodeABI();
+			console.log(removeOwner)
+
+			ethereum.request({
+				method: 'eth_sendTransaction',
+				// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
+				params: [
+					{
+						to: contractAddress,
+						from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
+						data: replaceOwner,
+						gasLimit: '21000000',
+						maxFeePerGas: '3000',
+						maxPriorityFeePerGas: '100',
+						gas: '90000',
+
+					},
+				],
+			})
+				.then((txHash) => console.log(txHash))
+				.catch((error) => console.error(error));
+		})
+
+		let cr = document.getElementById('changeRequirement');
+		cr.addEventListener('click', function () {
+			let requirement = document.getElementById('requirement').value;
+			console.log(requirement);
+			let pin = document.getElementById('pin3').value;
+			console.log(pin);
+			let changeRequirement = settings.methods.changeRequirement(requirement, pin).encodeABI();
+			console.log(changeRequirement)
+
+			ethereum.request({
+				method: 'eth_sendTransaction',
+				// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
+				params: [
+					{
+						to: contractAddress,
+						from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
+						data: changeRequirement,
+						gasLimit: '21000000',
+						maxFeePerGas: '3000',
+						maxPriorityFeePerGas: '100',
+						gas: '90000',
+
+					},
+				],
+			})
+				.then((txHash) => console.log(txHash))
+				.catch((error) => console.error(error));
+		})
+
+	</script>
 	<!--end::Global Javascript Bundle-->
 	<!--begin::Page Custom Javascript(used by this page)-->
 
