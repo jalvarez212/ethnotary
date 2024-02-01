@@ -25,10 +25,130 @@
 	<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
+	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+	<script src="assets/js/bundle.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
 	<!--end::Global Stylesheets Bundle-->
 </head>
 <!--end::Head-->
 <!--begin::Body-->
+
+
+<script type="text/javascript">
+	// Ensure ethers is available in the global scope
+
+
+	const ethers = window.ethers;
+	const MMSDK = new MetaMaskSDK.MetaMaskSDK(
+		dappMetadata = {
+			name: "ethnotary",
+			url: "ethnotary.io",
+		}
+		// Other options
+	)
+	const coinbaseWallet = new CoinbaseWalletSDK({
+		appName: 'ethnotary',
+		appLogoUrl: 'ethnotary.io',
+		darkMode: false
+	})
+	let wallet;
+
+	// Function to connect to the user's Ethereum wallet
+	async function connectMetaMask() {
+		if (typeof window.ethereum !== 'undefined') {
+			try {
+				const mmwallet = MMSDK.sdkProvider.request({ method: 'eth_requestAccounts' })
+
+				console.log(mmwallet)
+
+				mmwallet.request({ method: 'eth_requestAccounts' }).then(response => {
+					const accounts = response;
+					console.log(`User's address is ${accounts[0]}`);
+
+					// Optionally, have the default account set for web3.js
+					web3.eth.defaultAccount = accounts[0];
+				})
+
+
+
+
+			}
+			catch (error) {
+				console.error('User denied account access or an error occurred:', error);
+
+			}
+
+		}
+		else {
+			alert('This browser is not web3 enabled, please use a different browser.')
+
+		}
+	}
+
+	// Function to connect to the user's Ethereum wallet
+	async function connectOKXWallet() {
+		try {
+
+			window.okxwallet.request({ method: 'eth_requestAccounts' });
+
+
+		}
+		catch (error) {
+			window.open('https://www.okx.com/download');
+
+		}
+
+	}
+	// Function to connect to the user's Ethereum wallet
+	async function connectCoinbase() {
+
+		try {
+			const cbwallet = await coinbaseWallet.makeWeb3Provider('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '5');
+			cbwallet.request({ method: 'eth_requestAccounts' }).then(response => {
+				const accounts = response;
+				console.log(`User's address is ${accounts[0]}`);
+
+				// Optionally, have the default account set for web3.js
+				web3.eth.defaultAccount = accounts[0];
+			})
+
+
+		} catch (error) {
+			alert('User denied account access or an error occurred, please refresh browser and try again.');
+		}
+
+	}
+
+	async function connectPhantomWallet() {
+		if (typeof window.phantom !== 'undefined') {
+			try {
+				window.phantom.ethereum.request({ method: 'eth_requestAccounts' })
+
+			}
+			catch (error) {
+				alert('User denied account access or an error occurred, please refresh browser and try again.');
+
+			}
+
+		}
+		else {
+			window.open('https://phantom.app/', '_blank');
+
+		}
+
+
+
+	}
+
+
+
+
+</script>
+
+
+
+
+
 
 <body id="kt_body" data-sidebar="on" class="header-fixed header-tablet-and-mobile-fixed sidebar-enabled">
 	<!--begin::Main-->
@@ -39,7 +159,8 @@
 			<!--begin::Aside-->
 			<div id="kt_aside" class="aside bg-info" data-kt-drawer="true" data-kt-drawer-name="aside"
 				data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true"
-				data-kt-drawer-width="70px" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_sidebar_toggler">
+				data-kt-drawer-width="70px" data-kt-drawer-direction="start"
+				data-kt-drawer-toggle="#kt_sidebar_toggler">
 				<!--begin::Primary-->
 				<div class="aside-primary d-flex flex-column align-items-center flex-row-auto">
 					<!--begin::Logo-->
@@ -51,7 +172,8 @@
 					</div>
 					<!--end::Logo-->
 					<!--begin::Nav Wrapper-->
-					<div class="aside-nav d-flex flex-column align-items-center flex-column-fluid pt-0 pb-5" id="kt_aside_nav">
+					<div class="aside-nav d-flex flex-column align-items-center flex-column-fluid pt-0 pb-5"
+						id="kt_aside_nav">
 						<!--begin::Nav scroll-->
 						<div class="hover-scroll-y" data-kt-scroll="true" data-kt-scroll-height="auto"
 							data-kt-scroll-dependencies="#kt_aside_logo, #kt_aside_footer"
@@ -106,7 +228,7 @@
 
 								<!--begin::Item-->
 								<li class="nav-item mb-1" title="Account Settings" data-bs-toggle="tooltip"
-								data-bs-dismiss="click" data-bs-placement="right">
+									data-bs-dismiss="click" data-bs-placement="right">
 									<a href="./views/accountsettings.html"
 										class="nav-link h-40px w-40px h-lg-50px w-lg-50px btn btn-custom btn-icon btn-color-white"
 										role="tab">
@@ -218,6 +340,7 @@
 						<div class="d-flex align-items-center">
 
 							<!--begin::Wallet-->
+							<!--begin::Wallet-->
 							<div class="ms-1 ms-lg-6">
 								<div class="btn btn-icon btn-sm btn-active-bg-accent" data-kt-menu-trigger="click"
 									data-kt-menu-placement="bottom-end" id="kt_header_user_menu_toggle">
@@ -243,10 +366,10 @@
 								<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold w-300px"
 									data-kt-menu="true">
 									<div class="menu-content fw-bold d-flex align-items-center bgi-no-repeat bgi-position-y-top rounded-top"
-										style="background-image:url('assets/media//misc/dropdown-header-bg.jpg')">
+										style="background-image:url('./assets/media//misc/dropdown-header-bg.jpg')">
 										<div class="symbol symbol-45px mx-5 py-5">
 											<span class="symbol-label align-items-end">
-												<img alt="Logo" src="assets/media/icons/duotune/arrows/arr076.svg"
+												<img alt="Logo" src="./assets/media/icons/duotune/arrows/arr076.svg"
 													class="mh-35px" style="margin-bottom: auto;
 													margin-top: auto;" />
 											</span>
@@ -258,52 +381,43 @@
 									</div>
 									<!--begin::Row-->
 									<div class="row row-cols-2 g-0">
-										<a href="#"
+										<a onclick="connectPhantomWallet()"
 											class="border-bottom border-end text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
 
-											<!--begin::Svg Icon | path: assets/media/icons/duotune/general/gen025.svg-->
-											<span class="svg-icon svg-icon-3x me-n1"><svg
-													xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-													viewBox="0 0 24 24" fill="none">
-													<rect x="2" y="2" width="9" height="9" rx="2" fill="black" />
-													<rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2"
-														fill="black" />
-													<rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2"
-														fill="black" />
-													<rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2"
-														fill="black" />
-												</svg></span>
+											<span class="svg-icon svg-icon-3x me-n1">
+												<img style="width: 30px; height: 30px;" alt="Logo"
+													src="./assets/media/svg/Phantom_SVG_Icon.svg" />
+											</span>
 											<!--end::Svg Icon-->
-											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Browser Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Phantom Wallet</span>
 										</a>
-										<a href="#"
+										<a id="coinbase" onclick="connectCoinbase()"
 											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img style="width: 30px; height: 30px;" alt="Logo"
-													src="assets/media/svg/coinbase.svg" />
+													src="./assets/media/svg/coinbase.svg" />
 											</span>
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">Coinbase Wallet</span>
 										</a>
-										<a href="#"
+										<a onclick="connectOKXWallet()"
 											class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/finance/fin009.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="assets/media/svg/walletconnect.svg" />
+													src="./assets/media/svg/OKX_Logo.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">WalletConnect</span>
+											<span class="fw-bolder fs-6 d-block pt-3">OKX Wallet</span>
 										</a>
-										<a href="#"
+										<a id="metamask" onclick="connectMetaMask()"
 											class="col text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/arrows/arr077.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="assets/media/svg/metamask.svg" />
+													src="./assets/media/svg/metamask.svg" />
 
 											</span>
 											<!--end::Svg Icon-->
@@ -464,7 +578,7 @@
 												<!--begin::Row-->
 												<div class="row">
 													<div class="col me-n2 mb-5">
-														<button type="button"
+														<button type="button" id="sendETH"
 															class="btn btn-outline btn-bg-light btn-color-gray-600 btn-active-light-primary border-dashed border-active border-primary px-6 py-7 text-start w-100 min-w-150px"
 															data-bs-toggle="modal" data-bs-target="#kt_modal_1">
 															<!--begin::Svg Icon | path: icons/duotune/general/gen002.svg-->
@@ -562,7 +676,7 @@
 																				<i class="las la-wallet fs-1"></i>
 																			</span>
 																			<input type="text" class="form-control"
-																				id="basic-url" placeholder="Address"
+																				id="toAddress" placeholder="Address"
 																				aria-describedby="basic-addon3" />
 																		</div>
 																		<!--end::Input group-->
@@ -582,7 +696,7 @@
 																				<i class="bi bi-graph-down fs-2"></i>
 																			</span>
 																			<input type="text" class="form-control"
-																				id="basic-url"
+																				id="ethAmount"
 																				placeholder="Enter ETH amount"
 																				aria-describedby="basic-addon3" />
 																		</div>
@@ -607,7 +721,7 @@
 																		data-bs-dismiss="modal">Cancel</button>
 																	<!--end::Button-->
 																	<!--begin::Button-->
-																	<button type="button" id="kt_modal_add_event_submit"
+																	<button type="button" id="submitTxn"
 																		class="btn btn-primary">
 																		<span class="indicator-label">Submit
 																			Transaction</span>
@@ -1261,8 +1375,8 @@
 												</div>
 												<!--end::Tap pane-->
 												<!--begin::Tap pane-->
-												<div class="tab-pane fade" id="kt_tab_pane_1_2"
-													role="tabpanel" aria-labelledby="kt_tab_pane_1_2">
+												<div class="tab-pane fade" id="kt_tab_pane_1_2" role="tabpanel"
+													aria-labelledby="kt_tab_pane_1_2">
 													<!--begin::Table-->
 													<div class="table-responsive">
 														<table class="table table-borderless align-middle">
@@ -1473,6 +1587,42 @@
 	<!--end::Page Custom Javascript-->
 	<!--end::Javascript-->
 </body>
+<script>
+
+
+
+
+	let submitTxn = document.getElementById('submitTxn');
+	submitTxn.addEventListener('click', function () {
+		
+
+		let to = document.getElementById('toAddress').value;
+		let rawAmount = document.getElementById('ethAmount').value;
+		let amount = web3.utils.toWei(rawAmount, 'ether');
+
+		let callData = contract.methods.submitTransaction(to, amount, '0x').encodeABI();
+		console.log(callData);
+
+		ethereum.request({
+			method: 'eth_sendTransaction',
+			// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
+			params: [
+				{
+					to: contractAddress,
+					from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
+					data: callData, 
+					gasLimit: '21000000',
+					maxFeePerGas: '3000',
+					maxPriorityFeePerGas: '100',
+					gas: '90000',
+
+				},
+			],
+		})
+			.then((txHash) => console.log(txHash))
+			.catch((error) => console.error(error));
+	})
+</script>
 <!--end::Body-->
 
 </html>
