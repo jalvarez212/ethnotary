@@ -52,18 +52,18 @@
 		darkMode: false
 	})
 	let wallet;
+	let selectAddress;
 
 	// Function to connect to the user's Ethereum wallet
 	async function connectMetaMask() {
 		if (typeof window.ethereum !== 'undefined') {
 			try {
-				const mmwallet = MMSDK.sdkProvider.request({ method: 'eth_requestAccounts' })
+				wallet = await MMSDK.sdkProvider;
 
-				console.log(mmwallet)
-
-				mmwallet.request({ method: 'eth_requestAccounts' }).then(response => {
+				wallet.request({ method: 'eth_requestAccounts' }).then(response => {
 					const accounts = response;
 					console.log(`User's address is ${accounts[0]}`);
+					selectAddress = accounts[0];
 
 					// Optionally, have the default account set for web3.js
 					web3.eth.defaultAccount = accounts[0];
@@ -89,7 +89,13 @@
 	async function connectOKXWallet() {
 		try {
 
-			window.okxwallet.request({ method: 'eth_requestAccounts' });
+			wallet = okxwallet;
+			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+					selectAddress = okxwallet.selectedAddress;
+					// Optionally, have the default account set for web3.js
+					web3.eth.defaultAccount = okxwallet.selectedAddress;
+				});
+
 
 
 		}
@@ -104,9 +110,12 @@
 
 		try {
 			const cbwallet = await coinbaseWallet.makeWeb3Provider('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '5');
-			cbwallet.request({ method: 'eth_requestAccounts' }).then(response => {
+
+			wallet = await cbwallet;
+			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
 				const accounts = response;
 				console.log(`User's address is ${accounts[0]}`);
+				selectAddress = accounts[0];
 
 				// Optionally, have the default account set for web3.js
 				web3.eth.defaultAccount = accounts[0];
@@ -122,7 +131,14 @@
 	async function connectPhantomWallet() {
 		if (typeof window.phantom !== 'undefined') {
 			try {
-				window.phantom.ethereum.request({ method: 'eth_requestAccounts' })
+				console.log('helllllo')
+				wallet = await phantom.ethereum;
+				wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+					selectAddress = wallet.selectedAddress; 
+					// Optionally, have the default account set for web3.js
+					web3.eth.defaultAccount = wallet.selectedAddress; 
+				});
+
 
 			}
 			catch (error) {
@@ -145,7 +161,7 @@
 
 		for(i = 0; i < array.length; i++){
 
-			
+
 
 		}
 
@@ -1614,7 +1630,7 @@
 		let callData = contract.methods.submitTransaction(to, amount, '0x').encodeABI();
 		console.log(callData);
 
-		ethereum.request({
+		wallet.request({
 			method: 'eth_sendTransaction',
 			// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
 			params: [

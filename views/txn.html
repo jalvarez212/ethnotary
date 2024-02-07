@@ -39,6 +39,7 @@
 	// Ensure ethers is available in the global scope
 
 
+
 	const ethers = window.ethers;
 	const MMSDK = new MetaMaskSDK.MetaMaskSDK(
 		dappMetadata = {
@@ -58,11 +59,11 @@
 	async function connectMetaMask() {
 		if (typeof window.ethereum !== 'undefined') {
 			try {
-				const mmwallet = MMSDK.sdkProvider.request({ method: 'eth_requestAccounts' })
+				wallet = await MMSDK.sdkProvider.request({ method: 'eth_requestAccounts' }).then(function(w){return w})
 
 				console.log(mmwallet)
 
-				mmwallet.request({ method: 'eth_requestAccounts' }).then(response => {
+				wallet.request({ method: 'eth_requestAccounts' }).then(response => {
 					const accounts = response;
 					console.log(`User's address is ${accounts[0]}`);
 
@@ -90,7 +91,9 @@
 	async function connectOKXWallet() {
 		try {
 
-			window.okxwallet.request({ method: 'eth_requestAccounts' });
+			wallet = okxwallet;
+			wallet.request({ method: 'eth_requestAccounts' });
+
 
 
 		}
@@ -105,7 +108,9 @@
 
 		try {
 			const cbwallet = await coinbaseWallet.makeWeb3Provider('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '5');
-			cbwallet.request({ method: 'eth_requestAccounts' }).then(response => {
+
+			wallet = cbwallet;
+			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
 				const accounts = response;
 				console.log(`User's address is ${accounts[0]}`);
 
@@ -123,7 +128,8 @@
 	async function connectPhantomWallet() {
 		if (typeof window.phantom !== 'undefined') {
 			try {
-				window.phantom.ethereum.request({ method: 'eth_requestAccounts' })
+				wallet = phantom.ethereum;
+				wallet.request({ method: 'eth_requestAccounts' })
 
 			}
 			catch (error) {
