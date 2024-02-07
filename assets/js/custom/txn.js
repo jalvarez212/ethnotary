@@ -17,39 +17,8 @@ const ETHERSCAN_API_URL = 'https://api.etherscan.io/api';
 
 
 // Contract details
-const contractAddress = '0x189bA69e5ECf5914D14Cc051C4D8d1A10Bb767e5';
-const contractABI = [
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "accountOwner",
-				"type": "address"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_pin",
-				"type": "uint16"
-			}
-		],
-		"name": "addOwner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_required",
-				"type": "uint256"
-			}
-		],
-		"name": "changeRequirement",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
+const contractAddress = '0x47d4FFCd43561BF1D02DB4998671a4FEC3994F3c';
+const contractABI =[
 	{
 		"inputs": [
 			{
@@ -91,23 +60,10 @@ const contractABI = [
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "confirmTransaction",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
+				"indexed": false,
 				"internalType": "address",
 				"name": "sender",
 				"type": "address"
@@ -123,19 +79,6 @@ const contractABI = [
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "execute",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -143,6 +86,24 @@ const contractABI = [
 				"internalType": "uint256",
 				"name": "transactionId",
 				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes",
+				"name": "func",
+				"type": "bytes"
 			}
 		],
 		"name": "Execution",
@@ -188,45 +149,23 @@ const contractABI = [
 		"type": "event"
 	},
 	{
+		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": true,
 				"internalType": "address",
-				"name": "accountOwner",
+				"name": "oldOwner",
 				"type": "address"
 			},
 			{
-				"internalType": "uint16",
-				"name": "_pin",
-				"type": "uint16"
-			}
-		],
-		"name": "removeOwner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "accountOwner",
-				"type": "address"
-			},
-			{
+				"indexed": true,
 				"internalType": "address",
 				"name": "newOwner",
 				"type": "address"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_pin",
-				"type": "uint16"
 			}
 		],
-		"name": "replaceOwner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
+		"name": "OwnerReplace",
+		"type": "event"
 	},
 	{
 		"anonymous": false,
@@ -261,19 +200,6 @@ const contractABI = [
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "revokeConfirmation",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -281,43 +207,85 @@ const contractABI = [
 				"internalType": "uint256",
 				"name": "transactionId",
 				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "dest",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes",
+				"name": "func",
+				"type": "bytes"
 			}
 		],
 		"name": "Submission",
 		"type": "event"
 	},
 	{
+		"inputs": [],
+		"name": "MAX_OWNER_COUNT",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "dest",
+				"name": "accountOwner",
 				"type": "address"
 			},
 			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bytes",
-				"name": "func",
-				"type": "bytes"
+				"internalType": "uint16",
+				"name": "_pin",
+				"type": "uint16"
 			}
 		],
-		"name": "submitTransaction",
-		"outputs": [
+		"name": "addOwner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_required",
+				"type": "uint256"
+			}
+		],
+		"name": "changeRequirement",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
 			{
 				"internalType": "uint256",
 				"name": "transactionId",
 				"type": "uint256"
 			}
 		],
+		"name": "confirmTransaction",
+		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "receive"
 	},
 	{
 		"inputs": [
@@ -341,6 +309,19 @@ const contractABI = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "execute",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -433,32 +414,6 @@ const contractABI = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "MAX_OWNER_COUNT",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -478,6 +433,47 @@ const contractABI = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "accountOwner",
+				"type": "address"
+			},
+			{
+				"internalType": "uint16",
+				"name": "_pin",
+				"type": "uint16"
+			}
+		],
+		"name": "removeOwner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "accountOwner",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			},
+			{
+				"internalType": "uint16",
+				"name": "_pin",
+				"type": "uint16"
+			}
+		],
+		"name": "replaceOwner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "required",
 		"outputs": [
@@ -488,6 +484,48 @@ const contractABI = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "revokeConfirmation",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "dest",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes",
+				"name": "func",
+				"type": "bytes"
+			}
+		],
+		"name": "submitTransaction",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -541,9 +579,12 @@ const contractABI = [
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
 	}
-];
-
+]
 // Creating a contract instance
 const contract = new web3.eth.Contract(contractABI, contractAddress);
 

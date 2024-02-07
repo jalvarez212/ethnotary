@@ -5,10 +5,8 @@ pragma solidity ^0.8.22;
 /* solhint-disable no-inline-assembly */
 /* solhint-disable reason-string */
 
-
-contract MultiSigAccount
-{
-   //Multi Sig Constants
+contract MultiSigAccount {
+    //Multi Sig Constants
 
     bytes32 private pinHash;
 
@@ -36,15 +34,16 @@ contract MultiSigAccount
     event Confirmation(address indexed sender, uint indexed transactionId);
     event Revocation(address indexed sender, uint indexed transactionId);
     //ad sender and txn id to submission event
-    event Submission(uint indexed transactionId);
-    event Execution(uint indexed transactionId);
+    event Submission(uint indexed transactionId, address dest, uint256 value, bytes func);
+    event Execution(uint indexed transactionId, address to, uint amount, bytes func);
     event ExecutionFailure(uint indexed transactionId);
-    event Deposit(address indexed sender, uint value);
+    event Deposit(address sender, uint value);
     event OwnerAddition(address indexed owner);
     event OwnerRemoval(address indexed owner);
+    event OwnerReplace(address indexed oldOwner, address indexed newOwner);
     event RequirementChange(uint required);
    
-   
+
     //Multi Sig Modifiers
 
     modifier onlyOwner() {
@@ -88,10 +87,9 @@ contract MultiSigAccount
     }
 
     modifier verifyPin(uint16 _pin) {
-        require (keccak256(abi.encodePacked(_pin)) == pinHash, "incorrect pin");
+        require(keccak256(abi.encodePacked(_pin)) == pinHash, "incorrect pin");
         _;
     }
-
 
     modifier validRequirement(uint ownerCount, uint _required) {
         require(
@@ -103,17 +101,16 @@ contract MultiSigAccount
         _;
     }
 
-
     // solhint-disable-next-line no-empty-blocks
-    receive() external payable {}
+    receive() external payable {
+        emit Deposit(msg.sender, msg.value);
+    }
 
     constructor(
         address[] memory _owners,
         uint _required,
         uint16 _pin
-    ) payable
-    validRequirement(_owners.length, _required) 
-    {
+    ) payable validRequirement(_owners.length, _required) {
         for (uint i = 0; i < _owners.length; i++) {
             require(!isOwner[_owners[i]] && _owners[i] != address(0));
             isOwner[_owners[i]] = true;
@@ -130,14 +127,9 @@ contract MultiSigAccount
         );
     }
 
-
     function _requireFromOwner() internal view {
-        require(isOwner[msg.sender],
-            "account: not Owner or EntryPoint"
-        );
+        require(isOwner[msg.sender], "account: not Owner or EntryPoint");
     }
-
- 
 
     function _call(address target, uint256 value, bytes memory data) internal {
         (bool success, bytes memory result) = target.call{value: value}(data);
@@ -147,6 +139,7 @@ contract MultiSigAccount
             }
         }
     }
+
     //Multi Sig Functions
 
     function addOwner(
@@ -158,24 +151,17 @@ contract MultiSigAccount
         notNull(accountOwner)
         validRequirement(owners.length + 1, required)
         verifyPin(_pin)
-
     {
         _requireFromOwner();
         isOwner[accountOwner] = true;
         owners.push(accountOwner);
         emit OwnerAddition(accountOwner);
     }
-    
 
     function removeOwner(
         address accountOwner,
         uint16 _pin
-    ) 
-    public 
-    ownerExists(accountOwner) 
-    verifyPin(_pin)
-    
-    {
+    ) public ownerExists(accountOwner) verifyPin(_pin) {
         _requireFromOwner();
         isOwner[accountOwner] = false;
         for (uint i = 0; i < owners.length - 1; i++)
@@ -192,12 +178,11 @@ contract MultiSigAccount
         address accountOwner,
         address newOwner,
         uint16 _pin
-
-    ) 
-    public  
-    ownerExists(accountOwner) 
-    ownerDoesNotExist(newOwner)
-    verifyPin(_pin) 
+    )
+        public
+        ownerExists(accountOwner)
+        ownerDoesNotExist(newOwner)
+        verifyPin(_pin)
     {
         for (uint i = 0; i < owners.length; i++)
             if (owners[i] == accountOwner) {
@@ -207,25 +192,20 @@ contract MultiSigAccount
         isOwner[accountOwner] = false;
         isOwner[newOwner] = true;
         //this can be just one replace owner event with new,old, and address sibmitting change as params.
-        emit OwnerRemoval(accountOwner);
-        emit OwnerAddition(newOwner);
+        emit OwnerReplace(accountOwner, newOwner);
     }
 
     //add address that submitted the change as a param to the emit event function
 
     function changeRequirement(
         uint _required
-    ) public 
-   validRequirement(owners.length, _required) 
-   {
+    ) public validRequirement(owners.length, _required) {
         _requireFromOwner();
         required = _required;
         emit RequirementChange(_required);
     }
 
-    function execute(
-        uint transactionId
-    ) public {
+    function execute(uint transactionId) public {
         _requireFromOwner();
         require(isConfirmed(transactionId));
         require(!transactions[transactionId].executed);
@@ -235,14 +215,12 @@ contract MultiSigAccount
             txn.executed = true;
             _call(txn.dest, txn.value, txn.func);
             //add txn.dest, txn.value, and txn.func to the emit event
-            emit Execution(transactionId);
-        }
-        else {
+            emit Execution(transactionId, txn.dest, txn.value, txn.func);
+        } else {
             emit ExecutionFailure(transactionId);
             Transaction storage txn = transactions[transactionId];
             txn.executed = false;
-            }
-        
+        }
     }
 
     function submitTransaction(
@@ -252,7 +230,8 @@ contract MultiSigAccount
     ) public returns (uint transactionId) {
         _requireFromOwner();
         transactionId = addTransaction(dest, value, func);
-        confirmTransaction(transactionId);
+        confirmations[transactionId][msg.sender] = true;
+        emit Submission(transactionId, dest, value, func);
     }
 
     function confirmTransaction(
@@ -265,7 +244,6 @@ contract MultiSigAccount
     {
         confirmations[transactionId][msg.sender] = true;
         emit Confirmation(msg.sender, transactionId);
-
     }
 
     function revokeConfirmation(
@@ -280,7 +258,6 @@ contract MultiSigAccount
         emit Revocation(msg.sender, transactionId);
     }
 
-
     function isConfirmed(uint transactionId) public view returns (bool) {
         uint count = 0;
         for (uint i = 0; i < owners.length; i++) {
@@ -289,7 +266,6 @@ contract MultiSigAccount
         }
         return false;
     }
-   
 
     function addTransaction(
         address dest,
@@ -306,7 +282,7 @@ contract MultiSigAccount
         });
         transactionCount += 1;
         //i don't think this event is needed or find a way to only call one of confirm or submit
-        emit Submission(transactionId);
+        
     }
 
     function getConfirmationCount(
@@ -334,7 +310,4 @@ contract MultiSigAccount
         _confirmations = new address[](count);
         for (i = 0; i < count; i++) _confirmations[i] = confirmationsTemp[i];
     }
-
-
-    
 }

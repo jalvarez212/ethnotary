@@ -798,6 +798,33 @@
 
 			let m = document.getElementById("method").innerText = 'Revoke Txn';
 
+
+		}
+
+		if (l == 'execute') {
+
+			t = receipt.logs['0'].topics;
+			console.log('************')
+			console.log(receipt)
+			console.log(t)
+
+			console.log(l)
+			console.log('************')
+
+
+
+			let container = document.getElementById('logs');
+
+			let removed = document.createElement("div");
+			removed.classList.add('d-flex');
+			removed.classList.add('justify-content-between');
+			removed.classList.add('fs-6');
+			removed.classList.add('mb-3');
+			removed.innerHTML = `<span class="text-end">Owner Removed: 0x` + t[1].slice(26) + `</span>`
+			container.appendChild(removed);
+
+			let m = document.getElementById("method").innerText = 'Owner Removed';
+
 		}
 
 
