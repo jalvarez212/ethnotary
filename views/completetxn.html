@@ -607,12 +607,10 @@
 		l = await findContractMethod(tx);
 		t = receipt.logs['0'].topics;
 
+
 		if (l == 'confirmTransaction') {
 
 			let container = document.getElementById('logs');
-
-
-
 
 			// let sender = document.createElement("div");
 			// sender.classList.add('d-flex');
@@ -621,7 +619,6 @@
 			// sender.classList.add('mb-3');
 			// sender.innerHTML = `<span class="text-end">Sender: 0x` + t[1].slice(26) + `</span>`
 			// container.appendChild(sender);
-
 
 
 			let txnId = document.createElement("div");
@@ -828,6 +825,33 @@
 		}
 
 
+		if (l == null) {
+
+	
+			let container = document.getElementById('logs');
+
+			let from = document.createElement("div");
+			from.classList.add('d-flex');
+			from.classList.add('justify-content-between');
+			from.classList.add('fs-6');
+			from.classList.add('mb-3');
+			from.innerHTML = `<span class="text-end">From: ` + tx.from + `</span>`
+			container.appendChild(from);
+
+			let v = web3.utils.fromWei(tx.value, 'ether');
+			let value = document.createElement("div");
+			value.classList.add('d-flex');
+			value.classList.add('justify-content-between');
+			value.classList.add('fs-6');
+			value.classList.add('mb-3');
+			value.innerHTML = `<span class="text-end">Value: ` + v+ ` ETH</span>`
+			container.appendChild(value);
+
+			let m = document.getElementById("method").innerText = 'Deposit';
+
+		}
+
+
 
 
 
@@ -843,7 +867,7 @@
 		});
 
 		if (!abiMethod) {
-			console.log('No matching method found in the contract ABI.');
+			return null
 		} else {
 			return abiMethod.name
 		}
@@ -861,11 +885,12 @@
 
 			// Convert the fee to Ether from Wei
 			const txFeeInEther = web3.utils.fromWei(txFee.toString(), 'ether');
+			const valueInETH = web3.utils.fromWei(tx.value, 'ether');
 			document.getElementById('tx_hash').innerText = tx.hash;
 			document.getElementById('tx_to').innerText = tx.to;
 			document.getElementById('tx_from').innerText = tx.from;
 			document.getElementById('tx_fee').innerText = txFeeInEther;
-			document.getElementById('tx_value').innerText = tx.value;
+			document.getElementById('tx_value').innerText = valueInETH;
 			document.getElementById('gas_price').innerText = await web3.utils.fromWei(tx.gasPrice.toString(), 'ether');
 			document.getElementById('block').innerText = tx.blockNumber;
 			document.getElementById('gas_used').innerText = gasUsed;

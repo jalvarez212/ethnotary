@@ -599,8 +599,10 @@ async function findContractMethod(tx) {
         return abiEntry.type === 'function' && web3.eth.abi.encodeFunctionSignature(abiEntry) === methodId;
     });
 
+	let deposit = 'deposit';
+
     if (!abiMethod) {
-        console.log('No matching method found in the contract ABI.');
+        return deposit
     } else {
         return abiMethod.name
     }
