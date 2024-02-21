@@ -564,6 +564,27 @@
 	// Initialize Web3. Replace 'YourProviderURL' with your Ethereum node provider URL
 	const web3 = new Web3('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
 
+	const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+
+	async function callGetOwners() {
+		try {
+			const owners = await contract.methods.getOwners().call();
+
+			owners.forEach(function (x) {
+				let d = document.createElement('div');
+				d.classList.add('form-text');
+				d.innerText = x;
+				document.getElementById('accountOwners').append(d);
+			})
+
+		} catch (error) {
+			console.error('Error calling getOwners:', error);
+		}
+	}
+
+	callGetOwners();
+
 
 
 
@@ -764,7 +785,7 @@
 						<!--begin::Right-->
 						<div class="d-flex align-items-center">
 
-							
+
 							<!--begin::Wallet-->
 							<div class="ms-1 ms-lg-6">
 								<div class="btn btn-icon btn-sm btn-active-bg-accent" data-kt-menu-trigger="click"
@@ -993,12 +1014,9 @@
 										<!--begin::Form row-->
 										<div class="row mb-8">
 											<label class="col-lg-3 col-form-label">Account Owners</label>
-											<div class="col-lg-9">
+											<div class="col-lg-9" id="accountOwners">
 
-												<div class="form-text">0x23jbnr432ubr3874fn347ghf374ghf3874gh374ghv3
-												</div>
-												<div class="form-text">0x23jbnr432ubr3874fn347ghf374ghf3874gh374ghv3
-												</div>
+
 											</div>
 										</div>
 										<!--end::Form row-->
@@ -1019,7 +1037,7 @@
 												<div class="mb-10">
 													<input type="password"
 														class="form-control form-control-lg form-control-solid"
-														name="cccvv" placeholder="Enter Pin" value="" id="pin1"/>
+														name="cccvv" placeholder="Enter Pin" value="" id="pin1" />
 													<span class="form-text text-muted">Please enter your pin set during
 														account creation.</span>
 												</div>
@@ -1103,7 +1121,8 @@
 												<div class="mb-10">
 													<input type="number"
 														class="form-control form-control-lg form-control-solid"
-														name="ccmonth" placeholder="# of confirmations" value="" id="requirement" />
+														name="ccmonth" placeholder="# of confirmations" value=""
+														id="requirement" />
 													<span class="form-text text-muted">Enter the number of confimations
 														a transaction needs before it can be execute.</span>
 												</div>
@@ -1204,8 +1223,8 @@
 
 	<script type="text/javascript">
 		// Ensure ethers is available in the global scope
-	
-	
+
+
 		const ethers = window.ethers;
 		const MMSDK = new MetaMaskSDK.MetaMaskSDK(
 			dappMetadata = {
@@ -1220,97 +1239,97 @@
 			darkMode: false
 		})
 		let wallet;
-	
+
 		// Function to connect to the user's Ethereum wallet
 		async function connectMetaMask() {
 			if (typeof window.ethereum !== 'undefined') {
 				try {
 					const mmwallet = MMSDK.sdkProvider.request({ method: 'eth_requestAccounts' })
-	
+
 					console.log(mmwallet)
-	
+
 					mmwallet.request({ method: 'eth_requestAccounts' }).then(response => {
 						const accounts = response;
 						console.log(`User's address is ${accounts[0]}`);
-	
+
 						// Optionally, have the default account set for web3.js
 						web3.eth.defaultAccount = accounts[0];
 					})
-	
-	
-	
-	
+
+
+
+
 				}
 				catch (error) {
 					console.error('User denied account access or an error occurred:', error);
-	
+
 				}
-	
+
 			}
 			else {
 				alert('This browser is not web3 enabled, please use a different browser.')
-	
+
 			}
 		}
-	
+
 		// Function to connect to the user's Ethereum wallet
 		async function connectOKXWallet() {
 			try {
-	
+
 				window.okxwallet.request({ method: 'eth_requestAccounts' });
-	
-	
+
+
 			}
 			catch (error) {
 				window.open('https://www.okx.com/download');
-	
+
 			}
-	
+
 		}
 		// Function to connect to the user's Ethereum wallet
 		async function connectCoinbase() {
-	
+
 			try {
 				const cbwallet = await coinbaseWallet.makeWeb3Provider('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '5');
 				cbwallet.request({ method: 'eth_requestAccounts' }).then(response => {
 					const accounts = response;
 					console.log(`User's address is ${accounts[0]}`);
-	
+
 					// Optionally, have the default account set for web3.js
 					web3.eth.defaultAccount = accounts[0];
 				})
-	
-	
+
+
 			} catch (error) {
 				alert('User denied account access or an error occurred, please refresh browser and try again.');
 			}
-	
+
 		}
-	
+
 		async function connectPhantomWallet() {
 			if (typeof window.phantom !== 'undefined') {
 				try {
 					window.phantom.ethereum.request({ method: 'eth_requestAccounts' })
-	
+
 				}
 				catch (error) {
 					alert('User denied account access or an error occurred, please refresh browser and try again.');
-	
+
 				}
-	
+
 			}
 			else {
 				window.open('https://phantom.app/', '_blank');
-	
+
 			}
-	
-	
-	
+
+
+
 		}
-	
-	
-	
-	
+
+
+
+
 	</script>
 	<script>
 
@@ -1335,24 +1354,35 @@
 			let addOwner = settings.methods.addOwner(address, pin).encodeABI();
 			console.log(addOwner)
 
-			ethereum.request({
-				method: 'eth_sendTransaction',
-				// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
-				params: [
-					{
-						from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
-						to: contractAddress,
-						data: addOwner,
-						gasLimit: '21000000',
-						maxFeePerGas: '3000',
-						maxPriorityFeePerGas: '100',
-						gas: '90000',
+			ethereum.request({ method: 'eth_requestAccounts' })
+				.then(accounts => {
+					if (accounts.length === 0) {
+						console.error('No accounts found. Please connect your Ethereum wallet.');
+					} else {
+						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
-					},
-				],
-			})
-				.then((txHash) => console.log(txHash))
-				.catch((error) => console.log(error));
+						// Contract interaction steps come here after getting the active wallet
+						ethereum.request({
+							method: 'eth_sendTransaction',
+							params: [
+								{
+									to: contractAddress, // This now dynamically points to the user's account
+									from: selectAddress,
+									data: addOwner, // Ensure this is well defined in your original script
+									gasLimit: '21000000',
+									maxFeePerGas: '3000',
+									maxPriorityFeePerGas: '100',
+									gas: '90000',
+								},
+							],
+						})
+							.then((txHash) => console.log(txHash))
+							.catch((error) => console.error(error));
+					}
+				})
+				.catch(error => {
+					console.error('An error occurred while fetching the connected accounts.', error);
+				});
 		})
 
 		let ro = document.getElementById('removeOwner');
@@ -1370,24 +1400,35 @@
 			let removeOwner = settings.methods.removeOwner(address, pin).encodeABI();
 			console.log(removeOwner)
 
-			ethereum.request({
-				method: 'eth_sendTransaction',
-				// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
-				params: [
-					{
-						to: contractAddress,
-						from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
-						data: removeOwner,
-						gasLimit: '21000000',
-						maxFeePerGas: '3000',
-						maxPriorityFeePerGas: '100',
-						gas: '90000',
+			ethereum.request({ method: 'eth_requestAccounts' })
+				.then(accounts => {
+					if (accounts.length === 0) {
+						console.error('No accounts found. Please connect your Ethereum wallet.');
+					} else {
+						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
-					},
-				],
-			})
-				.then((txHash) => console.log(txHash))
-				.catch((error) => console.error(error));
+						// Contract interaction steps come here after getting the active wallet
+						ethereum.request({
+							method: 'eth_sendTransaction',
+							params: [
+								{
+									to: contractAddress, // This now dynamically points to the user's account
+									from: selectAddress,
+									data: removeOwner, // Ensure this is well defined in your original script
+									gasLimit: '21000000',
+									maxFeePerGas: '3000',
+									maxPriorityFeePerGas: '100',
+									gas: '90000',
+								},
+							],
+						})
+							.then((txHash) => console.log(txHash))
+							.catch((error) => console.error(error));
+					}
+				})
+				.catch(error => {
+					console.error('An error occurred while fetching the connected accounts.', error);
+				});
 		})
 
 		let re = document.getElementById('replaceOwner');
@@ -1406,24 +1447,35 @@
 			let replaceOwner = settings.methods.replaceOwner(address1, address2, pin).encodeABI();
 			console.log(removeOwner)
 
-			ethereum.request({
-				method: 'eth_sendTransaction',
-				// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
-				params: [
-					{
-						to: contractAddress,
-						from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
-						data: replaceOwner,
-						gasLimit: '21000000',
-						maxFeePerGas: '3000',
-						maxPriorityFeePerGas: '100',
-						gas: '90000',
+			ethereum.request({ method: 'eth_requestAccounts' })
+				.then(accounts => {
+					if (accounts.length === 0) {
+						console.error('No accounts found. Please connect your Ethereum wallet.');
+					} else {
+						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
-					},
-				],
-			})
-				.then((txHash) => console.log(txHash))
-				.catch((error) => console.error(error));
+						// Contract interaction steps come here after getting the active wallet
+						ethereum.request({
+							method: 'eth_sendTransaction',
+							params: [
+								{
+									to: contractAddress, // This now dynamically points to the user's account
+									from: selectAddress,
+									data: replaceOwner, // Ensure this is well defined in your original script
+									gasLimit: '21000000',
+									maxFeePerGas: '3000',
+									maxPriorityFeePerGas: '100',
+									gas: '90000',
+								},
+							],
+						})
+							.then((txHash) => console.log(txHash))
+							.catch((error) => console.error(error));
+					}
+				})
+				.catch(error => {
+					console.error('An error occurred while fetching the connected accounts.', error);
+				});
 		})
 
 		let cr = document.getElementById('changeRequirement');
@@ -1435,24 +1487,35 @@
 			let changeRequirement = settings.methods.changeRequirement(requirement, pin).encodeABI();
 			console.log(changeRequirement)
 
-			ethereum.request({
-				method: 'eth_sendTransaction',
-				// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
-				params: [
-					{
-						to: contractAddress,
-						from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
-						data: changeRequirement,
-						gasLimit: '21000000',
-						maxFeePerGas: '3000',
-						maxPriorityFeePerGas: '100',
-						gas: '90000',
+			ethereum.request({ method: 'eth_requestAccounts' })
+				.then(accounts => {
+					if (accounts.length === 0) {
+						console.error('No accounts found. Please connect your Ethereum wallet.');
+					} else {
+						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
-					},
-				],
-			})
-				.then((txHash) => console.log(txHash))
-				.catch((error) => console.error(error));
+						// Contract interaction steps come here after getting the active wallet
+						ethereum.request({
+							method: 'eth_sendTransaction',
+							params: [
+								{
+									to: contractAddress, // This now dynamically points to the user's account
+									from: selectAddress,
+									data: changeRequirement, // Ensure this is well defined in your original script
+									gasLimit: '21000000',
+									maxFeePerGas: '3000',
+									maxPriorityFeePerGas: '100',
+									gas: '90000',
+								},
+							],
+						})
+							.then((txHash) => console.log(txHash))
+							.catch((error) => console.error(error));
+					}
+				})
+				.catch(error => {
+					console.error('An error occurred while fetching the connected accounts.', error);
+				});
 		})
 
 	</script>
