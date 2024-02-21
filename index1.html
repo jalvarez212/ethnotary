@@ -1629,25 +1629,38 @@
 		let callData = contract.methods.submitTransaction(to, amount, '0x').encodeABI();
 		console.log(callData);
 
-		wallet.request({
-			method: 'eth_sendTransaction',
-			// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
-			params: [
-				{
-					to: contractAddress,
-					from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
-					data: callData, 
-					gasLimit: '21000000',
-					maxFeePerGas: '3000',
-					maxPriorityFeePerGas: '100',
-					gas: '90000',
+		ethereum.request({ method: 'eth_requestAccounts' })
+			.then(accounts => {
+				if (accounts.length === 0) {
+					console.error('No accounts found. Please connect your Ethereum wallet.');
+				} else {
+					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
-				},
-			],
-		})
-			.then((txHash) => console.log(txHash))
-			.catch((error) => console.error(error));
+					// Contract interaction steps come here after getting the active wallet
+					ethereum.request({
+						method: 'eth_sendTransaction',
+						params: [
+							{
+								to: contractAddress, // This now dynamically points to the user's account
+								from: selectAddress,
+								data: callData, // Ensure this is well defined in your original script
+								gasLimit: '21000000',
+								maxFeePerGas: '3000',
+								maxPriorityFeePerGas: '100',
+								gas: '90000',
+							},
+						],
+					})
+						.then((txHash) => console.log(txHash))
+						.catch((error) => console.error(error));
+				}
+			})
+			.catch(error => {
+				console.error('An error occurred while fetching the connected accounts.', error);
+			});
 	});
+
+
 
 	
 </script>
