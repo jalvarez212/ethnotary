@@ -1549,7 +1549,7 @@
 	});
 
 	let e = document.getElementById('execute');
-	eaddEventListener('click', function () {
+	e.addEventListener('click', function () {
 		// Step 1: First, get the first user's own address
 		ethereum.request({ method: 'eth_requestAccounts' })
 			.then(accounts => {
