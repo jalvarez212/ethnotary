@@ -59,7 +59,7 @@
 	async function connectMetaMask() {
 		if (typeof window.ethereum !== 'undefined') {
 			try {
-				wallet = await MMSDK.sdkProvider.request({ method: 'eth_requestAccounts' }).then(function(w){return w})
+				wallet = await MMSDK.sdkProvider.request({ method: 'eth_requestAccounts' }).then(function (w) { return w })
 
 				console.log(mmwallet)
 
@@ -128,8 +128,14 @@
 	async function connectPhantomWallet() {
 		if (typeof window.phantom !== 'undefined') {
 			try {
-				wallet = phantom.ethereum;
-				wallet.request({ method: 'eth_requestAccounts' })
+				console.log('helllllo')
+				wallet = await phantom.ethereum;
+				wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+					selectAddress = wallet.selectedAddress;
+					// Optionally, have the default account set for web3.js
+					web3.eth.defaultAccount = wallet.selectedAddress;
+				});
+
 
 			}
 			catch (error) {
@@ -161,573 +167,573 @@
 
 	const contractAddress = '0x47d4FFCd43561BF1D02DB4998671a4FEC3994F3c';
 
-	const contractABI =[
-	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "_owners",
-				"type": "address[]"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_required",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_pin",
-				"type": "uint16"
-			}
-		],
-		"stateMutability": "payable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "Confirmation",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "Deposit",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "bytes",
-				"name": "func",
-				"type": "bytes"
-			}
-		],
-		"name": "Execution",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "ExecutionFailure",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			}
-		],
-		"name": "OwnerAddition",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			}
-		],
-		"name": "OwnerRemoval",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "oldOwner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "OwnerReplace",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "required",
-				"type": "uint256"
-			}
-		],
-		"name": "RequirementChange",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "Revocation",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "dest",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "bytes",
-				"name": "func",
-				"type": "bytes"
-			}
-		],
-		"name": "Submission",
-		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "MAX_OWNER_COUNT",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "accountOwner",
-				"type": "address"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_pin",
-				"type": "uint16"
-			}
-		],
-		"name": "addOwner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_required",
-				"type": "uint256"
-			}
-		],
-		"name": "changeRequirement",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "confirmTransaction",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "confirmations",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "execute",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "getConfirmationCount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "count",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "getConfirmations",
-		"outputs": [
-			{
-				"internalType": "address[]",
-				"name": "_confirmations",
-				"type": "address[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getOwners",
-		"outputs": [
-			{
-				"internalType": "address[]",
-				"name": "",
-				"type": "address[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "isConfirmed",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "isOwner",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "owners",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "accountOwner",
-				"type": "address"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_pin",
-				"type": "uint16"
-			}
-		],
-		"name": "removeOwner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "accountOwner",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_pin",
-				"type": "uint16"
-			}
-		],
-		"name": "replaceOwner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "required",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "revokeConfirmation",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "dest",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bytes",
-				"name": "func",
-				"type": "bytes"
-			}
-		],
-		"name": "submitTransaction",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "transactionCount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "transactions",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "dest",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bytes",
-				"name": "func",
-				"type": "bytes"
-			},
-			{
-				"internalType": "bool",
-				"name": "executed",
-				"type": "bool"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "receive"
-	}
-]
+	const contractABI = [
+		{
+			"inputs": [
+				{
+					"internalType": "address[]",
+					"name": "_owners",
+					"type": "address[]"
+				},
+				{
+					"internalType": "uint256",
+					"name": "_required",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"stateMutability": "payable",
+			"type": "constructor"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "Confirmation",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				}
+			],
+			"name": "Deposit",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "amount",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "bytes",
+					"name": "func",
+					"type": "bytes"
+				}
+			],
+			"name": "Execution",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "ExecutionFailure",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				}
+			],
+			"name": "OwnerAddition",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				}
+			],
+			"name": "OwnerRemoval",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "oldOwner",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				}
+			],
+			"name": "OwnerReplace",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "required",
+					"type": "uint256"
+				}
+			],
+			"name": "RequirementChange",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "Revocation",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "address",
+					"name": "dest",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "bytes",
+					"name": "func",
+					"type": "bytes"
+				}
+			],
+			"name": "Submission",
+			"type": "event"
+		},
+		{
+			"inputs": [],
+			"name": "MAX_OWNER_COUNT",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "accountOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"name": "addOwner",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "_required",
+					"type": "uint256"
+				}
+			],
+			"name": "changeRequirement",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "confirmTransaction",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "confirmations",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "execute",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "getConfirmationCount",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "count",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "getConfirmations",
+			"outputs": [
+				{
+					"internalType": "address[]",
+					"name": "_confirmations",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "getOwners",
+			"outputs": [
+				{
+					"internalType": "address[]",
+					"name": "",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "isConfirmed",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "isOwner",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "owners",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "accountOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"name": "removeOwner",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "accountOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"name": "replaceOwner",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "required",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "revokeConfirmation",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "dest",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes",
+					"name": "func",
+					"type": "bytes"
+				}
+			],
+			"name": "submitTransaction",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "transactionCount",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "transactions",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "dest",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes",
+					"name": "func",
+					"type": "bytes"
+				},
+				{
+					"internalType": "bool",
+					"name": "executed",
+					"type": "bool"
+				},
+				{
+					"internalType": "uint256",
+					"name": "id",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"stateMutability": "payable",
+			"type": "receive"
+		}
+	]
 
 	// Initialize Web3. Replace 'YourProviderURL' with your Ethereum node provider URL
 	const web3 = new Web3('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
@@ -1504,72 +1510,105 @@
 <script>
 	let c = document.getElementById('confirm');
 	c.addEventListener('click', function () {
+		// Step 1: First, get the first user's own address
+		ethereum.request({ method: 'eth_requestAccounts' })
+			.then(accounts => {
+				if (accounts.length === 0) {
+					console.error('No accounts found. Please connect your Ethereum wallet.');
+				} else {
+					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
-		ethereum.request({
-			method: 'eth_sendTransaction',
-			// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
-			params: [
-				{
-					to: contractAddress,
-					from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
-					data: confirmCallData,
-					gasLimit: '21000000',
-					maxFeePerGas: '3000',
-					maxPriorityFeePerGas: '100',
-					gas: '90000',
-
-				},
-			],
-		})
-			.then((txHash) => console.log(txHash))
-			.catch((error) => console.error(error));
-	})
+					// Contract interaction steps come here after getting the active wallet
+					ethereum.request({
+						method: 'eth_sendTransaction',
+						params: [
+							{
+								to: contractAddress, // This now dynamically points to the user's account
+								from: selectAddress,
+								data: confirmCallData, // Ensure this is well defined in your original script
+								gasLimit: '21000000',
+								maxFeePerGas: '3000',
+								maxPriorityFeePerGas: '100',
+								gas: '90000',
+							},
+						],
+					})
+						.then((txHash) => console.log(txHash))
+						.catch((error) => console.error(error));
+				}
+			})
+			.catch(error => {
+				console.error('An error occurred while fetching the connected accounts.', error);
+			});
+	});
 
 	let r = document.getElementById('revoke');
 	r.addEventListener('click', function () {
+		// Step 1: First, get the first user's own address
+		ethereum.request({ method: 'eth_requestAccounts' })
+			.then(accounts => {
+				if (accounts.length === 0) {
+					console.error('No accounts found. Please connect your Ethereum wallet.');
+				} else {
+					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
-		ethereum.request({
-			method: 'eth_sendTransaction',
-			// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
-			params: [
-				{
-					to: contractAddress,
-					from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
-					data: revokeCallData,
-					gasLimit: '21000000',
-					maxFeePerGas: '3000',
-					maxPriorityFeePerGas: '100',
-					gas: '90000',
-
-				},
-			],
-		})
-			.then((txHash) => console.log(txHash))
-			.catch((error) => console.error(error));
-	})
+					// Contract interaction steps come here after getting the active wallet
+					ethereum.request({
+						method: 'eth_sendTransaction',
+						params: [
+							{
+								to: contractAddress, // This now dynamically points to the user's account
+								from: selectAddress,
+								data: revokeCallData, // Ensure this is well defined in your original script
+								gasLimit: '21000000',
+								maxFeePerGas: '3000',
+								maxPriorityFeePerGas: '100',
+								gas: '90000',
+							},
+						],
+					})
+						.then((txHash) => console.log(txHash))
+						.catch((error) => console.error(error));
+				}
+			})
+			.catch(error => {
+				console.error('An error occurred while fetching the connected accounts.', error);
+			});
+	});
 
 	let e = document.getElementById('execute');
-	e.addEventListener('click', function () {
+	eaddEventListener('click', function () {
+		// Step 1: First, get the first user's own address
+		ethereum.request({ method: 'eth_requestAccounts' })
+			.then(accounts => {
+				if (accounts.length === 0) {
+					console.error('No accounts found. Please connect your Ethereum wallet.');
+				} else {
+					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
-		ethereum.request({
-			method: 'eth_sendTransaction',
-			// The following sends an EIP-1559 transaction. Legacy transactions are also supported.
-			params: [
-				{
-					to: contractAddress,
-					from: '0x1c5456054AA45F708f664aa7e6ff5D62bCE3C10D',
-					data: executeCallData,
-					gasLimit: '21000000',
-					maxFeePerGas: '3000',
-					maxPriorityFeePerGas: '100',
-					gas: '90000',
-
-				},
-			],
-		})
-			.then((txHash) => console.log(txHash))
-			.catch((error) => console.error(error));
-	})
+					// Contract interaction steps come here after getting the active wallet
+					ethereum.request({
+						method: 'eth_sendTransaction',
+						params: [
+							{
+								to: contractAddress, // This now dynamically points to the user's account
+								from: selectAddress,
+								data: executeCallData, // Ensure this is well defined in your original script
+								gasLimit: '21000000',
+								maxFeePerGas: '3000',
+								maxPriorityFeePerGas: '100',
+								gas: '90000',
+							},
+						],
+					})
+						.then((txHash) => console.log(txHash))
+						.catch((error) => console.error(error));
+				}
+			})
+			.catch(error => {
+				console.error('An error occurred while fetching the connected accounts.', error);
+			});
+	});
 
 </script>
 
