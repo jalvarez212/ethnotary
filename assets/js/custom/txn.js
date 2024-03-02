@@ -17,7 +17,9 @@ const ETHERSCAN_API_URL = 'https://api.etherscan.io/api';
 
 
 // Contract details
-const contractAddress = '0x47d4FFCd43561BF1D02DB4998671a4FEC3994F3c';
+const contractAddress = localStorage.contract;
+
+console.log(contractAddress);
 const contractABI =[
 	{
 		"inputs": [
