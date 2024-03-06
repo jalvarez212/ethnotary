@@ -632,7 +632,7 @@
 
 		if (l == 'submitTransaction') {
 
-			t = receipt.logs['1'].topics;
+			t = await receipt.logs['1'].topics;
 
 			let container = document.getElementById('logs');
 
@@ -797,39 +797,24 @@
 
 		if (l == 'execute') {
 
-			t = receipt.logs['0'].data;
-			console.log('************')
-			console.log(receipt)
-			console.log(t)
-
-			console.log(l)
-			console.log('************')
-
-			const addressHex = '0x' + t.slice(26, 66);
-			const value1Hex = t.slice(66, 130);
-			const value2Hex = t.slice(130, 194);
-
-			// Convert hex to readable formats
-			const readableAddress = web3.utils.toChecksumAddress(addressHex);
-			// Using BigInt for conversion
-			const readableValue1 = BigInt('0x' + value1Hex).toString();
-			const readableValue2 = BigInt('0x' + value2Hex).toString();
+			let m = document.getElementById("method").innerText = 'Execute Txn';
 
 
+			t = receipt.logs;
 
-			let container = document.getElementById('logs');
+			//txn id
+			let txnId = web3.utils.hexToNumber(t[0].data);
+			console.log(txnId);
+			//addy
+			console.log('0x' + t[0].topics[1].substring(26));
+			//value
+			console.log(web3.utils.fromWei(BigInt(t[0].topics[2]), 'ether'))
+			//func call data
 
-			let to = document.createElement("div");
-			to.classList.add('d-flex');
-			to.classList.add('justify-content-between');
-			to.classList.add('fs-6');
-			to.classList.add('mb-3');
-			to.innerHTML = `<span class="text-end">To: 0x` + readableAddress + `</span>`
-			container.appendChild(to);
 
-			let m = document.getElementById("method").innerText = 'Txn Execution';
 
 		}
+
 
 
 		if (l == null) {
@@ -857,6 +842,8 @@
 			let m = document.getElementById("method").innerText = 'Deposit';
 
 		}
+
+
 
 
 
