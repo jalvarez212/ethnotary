@@ -33,6 +33,8 @@
 
 	const contractAddress = localStorage.contract;
 
+	let val;
+
 
 
 	const contractABI = [
@@ -609,13 +611,6 @@
 
 			let container = document.getElementById('logs');
 
-			// let sender = document.createElement("div");
-			// sender.classList.add('d-flex');
-			// sender.classList.add('justify-content-between');
-			// sender.classList.add('fs-6');
-			// sender.classList.add('mb-3');
-			// sender.innerHTML = `<span class="text-end">Sender: 0x` + t[1].slice(26) + `</span>`
-			// container.appendChild(sender);
 
 
 			let txnId = document.createElement("div");
@@ -626,15 +621,48 @@
 			txnId.innerHTML = `<span class="text-end">Txn Id: ` + web3.utils.hexToNumber(t[2]) + `</span>`
 			container.appendChild(txnId);
 
-			let m = document.getElementById("method").innerText = 'Confirm Txn';
+			let r = new web3.eth.Contract(contractABI, contractAddress);
+			r.methods.transactions(web3.utils.hexToNumber(t[2])).call().then(function (result) {
 
-		}
+				let sep = document.createElement("div");
+				sep.classList.add('d-flex');
+				sep.classList.add('justify-content-between');
+				sep.classList.add('fs-6');
+				sep.classList.add('mb-3');
+				sep.innerHTML = `<span class="text-end" style="font-weight: bold;">Transaction Data: </span>`
+				container.appendChild(sep);
 
-		if (l == 'submitTransaction') {
+				let to = document.createElement("div");
+				to.classList.add('d-flex');
+				to.classList.add('justify-content-between');
+				to.classList.add('fs-6');
+				to.classList.add('mb-3');
+				to.innerHTML = `<span class="text-end">To: ` + result[0] + `</span>`
+				container.appendChild(to);
 
-			t = await receipt.logs['1'].topics;
+				let val = document.createElement("div");
+				val.classList.add('d-flex');
+				val.classList.add('justify-content-between');
+				val.classList.add('fs-6');
+				val.classList.add('mb-3');
+				val.innerHTML = `<span class="text-end">Value to Transfer: ` + web3.utils.fromWei(BigInt(result[1]).toString(), 'ether') + ` ETH</span>`
+				container.appendChild(val);
 
-			let container = document.getElementById('logs');
+				let func = document.createElement("div");
+				func.classList.add('d-flex');
+				func.classList.add('justify-content-between');
+				func.classList.add('fs-6');
+				func.classList.add('mb-3');
+				func.innerHTML = `<span class="text-end">Call Data: ` + result[2] + ` </span>`
+				container.appendChild(func);
+
+
+
+
+
+				console.log(result)
+			})
+
 
 
 
@@ -644,18 +672,100 @@
 			sender.classList.add('justify-content-between');
 			sender.classList.add('fs-6');
 			sender.classList.add('mb-3');
-			sender.innerHTML = `<span class="text-end">Sender: 0x` + t[1].slice(26) + `</span>`
+			sender.innerHTML = `<span class="text-end">Confirmed By: 0x` + t[1].slice(26) + `</span>`
 			container.appendChild(sender);
 
+			let m = document.getElementById("method").innerText = 'Confirm Txn';
 
+		}
+
+		if (l == 'submitTransaction') {
+
+			t = await receipt.logs['0'].topics;
+			let d = await receipt.logs['0'].data;
+
+			let f = receipt.from;
+
+			let container = document.getElementById('logs');
+
+			// const addressStart = 2 + 24 * 2; // '0x' prefix + 24 bytes of zeros in hex
+			// const addressEnd = addressStart + 16; // Ethereum addresses are 20 bytes, 40 characters in hex
+			// const address = '0x' + d.slice(26, addressEnd);
+
+			// // The uint256 value follows the address, occupying 32 bytes (64 characters in hex)
+			// const uintStart = addressEnd;
+			// const uintEnd = uintStart + 64;
+			// const uintValueHex = '0x' + d.slice(uintStart, uintEnd); // Ensure '0x' prefix for hex value
+
+			// const uintValue = BigInt(uintValueHex).toString();
+
+			// // The bytes data follows the uint256 value and takes up the rest of the string
+			// const funcDataHex = '0x';
 
 			let txnId = document.createElement("div");
 			txnId.classList.add('d-flex');
 			txnId.classList.add('justify-content-between');
 			txnId.classList.add('fs-6');
 			txnId.classList.add('mb-3');
-			txnId.innerHTML = `<span class="text-end">Txn Id: ` + web3.utils.hexToNumber(t[2]) + `</span>`
+			txnId.innerHTML = `<span class="text-end">Txn Id: ` + web3.utils.hexToNumber(t[1]) + `</span>`;
 			container.appendChild(txnId);
+
+			let from = document.createElement("div");
+			from.classList.add('d-flex');
+			from.classList.add('justify-content-between');
+			from.classList.add('fs-6');
+			from.classList.add('mb-3');
+			from.innerHTML = `<span class="text-end">Submitted By: ` + f + `</span>`;
+			container.appendChild(from);
+
+
+
+
+
+
+
+			let r = new web3.eth.Contract(contractABI, contractAddress);
+			r.methods.transactions(web3.utils.hexToNumber(t[1])).call().then(function (result) {
+
+				let sep = document.createElement("div");
+				sep.classList.add('d-flex');
+				sep.classList.add('justify-content-between');
+				sep.classList.add('fs-6');
+				sep.classList.add('mb-3');
+				sep.innerHTML = `<span class="text-end" style="font-weight: bold;">Transaction Data: </span>`
+				container.appendChild(sep);
+
+				let to = document.createElement("div");
+				to.classList.add('d-flex');
+				to.classList.add('justify-content-between');
+				to.classList.add('fs-6');
+				to.classList.add('mb-3');
+				to.innerHTML = `<span class="text-end">To: ` + result[0] + `</span>`
+				container.appendChild(to);
+
+				let val = document.createElement("div");
+				val.classList.add('d-flex');
+				val.classList.add('justify-content-between');
+				val.classList.add('fs-6');
+				val.classList.add('mb-3');
+				val.innerHTML = `<span class="text-end">Value to Transfer: ` + web3.utils.fromWei(BigInt(result[1]).toString(), 'ether') + ` ETH</span>`
+				container.appendChild(val);
+
+				let func = document.createElement("div");
+				func.classList.add('d-flex');
+				func.classList.add('justify-content-between');
+				func.classList.add('fs-6');
+				func.classList.add('mb-3');
+				func.innerHTML = `<span class="text-end">Call Data: ` + result[2] + ` </span>`
+				container.appendChild(func);
+
+
+
+
+
+				console.log(result)
+			})
+
 
 			let m = document.getElementById("method").innerText = 'Submit Txn';
 
@@ -802,14 +912,88 @@
 
 			t = receipt.logs;
 
+			let f = receipt.from;
+
 			//txn id
-			let txnId = web3.utils.hexToNumber(t[0].data);
-			console.log(txnId);
+			let id = web3.utils.hexToNumber(t[0].data);
+			console.log(id);
 			//addy
-			console.log('0x' + t[0].topics[1].substring(26));
+			let addr = '0x' + t[0].topics[1].substring(26)
+			console.log(addr);
 			//value
-			console.log(web3.utils.fromWei(BigInt(t[0].topics[2]), 'ether'))
+			val = web3.utils.fromWei(BigInt(t[0].topics[2]), 'ether')
+			console.log(val)
 			//func call data
+			let func = '0x'
+			console.log(t[0].topics[4]);
+
+			let container = document.getElementById('logs');
+
+			let txnId = document.createElement("div");
+			txnId.classList.add('d-flex');
+			txnId.classList.add('justify-content-between');
+			txnId.classList.add('fs-6');
+			txnId.classList.add('mb-3');
+			txnId.innerHTML = `<span class="text-end">Txn Id: ` +id+ `</span>`;
+			container.appendChild(txnId);
+
+			let from = document.createElement("div");
+			from.classList.add('d-flex');
+			from.classList.add('justify-content-between');
+			from.classList.add('fs-6');
+			from.classList.add('mb-3');
+			from.innerHTML = `<span class="text-end">Executed By: ` + f + `</span>`;
+			container.appendChild(from);
+
+
+
+
+
+
+
+			let r = new web3.eth.Contract(contractABI, contractAddress);
+			r.methods.transactions(web3.utils.hexToNumber(t[0].data)).call().then(function (result) {
+
+				let sep = document.createElement("div");
+				sep.classList.add('d-flex');
+				sep.classList.add('justify-content-between');
+				sep.classList.add('fs-6');
+				sep.classList.add('mb-3');
+				sep.innerHTML = `<span class="text-end" style="font-weight: bold;">Transaction Data: </span>`
+				container.appendChild(sep);
+
+				let to = document.createElement("div");
+				to.classList.add('d-flex');
+				to.classList.add('justify-content-between');
+				to.classList.add('fs-6');
+				to.classList.add('mb-3');
+				to.innerHTML = `<span class="text-end">To: ` + result[0] + `</span>`
+				container.appendChild(to);
+
+				let val = document.createElement("div");
+				val.classList.add('d-flex');
+				val.classList.add('justify-content-between');
+				val.classList.add('fs-6');
+				val.classList.add('mb-3');
+				val.innerHTML = `<span class="text-end">Value to Transfer: ` + web3.utils.fromWei(BigInt(result[1]).toString(), 'ether') + ` ETH</span>`
+				container.appendChild(val);
+
+				let func = document.createElement("div");
+				func.classList.add('d-flex');
+				func.classList.add('justify-content-between');
+				func.classList.add('fs-6');
+				func.classList.add('mb-3');
+				func.innerHTML = `<span class="text-end">Call Data: ` + result[2] + ` </span>`
+				container.appendChild(func);
+
+
+
+
+
+				console.log(result)
+			})
+
+
 
 
 
@@ -879,7 +1063,7 @@
 
 			// Convert the fee to Ether from Wei
 			const txFeeInEther = web3.utils.fromWei(txFee.toString(), 'ether');
-			const valueInETH = web3.utils.fromWei(tx.value, 'ether');
+			const valueInETH = web3.utils.fromWei(tx.value.toString(), 'ether');
 			document.getElementById('tx_hash').innerText = tx.hash;
 			document.getElementById('tx_to').innerText = tx.to;
 			document.getElementById('tx_from').innerText = tx.from;
@@ -1388,7 +1572,7 @@
 																				class="fa fa-genderless text-success fs-1 me-2"></i>Value
 																		</div>
 																	</td>
-																	<td id="tx_value" class="text-end"></td>
+																	<td id="tx_value" class="text-end"> </td>
 
 																</tr>
 																<tr>
