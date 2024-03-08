@@ -33,9 +33,8 @@ contract MultiSigAccount {
 
     event Confirmation(address indexed sender, uint indexed transactionId);
     event Revocation(address indexed sender, uint indexed transactionId);
-    //ad sender and txn id to submission event
     event Submission(uint indexed transactionId, address dest, uint256 value, bytes func);
-    event Execution(uint transactionId, address indexed to, uint amount, bytes indexed func);
+    event Execution(uint indexed transactionId, address indexed to, uint indexed amount, bytes indexed func);
     event ExecutionFailure(uint indexed transactionId);
     event Deposit(address sender, uint value);
     event OwnerAddition(address indexed owner);

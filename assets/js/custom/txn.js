@@ -3,12 +3,12 @@
 const web3 = new Web3('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
 
 
-const Alltxns = [ 'Confirmation','Revocation','Submission','Execution','ExecutionFailure','Deposit','OwnerAddition','OwnerRemoval','RequirementChange'];
+const Alltxns = [ 'Confirmation','Revocation','Submission','Execution','ExecutionFailure','Deposit','OwnerAddition','OwnerRemoval', 'OwnerReplace','RequirementChange'];
 const Confirm = [ 'Confirmation','Revocation'];
 const Submit = [ 'Submission'];
 const Execute = ['Execution','ExecutionFailure'];
 const Deposits = ['Deposit'];
-const Account = [ 'OwnerAddition','OwnerRemoval','RequirementChange'];
+const Account = [ 'OwnerAddition','OwnerRemoval', 'OwnerReplace', 'RequirementChange'];
 
 const ETHERSCAN_API_KEY = '85YM7F9JQIE823T4NQS2W3ZMFRUYU6DA23'; // Replace with your Etherscan API key
 const ETHERSCAN_API_URL = 'https://api.etherscan.io/api';

@@ -822,7 +822,7 @@
 		if (l == 'replaceOwner') {
 
 			t = receipt.logs['0'].topics;
-			t2 = receipt.logs['1'].topics;
+			//t2 = receipt.logs['1'].topics;
 
 			let container = document.getElementById('logs');
 
@@ -842,7 +842,7 @@
 			added.classList.add('justify-content-between');
 			added.classList.add('fs-6');
 			added.classList.add('mb-3');
-			added.innerHTML = `<span class="text-end">Owner Added: 0x` + t2[1].slice(26) + `</span>`
+			added.innerHTML = `<span class="text-end">Owner Added: 0x` + t[2].slice(26) + `</span>`
 			container.appendChild(added);
 
 
