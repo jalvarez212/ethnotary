@@ -32,10 +32,7 @@
 <script type="text/javascript">
 
 	var user = localStorage.contract // Get the user input
-	var homeLink = document.getElementById('homeLink'); // Get the link element
 
-	// Update the link's href with the new query string
-	homeLink.href = "./index1.html?" + encodeURIComponent(user);
 	// Ensure ethers is available in the global scope
 
 
@@ -895,7 +892,7 @@
 					<!--begin::Logo-->
 					<div class="aside-logo d-flex flex-column align-items-center flex-column-auto py-4 pt-lg-10 pb-lg-7"
 						id="kt_aside_logo">
-						<a href="./index1.html">
+						<a id ="logo" href="./index1.html">
 							<img alt="Logo" src="assets/media/logos/logo-compact.svg" class="mh-50px" />
 						</a>
 					</div>
@@ -1587,6 +1584,13 @@
 				console.error('An error occurred while fetching the connected accounts.', error);
 			});
 	});
+
+	var homeLink = document.getElementById('homeLink'); // Get the link element
+	let logo = document.getElementById('logo');
+
+	// Update the link's href with the new query string
+	homeLink.href = "./index1.html?" + encodeURIComponent(user);
+	logo.href = "./index1.html?" + encodeURIComponent(user);
 
 </script>
 

@@ -33,6 +33,10 @@
 
 	const contractAddress = localStorage.contract;
 
+	const user = "./index1.html?" + contractAddress;
+
+
+
 	let val;
 
 
@@ -1108,7 +1112,7 @@
 					<!--begin::Logo-->
 					<div class="aside-logo d-flex flex-column align-items-center flex-column-auto py-4 pt-lg-10 pb-lg-7"
 						id="kt_aside_logo">
-						<a href="./index1.html">
+						<a id="logo" href="">
 							<img alt="Logo" src="assets/media/logos/logo-compact.svg" class="mh-50px" />
 						</a>
 					</div>
@@ -1272,7 +1276,7 @@
 							</button>
 							<!--end::Mega Menu Toggler-->
 							<!--begin::Logo-->
-							<a href="./index1.html">
+							<a href="">
 								<img alt="Logo" src="assets/media/logos/logo-default.svg" class="h-30px" />
 							</a>
 							<!--end::Logo-->
@@ -1717,11 +1721,15 @@
 	<script src="assets/plugins/global/plugins.bundle.js"></script>
 	<script src="assets/js/scripts.bundle.js"></script>
 	<script>
-		var user = localStorage.contract // Get the user input
+		 // Get the user input
 		var homeLink = document.getElementById('homeLink'); // Get the link element
+		var logo = document.getElementById('logo');
+		
+
 
 		// Update the link's href with the new query string
-		homeLink.href = "./index1.html?" + user;
+		homeLink.href = "./index1.html?" + contractAddress;
+		logo.href = "./index1.html?" + contractAddress;
 	</script>
 	<!-- <script src="assets/js/custom/txn.js"></script> -->
 

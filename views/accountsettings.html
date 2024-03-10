@@ -31,6 +31,8 @@
 
 	const contractAddress = localStorage.contract;
 
+
+
 	const contractABI = [
 		{
 			"inputs": [
@@ -609,7 +611,7 @@
 					<!--begin::Logo-->
 					<div class="aside-logo d-flex flex-column align-items-center flex-column-auto py-4 pt-lg-10 pb-lg-7"
 						id="kt_aside_logo">
-						<a href="./index1.html">
+						<a id="logo" href="">
 							<img alt="Logo" src="assets/media/logos/logo-compact.svg" class="mh-50px" />
 						</a>
 					</div>
@@ -1520,6 +1522,10 @@
 					console.error('An error occurred while fetching the connected accounts.', error);
 				});
 		})
+		let logo = document.getElementById('logo');
+
+		// Update the link's href with the new query string
+		logo.href = "./index1.html?" + contractAddress;
 
 	</script>
 	<!--end::Global Javascript Bundle-->
