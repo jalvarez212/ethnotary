@@ -1293,7 +1293,7 @@
 											<!-- begin: Invoice header-->
 											<div
 												class="d-flex justify-content-between pb-10 pb-md-20 flex-column flex-md-row">
-												<h1 class="display-6 text-dark fw-bolder mb-10">Txn 0</h1>
+												<h1 id ="txnid" class="display-6 text-dark fw-bolder mb-10"></h1>
 
 											</div>
 											<!--end: Invoice header-->
@@ -1627,6 +1627,7 @@
 
 				for (const tx of pending) {
 					console.log(tx)
+					document.getElementById('txnid').innerText = 'Txn '+tx.id;
 
 					const notElement = document.createElement('div');
 					notElement.classList.add('menu-item');
@@ -1673,6 +1674,8 @@
 		}
 
 		window.onload = processNotifications(getAllTxns(), document.getElementById('notificationsTab'))
+
+		
 
 
 </script>
