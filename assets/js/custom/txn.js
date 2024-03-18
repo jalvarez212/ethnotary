@@ -1,6 +1,6 @@
 
 // Initialize Web3 connection
-const web3 = new Web3('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
+const web3 = new Web3('https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
 
 
 const Alltxns = [ 'Confirmation','Revocation','Submission','Execution','ExecutionFailure','Deposit','OwnerAddition','OwnerRemoval', 'OwnerReplace','RequirementChange'];

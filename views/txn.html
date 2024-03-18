@@ -104,10 +104,11 @@
 	async function connectCoinbase() {
 
 		try {
-			const cbwallet = await coinbaseWallet.makeWeb3Provider('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '5');
+			const cbwallet = await coinbaseWallet.makeWeb3Provider('https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '11155111');
 
 			wallet = cbwallet;
 			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+				console.log(response)
 				const accounts = response;
 				console.log(`User's address is ${accounts[0]}`);
 
@@ -733,7 +734,7 @@
 	]
 
 	// Initialize Web3. Replace 'YourProviderURL' with your Ethereum node provider URL
-	const web3 = new Web3('https://goerli.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
+	const web3 = new Web3('https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
 
 	// Create contract instance
 	const contract = new web3.eth.Contract(contractABI, contractAddress);
