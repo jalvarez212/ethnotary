@@ -41,6 +41,8 @@ contract MultiSigAccount {
     event OwnerRemoval(address indexed owner);
     event OwnerReplace(address indexed oldOwner, address indexed newOwner);
     event RequirementChange(uint required);
+    event NftReceived(address operator, address from, uint256 tokenId, bytes data);
+
    
 
     //Multi Sig Modifiers
@@ -137,6 +139,25 @@ contract MultiSigAccount {
                 revert(add(result, 32), mload(result))
             }
         }
+    }
+
+        // This function is called by the ERC721 contract when an NFT is transferred to this contract.
+    function onERC721Received(
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes memory data
+    )
+        public
+        override
+        returns (bytes4)
+    {
+        // Emit an event noting that an NFT has been received
+        emit NftReceived(operator, from, tokenId, data);
+
+        // Return this magic value that signifies the contract's ability to receive NFTs correctly.
+        // It's a must; otherwise, the transaction will fail.
+        return this.onERC721Received.selector;
     }
 
     //Multi Sig Functions
