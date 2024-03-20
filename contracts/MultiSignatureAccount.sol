@@ -5,6 +5,25 @@ pragma solidity ^0.8.22;
 /* solhint-disable no-inline-assembly */
 /* solhint-disable reason-string */
 
+interface IERC721Receiver {
+    /**
+     * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
+     * by `operator` from `from`, this function is called.
+     *
+     * It must return its Solidity selector to confirm the token transfer.
+     * If any other value is returned or the interface is not implemented by the recipient, the transfer will be
+     * reverted.
+     *
+     * The selector can be obtained in Solidity with `IERC721Receiver.onERC721Received.selector`.
+     */
+    function onERC721Received(
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes calldata data
+    ) external returns (bytes4);
+}
+
 contract MultiSigAccount {
     //Multi Sig Constants
 
@@ -33,17 +52,29 @@ contract MultiSigAccount {
 
     event Confirmation(address indexed sender, uint indexed transactionId);
     event Revocation(address indexed sender, uint indexed transactionId);
-    event Submission(uint indexed transactionId, address dest, uint256 value, bytes func);
-    event Execution(uint indexed transactionId, address indexed to, uint indexed amount, bytes indexed func);
+    event Submission(
+        uint indexed transactionId,
+        address dest,
+        uint256 value,
+        bytes func
+    );
+    event Execution(
+        uint transactionId,
+        address indexed to,
+        uint indexed amount
+    );
     event ExecutionFailure(uint indexed transactionId);
     event Deposit(address sender, uint value);
     event OwnerAddition(address indexed owner);
     event OwnerRemoval(address indexed owner);
     event OwnerReplace(address indexed oldOwner, address indexed newOwner);
     event RequirementChange(uint required);
-    event NftReceived(address operator, address from, uint256 tokenId, bytes data);
-
-   
+    event NftReceived(
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes data
+    );
 
     //Multi Sig Modifiers
 
@@ -141,17 +172,13 @@ contract MultiSigAccount {
         }
     }
 
-        // This function is called by the ERC721 contract when an NFT is transferred to this contract.
+    // This function is called by the ERC721 contract when an NFT is transferred to this contract.
     function onERC721Received(
         address operator,
         address from,
         uint256 tokenId,
         bytes memory data
-    )
-        public
-        override
-        returns (bytes4)
-    {
+    ) public returns (bytes4) {
         // Emit an event noting that an NFT has been received
         emit NftReceived(operator, from, tokenId, data);
 
@@ -235,7 +262,7 @@ contract MultiSigAccount {
             txn.executed = true;
             _call(txn.dest, txn.value, txn.func);
             //add txn.dest, txn.value, and txn.func to the emit event
-            emit Execution(transactionId, txn.dest, txn.value, txn.func);
+            emit Execution(transactionId, txn.dest, txn.value);
         } else {
             emit ExecutionFailure(transactionId);
             Transaction storage txn = transactions[transactionId];
@@ -302,7 +329,6 @@ contract MultiSigAccount {
         });
         transactionCount += 1;
         //i don't think this event is needed or find a way to only call one of confirm or submit
-        
     }
 
     function getConfirmationCount(
