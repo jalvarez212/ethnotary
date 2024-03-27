@@ -1,3 +1,8 @@
+To start dApp on your local machine, please run "python -m http.server 8000" within the directory. Then navigate to http://localhost:8000/index1.html?0x014AF42316A9f69a5a38A422705fE06b6B9D3d4F in your browser. Please make sure you are using a web3 enabled browser.      
+
+
+
+
 Contribution Guide:
 
 Ethnotary has 3 major ongoing development themes. Themes serve as guidelines & priorities for the ongoing development of the applications and its tools. ANyone looking to contribute to our project should familiarize themselves with these 3 themes. 
