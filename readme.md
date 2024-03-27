@@ -5,7 +5,7 @@ To start dApp on your local machine, please run "python -m http.server 8000" wit
 
 Contribution Guide:
 
-Ethnotary has 3 major ongoing development themes. Themes serve as guidelines & priorities for the ongoing development of the applications and its tools. ANyone looking to contribute to our project should familiarize themselves with these 3 themes. 
+Ethnotary has 3 major ongoing development themes. Themes serve as guidelines & priorities for the ongoing development of the applications and its tools. Anyone looking to contribute to our project should familiarize themselves with these 3 themes. 
 
 Simplicity & Optimization
 1) Any measure to make our codebase smaller, light weight, and overall easier to understand are welcomed. Generally speaking these measures can be quantified as:
