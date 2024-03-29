@@ -61,7 +61,7 @@
 	async function connectMetaMask() {
 		if (typeof window.ethereum !== 'undefined') {
 			try {
-				wallet = await MMSDK.sdkProvider;
+				wallet = await MMSDK.getProvider();
 
 				wallet.request({ method: 'eth_requestAccounts' }).then(response => {
 					const accounts = response;
