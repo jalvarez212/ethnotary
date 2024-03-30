@@ -1487,7 +1487,7 @@
 	let c = document.getElementById('confirm');
 	c.addEventListener('click', function () {
 		// Step 1: First, get the first user's own address
-		wallet.request({ method: 'eth_requestAccounts' })
+		ethereum.request({ method: 'eth_requestAccounts' })
 			.then(accounts => {
 				if (accounts.length === 0) {
 					console.error('No accounts found. Please connect your Ethereum wallet.');
@@ -1495,7 +1495,7 @@
 					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
 					// Contract interaction steps come here after getting the active wallet
-					wallet.request({
+					ethereum.request({
 						method: 'eth_sendTransaction',
 						params: [
 							{
@@ -1521,7 +1521,7 @@
 	let r = document.getElementById('revoke');
 	r.addEventListener('click', function () {
 		// Step 1: First, get the first user's own address
-		wallet.request({ method: 'eth_requestAccounts' })
+		ethereum.request({ method: 'eth_requestAccounts' })
 			.then(accounts => {
 				if (accounts.length === 0) {
 					console.error('No accounts found. Please connect your Ethereum wallet.');
@@ -1529,7 +1529,7 @@
 					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
 					// Contract interaction steps come here after getting the active wallet
-					wallet.request({
+					ethereum.request({
 						method: 'eth_sendTransaction',
 						params: [
 							{
@@ -1555,7 +1555,7 @@
 	let e = document.getElementById('execute');
 	e.addEventListener('click', function () {
 		// Step 1: First, get the first user's own address
-		wallet.request({ method: 'eth_requestAccounts' })
+		ethereum.request({ method: 'eth_requestAccounts' })
 			.then(accounts => {
 				if (accounts.length === 0) {
 					console.error('No accounts found. Please connect your Ethereum wallet.');
@@ -1563,7 +1563,7 @@
 					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
 					// Contract interaction steps come here after getting the active wallet
-					wallet.request({
+					ethereum.request({
 						method: 'eth_sendTransaction',
 						params: [
 							{

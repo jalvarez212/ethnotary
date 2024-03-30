@@ -1371,7 +1371,7 @@
 			let addOwner = settings.methods.addOwner(address, pin).encodeABI();
 			console.log(addOwner)
 
-			wallet.request({ method: 'eth_requestAccounts' })
+			ethereum.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
 					if (accounts.length === 0) {
 						console.error('No accounts found. Please connect your Ethereum wallet.');
@@ -1379,7 +1379,7 @@
 						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
 						// Contract interaction steps come here after getting the active wallet
-						wallet.request({
+						ethereum.request({
 							method: 'eth_sendTransaction',
 							params: [
 								{
@@ -1417,7 +1417,7 @@
 			let removeOwner = settings.methods.removeOwner(address, pin).encodeABI();
 			console.log(removeOwner)
 
-			wallet.request({ method: 'eth_requestAccounts' })
+			ethereum.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
 					if (accounts.length === 0) {
 						console.error('No accounts found. Please connect your Ethereum wallet.');
@@ -1425,7 +1425,7 @@
 						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
 						// Contract interaction steps come here after getting the active wallet
-						wallet.request({
+						ethereum.request({
 							method: 'eth_sendTransaction',
 							params: [
 								{
@@ -1464,7 +1464,7 @@
 			let replaceOwner = settings.methods.replaceOwner(address1, address2, pin).encodeABI();
 			console.log(removeOwner)
 
-			wallet.request({ method: 'eth_requestAccounts' })
+			ethereum.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
 					if (accounts.length === 0) {
 						console.error('No accounts found. Please connect your Ethereum wallet.');
@@ -1472,7 +1472,7 @@
 						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
 						// Contract interaction steps come here after getting the active wallet
-						wallet.request({
+						ethereum.request({
 							method: 'eth_sendTransaction',
 							params: [
 								{
@@ -1504,7 +1504,7 @@
 			let changeRequirement = settings.methods.changeRequirement(requirement, pin).encodeABI();
 			console.log(changeRequirement)
 
-			wallet.request({ method: 'eth_requestAccounts' })
+			ethereum.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
 					if (accounts.length === 0) {
 						console.error('No accounts found. Please connect your Ethereum wallet.');
@@ -1512,7 +1512,7 @@
 						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
 						// Contract interaction steps come here after getting the active wallet
-						wallet.request({
+						ethereum.request({
 							method: 'eth_sendTransaction',
 							params: [
 								{
