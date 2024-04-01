@@ -61,15 +61,15 @@
 	async function connectMetaMask() {
 		if (typeof window.ethereum !== 'undefined') {
 			try {
-				wallet = await MMSDK.sdkProvider;
+				wallet = await MMSDK.getProvider();
 
 				wallet.request({ method: 'eth_requestAccounts' }).then(response => {
 					const accounts = response;
 					console.log(`User's address is ${accounts[0]}`);
-					selectAddress = accounts[0];
+					selectAddress = this.selectAddress
 
 					// Optionally, have the default account set for web3.js
-					web3.eth.defaultAccount = accounts[0];
+					web3.eth.defaultAccount = this.selectAddress
 				})
 
 
@@ -1653,7 +1653,7 @@
 		let callData = contract.methods.submitTransaction(to, amount, '0x').encodeABI();
 		console.log(callData);
 
-		ethereum.request({ method: 'eth_requestAccounts' })
+		wallet.request({ method: 'eth_requestAccounts' })
 			.then(accounts => {
 				if (accounts.length === 0) {
 					console.error('No accounts found. Please connect your Ethereum wallet.');
@@ -1661,7 +1661,7 @@
 					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
 					// Contract interaction steps come here after getting the active wallet
-					ethereum.request({
+					wallet.request({
 						method: 'eth_sendTransaction',
 						params: [
 							{

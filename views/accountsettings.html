@@ -1296,9 +1296,8 @@
 	async function connectCoinbase() {
 
 		try {
-			const cbwallet = await coinbaseWallet.walletExtension;
+			wallet = await coinbaseWallet.walletExtension;
 
-			wallet = cbwallet;
 			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
 				console.log(response)
 				const accounts = response;
@@ -1371,7 +1370,7 @@
 			let addOwner = settings.methods.addOwner(address, pin).encodeABI();
 			console.log(addOwner)
 
-			ethereum.request({ method: 'eth_requestAccounts' })
+			wallet.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
 					if (accounts.length === 0) {
 						console.error('No accounts found. Please connect your Ethereum wallet.');
@@ -1379,7 +1378,7 @@
 						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
 						// Contract interaction steps come here after getting the active wallet
-						ethereum.request({
+						wallet.request({
 							method: 'eth_sendTransaction',
 							params: [
 								{
@@ -1417,7 +1416,7 @@
 			let removeOwner = settings.methods.removeOwner(address, pin).encodeABI();
 			console.log(removeOwner)
 
-			ethereum.request({ method: 'eth_requestAccounts' })
+			wallet.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
 					if (accounts.length === 0) {
 						console.error('No accounts found. Please connect your Ethereum wallet.');
@@ -1425,7 +1424,7 @@
 						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
 						// Contract interaction steps come here after getting the active wallet
-						ethereum.request({
+						wallet.request({
 							method: 'eth_sendTransaction',
 							params: [
 								{
@@ -1464,7 +1463,7 @@
 			let replaceOwner = settings.methods.replaceOwner(address1, address2, pin).encodeABI();
 			console.log(removeOwner)
 
-			ethereum.request({ method: 'eth_requestAccounts' })
+			wallet.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
 					if (accounts.length === 0) {
 						console.error('No accounts found. Please connect your Ethereum wallet.');
@@ -1504,7 +1503,7 @@
 			let changeRequirement = settings.methods.changeRequirement(requirement, pin).encodeABI();
 			console.log(changeRequirement)
 
-			ethereum.request({ method: 'eth_requestAccounts' })
+			wallet.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
 					if (accounts.length === 0) {
 						console.error('No accounts found. Please connect your Ethereum wallet.');
@@ -1512,7 +1511,7 @@
 						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
 						// Contract interaction steps come here after getting the active wallet
-						ethereum.request({
+						wallet.request({
 							method: 'eth_sendTransaction',
 							params: [
 								{
