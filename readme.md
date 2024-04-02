@@ -1,9 +1,8 @@
-# ethnotary 
+# 🐘 ethnotary 🐘
 
 ethnotary is a cryptographic utility tool that allows blockchain based individuals and communities to organize and conduct its operations. We accomplish this through our frontend interface that allows users the ability to read, write to, and deploy new smart contract based applications. 
 
 These applications help users secure funds or treasuries through multisignature logic, manage commerce on blockchains through ERC 721 & 1155 standards, and help decentralized autonomous organizations facilitate its operations. 
-
 
 We take accepted standards from ethereum and other blockchains communities to provide easy to use interfaces where users can organize and customize these standards to their needs and publish on chain! We strive to provide this utility in a sufficiently distributed architecture that allows for its robust & reliable operation on the world wide web.
 
