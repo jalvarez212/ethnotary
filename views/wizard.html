@@ -285,8 +285,10 @@
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">Browser Wallet</span>
 										</a>
-										<a href="#"
-											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
+										<a 
+											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0"
+											onclick="connectCoinbase()"
+											>
 											<!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img style="width: 30px; height: 30px;" alt="Logo"
@@ -305,8 +307,10 @@
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">WalletConnect</span>
 										</a>
-										<a href="#"
-											class="col text-center py-10 btn btn-active-color-primary rounded-0">
+										<a 
+											class="col text-center py-10 btn btn-active-color-primary rounded-0"
+											onclick="connectMetaMask()"
+											>
 											<!--begin::Svg Icon | path: icons/duotune/arrows/arr077.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
@@ -1035,14 +1039,107 @@
 	<!--begin::Page Custom Javascript(used by this page)-->
 	<script src="assets/js/custom/general/wizard.js"></script>
 	<script src="assets/js/custom/apps/chat/chat.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
+	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
 
-	<script>
+
+	<script type="text/javascript">
+
 		let homeLink = document.getElementById('homeLink'); // Get the link element
 		let logo = document.getElementById('logo');
 
 		// Update the link's href with the new query string
 		homeLink.href = "./index1.html?" + contractAddress;
 		logo.href = "./index1.html?" + contractAddress;
+
+		const ethers = window.ethers;
+		const MMSDK = new MetaMaskSDK.MetaMaskSDK(
+			dappMetadata = {
+				name: "ethnotary",
+				url: "ethnotary.io",
+			}
+			// Other options
+		)
+		const coinbaseWallet = new CoinbaseWalletSDK({
+			appName: 'ethnotary',
+			appLogoUrl: 'ethnotary.io',
+			darkMode: false
+		})
+		let wallet;
+
+
+		async function connectMetaMask() {
+			if (typeof window.ethereum !== 'undefined') {
+				try {
+					wallet = await MMSDK.getProvider();
+
+					wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+						const accounts = response;
+						console.log(`User's address is ${accounts[0]}`);
+						// Optionally, have the default account set for web3.js
+						web3.eth.defaultAccount = accounts[0];
+					})
+				}
+				catch (error) {
+					console.error('User denied account access or an error occurred:', error);
+				}
+			}
+			else {
+				alert('This browser is not web3 enabled, please use a different browser.')
+			}
+		}
+console.log("working fine");
+		async function connectOKXWallet() {
+			try {
+				wallet = okxwallet;
+				wallet.request({ method: 'eth_requestAccounts' });
+			}
+			catch (error) {
+				window.open('https://www.okx.com/download');
+			}
+		}
+		console.log("working fine");
+
+		async function connectCoinbase() {
+			try {
+				wallet = await coinbaseWallet.walletExtension;
+
+				wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+					console.log(response)
+					const accounts = response;
+					console.log(`User's address is ${accounts[0]}`);
+
+					// Optionally, have the default account set for web3.js
+					web3.eth.defaultAccount = accounts[0];
+				})
+			} catch (error) {
+				alert('User denied account access or an error occurred, please refresh browser and try again.');
+			}
+		}
+		console.log("working fine");
+
+		async function connectPhantomWallet() {
+			if (typeof window.phantom !== 'undefined') {
+				try {
+					console.log('helllllo')
+					wallet = await phantom.ethereum;
+					wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+						selectAddress = wallet.selectedAddress;
+						// Optionally, have the default account set for web3.js
+						web3.eth.defaultAccount = wallet.selectedAddress;
+					});
+				}
+				catch (error) {
+					alert('User denied account access or an error occurred, please refresh browser and try again.');
+				}
+			}
+			else {
+				window.open('https://phantom.app/', '_blank');
+			}
+		}
+	
+
 	</script>
 	<!--end::Page Custom Javascript-->
 	<!--end::Javascript-->
