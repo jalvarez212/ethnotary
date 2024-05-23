@@ -1290,7 +1290,3 @@ document.getElementById("refresh").addEventListener('click', function(){
 	updateNetworkCongestionBar();	
 
 })
-
-
-
-

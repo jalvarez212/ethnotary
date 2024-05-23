@@ -45,7 +45,7 @@ var KTWizardPage = (function () {
                             buttonsStyling: !1,
                             confirmButtonText: "Yes, submit!",
                             cancelButtonText: "No, cancel",
-                            customClass: { confirmButton: "btn fw-bold btn-primary", cancelButton: "btn fw-bold btn-active-light-primary" },
+                            customClass: { confirmButton: "btn fw-bold btn-primary sendtxn", cancelButton: "btn fw-bold btn-active-light-primary" },
                         }).then(function (t) {
                             t.value
                                 ? e.submit()
@@ -127,16 +127,16 @@ document.addEventListener('DOMContentLoaded', function () {
             reviewContainer.innerHTML = '';
 
             let companyname = document.getElementById('companyname');
-            let review_name = document.getElementById('review_name').innerText = companyname.value;
+            let review_name = document.getElementById('review_name').innerText;
             
             let Pin = document.getElementById('Pin');
-            let review_pin = document.getElementById('review_pin').innerText = Pin.value;
+            let review_pin = document.getElementById('review_pin').innerText;
             
             let Owner = document.getElementById('initialField');
-            let review_owner = document.getElementById('review_owners').innerText = Owner.value;
+            let review_owner = document.getElementById('review_owners').innerText;
             
             let Requirement = document.getElementById('Requirement');
-            let review_requirement = document.getElementById('review_requirement').innerText = Requirement.value;
+            let review_requirement = document.getElementById('review_requirement').innerText;
 
 
             for (let i = 0; i < numberOfFields; i++){

@@ -357,3 +357,34 @@ contract MultiSigAccount {
         for (i = 0; i < count; i++) _confirmations[i] = confirmationsTemp[i];
     }
 }
+
+
+contract MSAFactory {
+
+    uint256 notaryFee = 10000000000000000;
+    address payable private owner;
+
+    constructor() {
+        owner = payable(msg.sender); // Set the contract creator as the owner
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Caller is not the owner");
+        _;
+    }
+
+
+    function withdraw() public onlyOwner {
+        uint balance = address(this).balance;
+        payable(msg.sender).transfer(balance);
+    }
+
+  
+    function newMSA(address[] calldata _owners, uint _required, uint16 _pin) payable public returns (MultiSigAccount){
+        require(msg.value > notaryFee , "Ether value sent is not correct");
+
+        MultiSigAccount instance = new MultiSigAccount( _owners, _required, _pin);
+        return MultiSigAccount(instance);
+    }
+    
+}

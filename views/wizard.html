@@ -919,7 +919,7 @@
 													<div>
 														<button type="button"
 															class="btn btn-lg btn-primary fw-bolder py-4 ps-8 me-3"
-															data-kt-stepper-action="submit">Deploy
+															data-kt-stepper-action="submit" id="compile">Deploy
 															<!--begin::Svg Icon | path: icons/duotune/arrows/arr064.svg-->
 															<span class="svg-icon svg-icon-4 ms-2">
 																<svg xmlns="http://www.w3.org/2000/svg" width="24"
@@ -933,6 +933,29 @@
 																</svg>
 															</span>
 															<!--end::Svg Icon--></button>
+
+														<script>
+															// let compile = document.getElementById('compile');
+															// let owners = [];
+
+
+															// compile.addEventListener('click', function () {
+
+															// 	console.log('complie is running!')
+
+															// 	let owner_count = document.getElementById('initialField').value;
+															// 	let pin = document.getElementById('Pin').value;
+															// 	let reqs = document.getElementById('Requirement').value
+															// 	let count = owner_count - 1;
+															// 	for (let i = 0; i < count; i++) {
+															// 		let owner = document.getElementById(`owner_${count}`).value;
+															// 		owners.push(owner);
+															// 	}
+
+
+
+															// })
+														</script>
 														<button id="listener" type="button"
 															class="btn btn-lg btn-primary fw-bolder py-4 ps-8 me-3"
 															data-kt-stepper-action="next">Next Step
@@ -1043,6 +1066,31 @@
 		// Update the link's href with the new query string
 		homeLink.href = "./index1.html?" + contractAddress;
 		logo.href = "./index1.html?" + contractAddress;
+
+		let compile = document.getElementById('compile');
+		let adx = [];
+
+
+		compile.addEventListener('click', function () {
+
+			console.log('complie is running!')
+
+			let owner_count = document.getElementById('initialField').value;
+			let pin = document.getElementById('Pin').value;
+			let reqs = document.getElementById('Requirement').value
+			
+			for (let i = 0; i < owner_count; i++) {
+				let owner = document.getElementById(`owner_${i}`).value;
+				adx.push(owner);
+
+
+			}
+
+			
+
+
+
+		})
 	</script>
 	<!--end::Page Custom Javascript-->
 	<!--end::Javascript-->
