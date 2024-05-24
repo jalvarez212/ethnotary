@@ -14,7 +14,7 @@
 	<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="pragma" content="no-cache" />
 	<link rel="canonical" href="https://preview.keenthemes.com/start" />
-	<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
+	<link rel="shortcut icon" href="assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 	<!--end::Fonts-->
@@ -1218,7 +1218,7 @@
 					<div class="aside-logo d-flex flex-column align-items-center flex-column-auto py-4 pt-lg-10 pb-lg-7"
 						id="kt_aside_logo">
 						<a id="logo" href="">
-							<img alt="Logo" src="assets/media/logos/logo-compact.svg" class="mh-50px" />
+							<img alt="Logo" src="assets/media/logos/en_logo.png" class="mh-50px" />
 						</a>
 					</div>
 					<!--end::Logo-->
@@ -1360,29 +1360,11 @@
 						<!--begin::Left-->
 						<div class="d-flex align-items-center">
 							<!--begin::Mega Menu Toggler-->
-							<button class="btn btn-icon btn-accent me-2 me-lg-6" id="kt_mega_menu_toggle"
-								data-bs-toggle="modal" data-bs-target="#kt_mega_menu_modal">
-								<!--begin::Svg Icon | path: icons/duotune/general/gen059.svg-->
-								<span class="svg-icon svg-icon-3">
-									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-										fill="none">
-										<path
-											d="M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z"
-											fill="black" />
-										<path opacity="0.3"
-											d="M17.5 22H6.5C4 22 2 20 2 17.5C2 15 4 13 6.5 13H17.5C20 13 22 15 22 17.5C22 20 20 22 17.5 22ZM4 17.5C4 18.9 5.1 20 6.5 20C7.9 20 9 18.9 9 17.5C9 16.1 7.9 15 6.5 15C5.1 15 4 16.1 4 17.5Z"
-											fill="black" />
-									</svg>
-								</span>
-								<!--end::Svg Icon-->
 
-
-
-							</button>
 							<!--end::Mega Menu Toggler-->
 							<!--begin::Logo-->
-							<a href="">
-								<img alt="Logo" src="assets/media/logos/logo-default.svg" class="h-30px" />
+							<a id="logo" href="">
+								<img alt="Logo" src="assets/media/logos/logo_full.png" class="h-30px" />
 							</a>
 							<!--end::Logo-->
 						</div>
@@ -1828,13 +1810,14 @@
 	<script>
 		 // Get the user input
 		var homeLink = document.getElementById('homeLink'); // Get the link element
-		var logo = document.getElementById('logo');
 		
 
 
 		// Update the link's href with the new query string
 		homeLink.href = "./index1.html?" + contractAddress;
-		logo.href = "./index1.html?" + contractAddress;
+
+		let logo = document.querySelectorAll('[id="logo"]').forEach(
+		element => {element.href = "./index1.html?" + localStorage.contract;});
 
 		async function getAllTxns() {
 			let count = await contract.methods.transactionCount().call().then(function (result) {
