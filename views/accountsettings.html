@@ -1231,16 +1231,15 @@
 	async function connectMetaMask() {
 		if (typeof window.ethereum !== 'undefined') {
 			try {
-				wallet = await MMSDK.sdkProvider.request({ method: 'eth_requestAccounts' }).then(function (w) { return w })
-
-				console.log(mmwallet)
+				wallet = await MMSDK.getProvider();
 
 				wallet.request({ method: 'eth_requestAccounts' }).then(response => {
 					const accounts = response;
 					console.log(`User's address is ${accounts[0]}`);
+					selectAddress = this.selectAddress
 
 					// Optionally, have the default account set for web3.js
-					web3.eth.defaultAccount = accounts[0];
+					web3.eth.defaultAccount = this.selectAddress
 				})
 
 
