@@ -1640,9 +1640,16 @@
 
 			token.balance = balance.toString();
 
+			console.log('token balance ='+token.balance)
+
+			if(token.balance !== '0'){
 			// Constructing the option element to append to the dropdown
 			const optionHtml = `<option value="${token.id}">${token.balance} ${token.type}</option>`;
 			document.getElementById('tokenHoldings').innerHTML += optionHtml;
+
+			}
+
+
 		}
 
 		console.log(tokens);
