@@ -19,7 +19,62 @@ const ETHERSCAN_API_URL = 'https://api.etherscan.io/api';
 // Contract details
 const contractAddress = localStorage.contract;
 
-console.log(contractAddress);
+
+const erc721Abi = [
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "transferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
+
+const erc20Contract = [[
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "from",
+		  "type": "address"
+		},
+		{
+		  "internalType": "address",
+		  "name": "to",
+		  "type": "address"
+		},
+		{
+		  "internalType": "uint256",
+		  "name": "value",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "transferFrom",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	}
+  ]]
+
+
+
+
 const contractABI =[
 	{
 		"inputs": [
@@ -141,7 +196,7 @@ const contractABI =[
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
+				"indexed": false,
 				"internalType": "uint256",
 				"name": "transactionId",
 				"type": "uint256"
@@ -425,6 +480,35 @@ const contractABI =[
 			{
 				"internalType": "uint256",
 				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "nftContractAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "submitTransferNFT",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
 				"type": "uint256"
 			}
 		],

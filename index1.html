@@ -735,7 +735,8 @@
 																<!--begin::Button-->
 																<button type="button" id="submitTxn"
 																	class="btn btn-primary">
-																	<span class="indicator-label">Submit Transaction</span>
+																	<span class="indicator-label">Submit
+																		Transaction</span>
 																	<span class="indicator-progress">Please wait...
 																		<span
 																			class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -794,18 +795,16 @@
 
 																	<select id="tokenHoldings2" class="form-select"
 																		aria-label="Select example">
-																		
+
 
 																	</select>
 																</div>
+																<div id="token_type">
 
-																<div class="fv-row mb-9">
-																	<!--begin::Label-->
+																	<!-- 	<div class="fv-row mb-9">
 																	<label
 																		class="fs-6 fw-bold required mb-2">To:</label>
-																	<!--end::Label-->
-																	<!--begin::Input-->
-																	<!--begin::Input group-->
+
 																	<div class="input-group mb-5">
 																		<span class="input-group-text"
 																			id="basic-addon3">
@@ -815,17 +814,12 @@
 																			id="basic-url" placeholder="Address"
 																			aria-describedby="basic-addon3" />
 																	</div>
-																	<!--end::Input group-->
-																	<!--end::Input-->
+
 																</div>
-																<!--end::Input group-->
-																<!--begin::Input group-->
+
 																<div class="fv-row mb-9">
-																	<!--begin::Label-->
 																	<label class="fs-6 fw-bold mb-2">Amount:</label>
-																	<!--end::Label-->
-																	<!--begin::Input-->
-																	<!--begin::Input group-->
+
 																	<div class="input-group mb-5">
 																		<span class="input-group-text"
 																			id="basic-addon3">
@@ -835,6 +829,9 @@
 																			id="basic-url" placeholder="Enter amount"
 																			aria-describedby="basic-addon3" />
 																	</div>
+																</div> -->
+
+
 																</div>
 																<!--end::Input group-->
 																<!--begin::Input group-->
@@ -857,7 +854,8 @@
 																<!--begin::Button-->
 																<button type="button" id="transferToken"
 																	class="btn btn-primary">
-																	<span class="indicator-label">Submit Transaction</span>
+																	<span class="indicator-label">Submit
+																		Transaction</span>
 																	<span class="indicator-progress">Please wait...
 																		<span
 																			class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -1613,6 +1611,21 @@
 
 <script type="text/javascript">
 
+	async function getAllTokenIdsOwnedByAddress(tokenAdd, ownerAddress) {
+		try {
+			const balance = await tokenAdd.methods.balanceOf(ownerAddress).call();
+			const tokenIds = [];
+			for (let i = 0; i < balance; i++) {
+				const tokenId = await tokenAdd.methods.tokenOfOwnerByIndex(ownerAddress, i).call();
+				tokenIds.push(tokenId);
+			}
+			console.log("tokenIds: " + tokenIds);
+		} catch (error) {
+			console.error(error);
+			return [];
+		}
+	}
+
 	async function fetchTokenBalances(data) {
 		const balanceAbi = [
 			{
@@ -1632,19 +1645,32 @@
 
 		let tokens = JSON.parse(data);
 
+		console.log('these are the toks my boyy, ' + data)
+
 		for (const token of tokens) {
 			const tokenContract = new web3.eth.Contract(balanceAbi, token.address);
 			const balance = await tokenContract.methods.balanceOf(localStorage.getItem('contract')).call();
 
 			token.balance = balance.toString();
 
-			console.log('token balance ='+token.balance)
+			console.log('token balance =' + token.balance)
+			console.log(token)
 
-			if(token.balance !== '0'){
-			// Constructing the option element to append to the dropdown
-			const optionHtml = `<option value="${token.id}">${token.balance} ${token.type}</option>`;
-			document.getElementById('tokenHoldings1').innerHTML += optionHtml;
-			document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+			if (token.balance !== '0') {
+
+
+				console.log("new token: " + JSON.stringify(token))
+				// Constructing the option element to append to the dropdown
+				const optionHtml = `<option class="clickable" value="${token.balance}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">${token.balance} ${token.type}</option>`;
+				document.getElementById('tokenHoldings1').innerHTML += optionHtml;
+				document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+				//document.querySelectorAll(`.clickable`).addEventListener('click', function(){console.log('hellollloolololoo')});
+
+
+
+
+
+
 
 
 			}
@@ -1653,7 +1679,108 @@
 		}
 
 		console.log(tokens);
+		document.getElementsByClassName(`clickable`).forEach(element => {
+			element.addEventListener('click', function () { console.log('hellollloolololoo') });
+		});
+
 	}
+
+	function addEventListenerToSelect() {
+		// Get the select element by its id
+		const selectElement = document.getElementById('tokenHoldings2');
+
+		// Ensure the select element exists
+		if (selectElement) {
+			// Add an event listener to the select element
+			selectElement.addEventListener('change', function () {
+				// Get the selected option
+				const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+				const dataType = selectedOption.dataset.type;
+				if (dataType == 'erc20') {
+
+					document.getElementById('token_type').innerHTML = `<div class="fv-row mb-9">
+																	<label
+																		class="fs-6 fw-bold required mb-2">To:</label>
+
+																	<div class="input-group mb-5">
+																		<span class="input-group-text"
+																			id="basic-addon3">
+																			<i class="las la-wallet fs-1"></i>
+																		</span>
+																		<input type="text" class="form-control"
+																			id="basic-url" placeholder="Address"
+																			aria-describedby="basic-addon3" />
+																	</div>
+
+																</div>
+
+																<div class="fv-row mb-9">
+																	<label class="fs-6 fw-bold mb-2">Amount:</label>
+
+																	<div class="input-group mb-5">
+																		<span class="input-group-text"
+																			id="basic-addon3">
+																			<i class="bi bi-graph-down fs-2"></i>
+																		</span>
+																		<input type="text" class="form-control"
+																			id="basic-url" placeholder="Enter amount"
+																			aria-describedby="basic-addon3" />
+																	</div>
+																</div>`
+
+
+				}
+
+				if (dataType == 'erc721') {
+
+					document.getElementById('token_type').innerHTML = `<div class="fv-row mb-9">
+												<label
+													class="fs-6 fw-bold required mb-2">To:</label>
+
+												<div class="input-group mb-5">
+													<span class="input-group-text"
+														id="basic-addon3">
+														<i class="las la-wallet fs-1"></i>
+													</span>
+													<input type="text" class="form-control"
+														id="toAddress1" placeholder="Address"
+														aria-describedby="basic-addon3" />
+												</div>
+
+											</div>
+
+											<div class="fv-row mb-9">
+												<label class="fs-6 fw-bold mb-2">Token ID:</label>
+
+												<div class="input-group mb-5">
+													<span class="input-group-text"
+														id="basic-addon3">
+														<i class="bi bi-graph-down fs-2"></i>
+													</span>
+													<input type="text" class="form-control"
+														id="basic-url" placeholder="Enter token id"
+														aria-describedby="basic-addon3" />
+												</div>
+											</div>`
+
+
+				}
+
+
+				// Your event handler code here
+				console.log(dataType);
+			});
+		} else {
+			console.error('Select element with id "tokenHoldings2" not found.');
+		}
+	}
+
+	// Call the function to add event listener to the select element
+	document.addEventListener('DOMContentLoaded', function () {
+		addEventListenerToSelect();
+	});
+
 
 	fetchTokenBalances(localStorage.token_contracts);
 
@@ -1697,7 +1824,7 @@
 
 
 	let submitTxn = document.getElementById('submitTxn');
-	submitTxn.addEventListener('click', function () {
+	submitTxn.addEventListener('click', function (tokenType) {
 
 
 		let to = document.getElementById('toAddress').value;
@@ -1706,6 +1833,8 @@
 
 		let callData = contract.methods.submitTransaction(to, amount, '0x').encodeABI();
 		console.log(callData);
+
+
 
 		wallet.request({ method: 'eth_requestAccounts' })
 			.then(accounts => {
@@ -1736,6 +1865,69 @@
 			.catch(error => {
 				console.error('An error occurred while fetching the connected accounts.', error);
 			});
+	});
+
+	let transferToken = document.getElementById('transferToken');
+	transferToken.addEventListener('click', function () {
+
+
+		let optionElement = document.querySelector('option.clickable');
+		let to = document.getElementById('toAddress1').value;
+		let from = contractAddress;
+		let tokenAddress = optionElement.getAttribute('data-add');
+
+
+		if (optionElement.getAttribute('data-type') == 'erc721') {
+
+			let id = parseInt(optionElement.getAttribute('value')); 
+			let erc721Contract = new web3.eth.Contract(erc721Abi, tokenAddress);
+
+			
+			let erc721Data = erc721Contract.methods.transferFrom(from, to, 0).encodeABI();
+
+			console.log(erc721Data)
+
+			let callData = contract.methods.submitTransferNFT(tokenAddress, to, 31).encodeABI();
+
+			console.log("beep beep compute compute, here is the calldata: "+erc721Data)
+
+			console.log('heyo heyo')
+			wallet.request({ method: 'eth_requestAccounts' })
+				.then(accounts => {
+					if (accounts.length === 0) {
+						console.error('No accounts found. Please connect your Ethereum wallet.');
+					} else {
+						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
+
+						// Contract interaction steps come here after getting the active wallet
+						wallet.request({
+							method: 'eth_sendTransaction',
+							params: [
+								{
+									to: localStorage.contract, // This now dynamically points to the user's account
+									from: selectAddress,
+									data: callData, // Ensure this is well defined in your original script
+									gasLimit: '21000000',
+									maxFeePerGas: '3000',
+									maxPriorityFeePerGas: '100',
+									gas: '90000',
+								},
+							],
+						})
+							.then((txHash) => console.log(txHash))
+							.catch((error) => console.error(error));
+					}
+				})
+				.catch(error => {
+					console.error('An error occurred while fetching the connected accounts.', error);
+				});
+
+		}
+		if (optionElement.getAttribute('data-type') == ' erc20') {
+
+		}
+
+
 	});
 
 	let logo = document.getElementById('logo');
