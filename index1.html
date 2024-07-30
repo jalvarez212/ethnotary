@@ -1627,12 +1627,45 @@
 	}
 
 	async function fetchTokenBalances(data) {
-		const balanceAbi = [
+		const abiFunctions = [
 			{
 				"constant": true,
-				"inputs": [{ "name": "owner", "type": "address" }],
+				"inputs": [
+					{
+						"name": "owner",
+						"type": "address"
+					}
+				],
 				"name": "balanceOf",
-				"outputs": [{ "name": "", "type": "uint256" }],
+				"outputs": [
+					{
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"constant": true,
+				"inputs": [
+					{
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"name": "index",
+						"type": "uint256"
+					}
+				],
+				"name": "tokenOfOwnerByIndex",
+				"outputs": [
+					{
+						"name": "",
+						"type": "uint256"
+					}
+				],
 				"payable": false,
 				"stateMutability": "view",
 				"type": "function"
@@ -1648,7 +1681,7 @@
 		console.log('these are the toks my boyy, ' + data)
 
 		for (const token of tokens) {
-			const tokenContract = new web3.eth.Contract(balanceAbi, token.address);
+			const tokenContract = new web3.eth.Contract(abiFunctions, token.address);
 			const balance = await tokenContract.methods.balanceOf(localStorage.getItem('contract')).call();
 
 			token.balance = balance.toString();
@@ -1659,12 +1692,36 @@
 			if (token.balance !== '0') {
 
 
-				console.log("new token: " + JSON.stringify(token))
-				// Constructing the option element to append to the dropdown
-				const optionHtml = `<option class="clickable" value="${token.balance}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">${token.balance} ${token.type}</option>`;
-				document.getElementById('tokenHoldings1').innerHTML += optionHtml;
-				document.getElementById('tokenHoldings2').innerHTML += optionHtml;
-				//document.querySelectorAll(`.clickable`).addEventListener('click', function(){console.log('hellollloolololoo')});
+				if (token.sym == 'erc721') {
+
+					let tokenId;
+					let optionHtml;
+
+
+					for (let i = 0; i < token.balance; i++) {
+						tokenId = await tokenContract.methods.tokenOfOwnerByIndex(contractAddress, i).call();
+
+						console.log(tokenId)
+						optionHtml = `<option class="clickable" data-id="${tokenId.toString()}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">#${tokenId.toString()} ${token.type}</option>`;
+						document.getElementById('tokenHoldings1').innerHTML += optionHtml;
+						document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+
+					}
+
+					console.log(token.balance)
+
+				}
+
+				else {
+					console.log("new token: " + JSON.stringify(token))
+					// Constructing the option element to append to the dropdown
+					const optionHtml = `<option class="clickable" value="${token.balance}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">BALANCE:${token.balance} ${token.type}</option>`;
+					document.getElementById('tokenHoldings1').innerHTML += optionHtml;
+					document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+					//document.querySelectorAll(`.clickable`).addEventListener('click', function(){console.log('hellollloolololoo')});
+
+
+				}
 
 
 
@@ -1750,18 +1807,6 @@
 
 											</div>
 
-											<div class="fv-row mb-9">
-												<label class="fs-6 fw-bold mb-2">Token ID:</label>
-
-												<div class="input-group mb-5">
-													<span class="input-group-text"
-														id="basic-addon3">
-														<i class="bi bi-graph-down fs-2"></i>
-													</span>
-													<input type="text" class="form-control"
-														id="basic-url" placeholder="Enter token id"
-														aria-describedby="basic-addon3" />
-												</div>
 											</div>`
 
 
@@ -1879,17 +1924,17 @@
 
 		if (optionElement.getAttribute('data-type') == 'erc721') {
 
-			let id = parseInt(optionElement.getAttribute('value')); 
+			let id = parseInt(optionElement.getAttribute('data-id'));
 			let erc721Contract = new web3.eth.Contract(erc721Abi, tokenAddress);
 
-			
-			let erc721Data = erc721Contract.methods.transferFrom(from, to, 0).encodeABI();
+
+			let erc721Data = erc721Contract.methods.transferFrom(from, to, id).encodeABI();
 
 			console.log(erc721Data)
 
-			let callData = contract.methods.submitTransferNFT(tokenAddress, to, 31).encodeABI();
+			let callData = contract.methods.submitTransferNFT(tokenAddress, to, id).encodeABI();
 
-			console.log("beep beep compute compute, here is the calldata: "+erc721Data)
+			console.log("beep beep compute compute, here is the calldata: " + erc721Data)
 
 			console.log('heyo heyo')
 			wallet.request({ method: 'eth_requestAccounts' })
