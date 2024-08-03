@@ -1669,6 +1669,44 @@
 				"payable": false,
 				"stateMutability": "view",
 				"type": "function"
+			},
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "transfer",
+				"outputs": [
+					{
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+
+			{
+				"constant": true,
+				"inputs": [],
+				"name": "decimals",
+				"outputs": [
+					{
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
 			}
 		];
 		document.getElementById('tokenHoldings1').innerHTML = "<option></option>";
@@ -1681,10 +1719,12 @@
 		console.log('these are the toks my boyy, ' + data)
 
 		for (const token of tokens) {
-			const tokenContract = new web3.eth.Contract(abiFunctions, token.address);
-			const balance = await tokenContract.methods.balanceOf(localStorage.getItem('contract')).call();
+			let tokenContract = new web3.eth.Contract(abiFunctions, token.address);
+			let balance = await tokenContract.methods.balanceOf(localStorage.getItem('contract')).call();
 
 			token.balance = balance.toString();
+
+
 
 			console.log('token balance =' + token.balance)
 			console.log(token)
@@ -1702,7 +1742,7 @@
 						tokenId = await tokenContract.methods.tokenOfOwnerByIndex(contractAddress, i).call();
 
 						console.log(tokenId)
-						optionHtml = `<option class="clickable" data-id="${tokenId.toString()}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">#${tokenId.toString()} ${token.type}</option>`;
+						optionHtml = `<option class="${token.type}" data-id="${tokenId.toString()}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">#${tokenId.toString()} ${token.type}</option>`;
 						document.getElementById('tokenHoldings1').innerHTML += optionHtml;
 						document.getElementById('tokenHoldings2').innerHTML += optionHtml;
 
@@ -1712,10 +1752,27 @@
 
 				}
 
-				else {
+				if (token.sym == 'erc20') {
 					console.log("new token: " + JSON.stringify(token))
+
+
+
+
+					let decimals = await tokenContract.methods.decimals().call();
+
+					const balanceBigInt = BigInt(balance);
+					const decimalsBigInt = BigInt(decimals);
+					const factor = BigInt(10) ** decimalsBigInt;
+					const formattedBalance = Number(balanceBigInt) / Number(factor);
+
+					//let formattedBalance = await web3.utils.fromWei(balance, 'ether') * Math.pow(10, 18 - decimals);
+
+					console.log('token balance =' + formattedBalance.toFixed(4))
+					console.log('decimals =' + decimals.toString())
+
 					// Constructing the option element to append to the dropdown
-					const optionHtml = `<option class="clickable" value="${token.balance}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">BALANCE:${token.balance} ${token.type}</option>`;
+
+					const optionHtml = `<option class="${token.type}" value="${formattedBalance}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}" data-dec="${decimals.toString()}">${formattedBalance.toFixed(4)} ${token.type}</option>`;
 					document.getElementById('tokenHoldings1').innerHTML += optionHtml;
 					document.getElementById('tokenHoldings2').innerHTML += optionHtml;
 					//document.querySelectorAll(`.clickable`).addEventListener('click', function(){console.log('hellollloolololoo')});
@@ -1766,7 +1823,7 @@
 																			<i class="las la-wallet fs-1"></i>
 																		</span>
 																		<input type="text" class="form-control"
-																			id="basic-url" placeholder="Address"
+																		id="toAddress1" placeholder="Address"
 																			aria-describedby="basic-addon3" />
 																	</div>
 
@@ -1781,7 +1838,7 @@
 																			<i class="bi bi-graph-down fs-2"></i>
 																		</span>
 																		<input type="text" class="form-control"
-																			id="basic-url" placeholder="Enter amount"
+																			id="erc20Amount" placeholder="Enter amount"
 																			aria-describedby="basic-addon3" />
 																	</div>
 																</div>`
@@ -1916,15 +1973,15 @@
 	transferToken.addEventListener('click', function () {
 
 
-		let optionElement = document.querySelector('option.clickable');
+		let tokenSelect = document.getElementById('tokenHoldings2');
 		let to = document.getElementById('toAddress1').value;
 		let from = contractAddress;
-		let tokenAddress = optionElement.getAttribute('data-add');
+		let tokenAddress = tokenSelect[tokenSelect.selectedIndex].getAttribute('data-add');
 
 
-		if (optionElement.getAttribute('data-type') == 'erc721') {
+		if (tokenSelect[tokenSelect.selectedIndex].getAttribute('data-type') == 'erc721') {
 
-			let id = parseInt(optionElement.getAttribute('data-id'));
+			let id = parseInt(tokenSelect[tokenSelect.selectedIndex].getAttribute('data-id'));
 			let erc721Contract = new web3.eth.Contract(erc721Abi, tokenAddress);
 
 
@@ -1968,7 +2025,55 @@
 				});
 
 		}
-		if (optionElement.getAttribute('data-type') == ' erc20') {
+		if (tokenSelect[tokenSelect.selectedIndex].getAttribute('data-type') == 'erc20') {
+
+			let value = parseFloat(document.getElementById('erc20Amount').value);
+			let erc20Contract = new web3.eth.Contract(erc20Abi, tokenAddress);
+
+			let decimals = parseInt(tokenSelect[tokenSelect.selectedIndex].getAttribute('data-dec'));
+
+	
+			const amountInSmallestUnit = web3.utils.toBigInt(value * Math.pow(10, decimals));
+
+
+
+			let erc20Data = erc20Contract.methods.transfer(to, amountInSmallestUnit).encodeABI();
+
+			console.log(erc20Data)
+
+			let callData = contract.methods.submitTransferERC20(tokenAddress, to, amountInSmallestUnit).encodeABI();
+
+
+			console.log('heyo heyo')
+			wallet.request({ method: 'eth_requestAccounts' })
+				.then(accounts => {
+					if (accounts.length === 0) {
+						console.error('No accounts found. Please connect your Ethereum wallet.');
+					} else {
+						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
+
+						// Contract interaction steps come here after getting the active wallet
+						wallet.request({
+							method: 'eth_sendTransaction',
+							params: [
+								{
+									to: localStorage.contract, // This now dynamically points to the user's account
+									from: selectAddress,
+									data: callData, // Ensure this is well defined in your original script
+									gasLimit: '21000000',
+									maxFeePerGas: '3000',
+									maxPriorityFeePerGas: '100',
+									gas: '90000',
+								},
+							],
+						})
+							.then((txHash) => console.log(txHash))
+							.catch((error) => console.error(error));
+					}
+				})
+				.catch(error => {
+					console.error('An error occurred while fetching the connected accounts.', error);
+				});
 
 		}
 
