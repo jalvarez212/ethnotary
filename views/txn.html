@@ -26,6 +26,8 @@
 	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
 	<script src="assets/js/bundle.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
+	<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+
 </head>
 
 
@@ -773,10 +775,28 @@
 
 <!--end::Head-->
 <!--begin::Body-->
-<w3m-connect-button />
 
 <body id="kt_body" data-sidebar="on"
 	class="print-content-only header-fixed header-tablet-and-mobile-fixed toolbar-enabled sidebar-enabled">
+
+	<div id="animation-container" style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; display: none; z-index: 99;">
+		<dotlottie-player id="processing-animation"
+			src="https://lottie.host/c0c762b6-fd69-4271-b53c-1c7408d4ac7b/UQ58y0jOJk.json" background="transparent"
+			speed="1"
+			style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
+			loop autoplay></dotlottie-player>
+		<dotlottie-player id="success-animation"
+			src="https://lottie.host/ad8c738b-dc0b-4023-a493-e963160f6374/liHt4pMZnH.json" background="transparent"
+			speed="1"
+			style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
+			loop autoplay></dotlottie-player>
+			<dotlottie-player id="revoke-animation"
+			src="https://lottie.host/717bd718-5d50-42e0-bdca-1afbb11a7591/QX0hRMpiLk.json" background="transparent"
+			speed="1"
+			style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
+			loop autoplay></dotlottie-player>
+			
+	</div>
 	<!--begin::Main-->
 	<!--begin::Root-->
 	<div class="d-flex flex-column flex-root">
@@ -1324,6 +1344,7 @@
 				</div>
 				<!--end::Footer-->
 			</div>
+
 			<!--end::Wrapper-->
 
 		</div>
@@ -1346,6 +1367,7 @@
 		</span>
 		<!--end::Svg Icon-->
 	</div>
+
 	<!--end::Scrolltop-->
 	<!--end::Main-->
 	<script>var hostUrl = "assets/";</script>
@@ -1361,6 +1383,31 @@
 	<!--end::Javascript-->
 </body>
 <script>
+
+		// Function to start processing animation
+	function startProcessingAnimation() {
+		document.getElementById('animation-container').style.display = 'block';
+		document.getElementById('processing-animation').style.display = 'block';
+		document.getElementById('success-animation').style.display = 'none';
+	}
+
+	// Function to show success animation
+	function showSuccessAnimation() {
+		document.getElementById('processing-animation').style.display = 'none';
+		document.getElementById('success-animation').style.display = 'block';
+	}
+
+	function showRevokeAnimation() {
+		document.getElementById('processing-animation').style.display = 'none';
+		document.getElementById('revoke-animation').style.display = 'block';
+	}
+
+
+	// Function to hide animations
+	function hideAnimations() {
+		document.getElementById('animation-container').style.display = 'none';
+	}
+
 
 
 	// Function to connect to the user's Ethereum wallet
@@ -1463,11 +1510,32 @@
 	var user = localStorage.contract // Get the user input
 	var homeLink = document.getElementById('homeLink'); // Get the link element
 
+
+	let gas;
+	let maxFeePerGas;
+	let maxPriorityFeePerGas;
+
+
+	async function getGas(method) {
+
+		gas = await method.estimateGas({ from: selectAddress });
+
+		let feeHistory = await web3.eth.getFeeHistory(1, 'latest', [10, 90]);
+		// Get the gas price
+		let baseFeePerGas = await parseInt(feeHistory.baseFeePerGas[0]);
+		maxPriorityFeePerGas = await web3.utils.toWei('2', 'gwei'); // Default to 2 gwei, you can adjust this
+
+		// Calculate the maxFeePerGas (base fee + max priority fee)
+		maxFeePerGas = await baseFeePerGas + parseInt(maxPriorityFeePerGas);
+	}
+
+
 	// Update the link's href with the new query string
 	homeLink.href = "./index1.html?" + user;
 	let c = document.getElementById('confirm');
 	c.addEventListener('click', function () {
 		// Step 1: First, get the first user's own address
+		getGas(msa.methods.confirmTransaction(paramValue))
 		wallet.request({ method: 'eth_requestAccounts' })
 			.then(accounts => {
 				if (accounts.length === 0) {
@@ -1483,15 +1551,27 @@
 								to: contractAddress, // This now dynamically points to the user's account
 								from: selectAddress,
 								data: confirmCallData, // Ensure this is well defined in your original script
-								gasLimit: '21000000',
-								maxFeePerGas: '3000',
-								maxPriorityFeePerGas: '100',
-								gas: '90000',
+								gasLimit: gas,
+								maxFeePerGas: maxFeePerGas,
+								maxPriorityFeePerGas: maxPriorityFeePerGas,
+								gas: gas,
 							},
 						],
 					})
-						.then((txHash) => console.log(txHash))
-						.catch((error) => console.error(error));
+					.then((txHash) => {
+							console.log('Transaction Hash:', txHash);
+							startProcessingAnimation();
+							setTimeout(showSuccessAnimation, 6000);
+
+							// Hide animations after a short delay (optional)
+							setTimeout(hideAnimations, 8500);
+
+						})
+						.catch((error) => {
+							console.error('Transaction failed:', error);
+							// Optionally handle error animation or message here
+							hideAnimations(); // Hide animations immediately if there's an error
+						});
 				}
 			})
 			.catch(error => {
@@ -1502,6 +1582,8 @@
 	let r = document.getElementById('revoke');
 	r.addEventListener('click', function () {
 		// Step 1: First, get the first user's own address
+		getGas(msa.methods.revokeConfirmation(paramValue))
+
 		wallet.request({ method: 'eth_requestAccounts' })
 			.then(accounts => {
 				if (accounts.length === 0) {
@@ -1517,15 +1599,27 @@
 								to: contractAddress, // This now dynamically points to the user's account
 								from: selectAddress,
 								data: revokeCallData, // Ensure this is well defined in your original script
-								gasLimit: '21000000',
-								maxFeePerGas: '3000',
-								maxPriorityFeePerGas: '100',
-								gas: '90000',
+								gasLimit: gas,
+								maxFeePerGas: maxFeePerGas,
+								maxPriorityFeePerGas: maxPriorityFeePerGas,
+								gas: gas,
 							},
 						],
 					})
-						.then((txHash) => console.log(txHash))
-						.catch((error) => console.error(error));
+					.then((txHash) => {
+							console.log('Transaction Hash:', txHash);
+							startProcessingAnimation();
+							setTimeout(showRevokeAnimation, 6000);
+
+							// Hide animations after a short delay (optional)
+							setTimeout(hideAnimations, 7500);
+
+						})
+						.catch((error) => {
+							console.error('Transaction failed:', error);
+							// Optionally handle error animation or message here
+							hideAnimations(); // Hide animations immediately if there's an error
+						});
 				}
 			})
 			.catch(error => {
@@ -1536,6 +1630,8 @@
 	let e = document.getElementById('execute');
 	e.addEventListener('click', function () {
 		// Step 1: First, get the first user's own address
+		getGas(msa.methods.execute(paramValue))
+
 		wallet.request({ method: 'eth_requestAccounts' })
 			.then(accounts => {
 				if (accounts.length === 0) {
@@ -1551,15 +1647,27 @@
 								to: contractAddress, // This now dynamically points to the user's account
 								from: selectAddress,
 								data: executeCallData, // Ensure this is well defined in your original script
-								gasLimit: '21000000',
-								maxFeePerGas: '3000',
-								maxPriorityFeePerGas: '100',
-								gas: '90000',
+								gasLimit: gas,
+								maxFeePerGas: maxFeePerGas,
+								maxPriorityFeePerGas: maxPriorityFeePerGas,
+								gas: gas,
 							},
 						],
 					})
-						.then((txHash) => console.log(txHash))
-						.catch((error) => console.error(error));
+					.then((txHash) => {
+							console.log('Transaction Hash:', txHash);
+							startProcessingAnimation();
+							setTimeout(showSuccessAnimation, 6000);
+
+							// Hide animations after a short delay (optional)
+							setTimeout(hideAnimations, 8500);
+
+						})
+						.catch((error) => {
+							console.error('Transaction failed:', error);
+							// Optionally handle error animation or message here
+							hideAnimations(); // Hide animations immediately if there's an error
+						});
 				}
 			})
 			.catch(error => {
@@ -1662,6 +1770,8 @@
 
 
 </script>
+
+
 
 <!--end::Body-->
 
