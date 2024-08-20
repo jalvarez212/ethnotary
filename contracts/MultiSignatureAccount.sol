@@ -566,10 +566,9 @@ contract MultiSigAccount {
     }
 }
 
-
 contract MSAFactory {
 
-    uint256 notaryFee = 10000000000000000;
+    uint256 notaryFee = 999999999999999;
     address payable private owner;
 
      receive() external payable {
@@ -582,6 +581,10 @@ contract MSAFactory {
     modifier onlyOwner() {
         require(msg.sender == owner, "Caller is not the owner");
         _;
+    }
+
+    function changeFee(uint256 newFee) public onlyOwner{
+         notaryFee = newFee;
     }
 
 

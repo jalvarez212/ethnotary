@@ -4,36 +4,59 @@
 <!--begin::Head-->
 
 <head>
-	<base href="../">
 	<title>Wizard</title>
-	<meta charset="utf-8" />
-	<meta name="description"
-		content="Check out all the features of the Start admin panel. A large number of templates, components and widgets." />
-	<meta name="keywords"
-		content="Start, bootstrap, bootstrap 5, admin themes, free admin themes, bootstrap admin, bootstrap dashboard, html admin theme, html template" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<meta property="og:locale" content="en_US" />
-	<meta property="og:type" content="article" />
-	<meta property="og:title" content="Start - Bootstrap 5 HTML Multipurpose Admin Dashboard Template" />
-	<meta property="og:url"
-		content="https://themes.getbootstrap.com/product/start-multipurpose-admin-dashboard-theme/" />
-	<meta property="og:site_name" content="Keenthemes | Start" />
+	<base href="../">
+
+
+	<meta http-equiv="cache-control" content="max-age=0" />
+	<meta http-equiv="cache-control" content="no-cache" />
+	<meta http-equiv="expires" content="0" />
+	<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="pragma" content="no-cache" />
 	<link rel="canonical" href="https://preview.keenthemes.com/start" />
 	<link rel="shortcut icon" href="assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 	<!--end::Fonts-->
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
-	<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-	<link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+	<link href="./assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+	<link href="./assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<!--end::Global Stylesheets Bundle-->
 	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
-	<script>
+	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+	<script src="assets/js/bundle.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
+	<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 
-	</script>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
+
+<script type="text/javascript">
+
+	var user = localStorage.contract // Get the user input
+
+	// Ensure ethers is available in the global scope
+
+
+
+	const ethers = window.ethers;
+	const MMSDK = new MetaMaskSDK.MetaMaskSDK(
+		dappMetadata = {
+			name: "ethnotary",
+			url: "ethnotary.io",
+		}
+		// Other options
+	)
+	const coinbaseWallet = new CoinbaseWalletSDK({
+		appName: 'ethnotary',
+		appLogoUrl: 'ethnotary.io',
+		darkMode: false
+	})
+	let wallet;
+
+
+</script>
 
 <body id="kt_body" data-sidebar="on"
 	class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled sidebar-enabled">
@@ -248,52 +271,43 @@
 									</div>
 									<!--begin::Row-->
 									<div class="row row-cols-2 g-0">
-										<a href="#"
+										<a onclick="connectPhantomWallet()"
 											class="border-bottom border-end text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
 
-											<!--begin::Svg Icon | path: assets/media/icons/duotune/general/gen025.svg-->
-											<span class="svg-icon svg-icon-3x me-n1"><svg
-													xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-													viewBox="0 0 24 24" fill="none">
-													<rect x="2" y="2" width="9" height="9" rx="2" fill="black" />
-													<rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2"
-														fill="black" />
-													<rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2"
-														fill="black" />
-													<rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2"
-														fill="black" />
-												</svg></span>
+											<span class="svg-icon svg-icon-3x me-n1">
+												<img style="width: 30px; height: 30px;" alt="Logo"
+													src="./assets/media/svg/Phantom_SVG_Icon.svg" />
+											</span>
 											<!--end::Svg Icon-->
-											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Browser Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Phantom Wallet</span>
 										</a>
-										<a href="#"
+										<a id="coinbase" onclick="connectCoinbase()"
 											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img style="width: 30px; height: 30px;" alt="Logo"
-													src="assets/media/svg/coinbase.svg" />
+													src="./assets/media/svg/coinbase.svg" />
 											</span>
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">Coinbase Wallet</span>
 										</a>
-										<a href="#"
+										<a onclick="connectOKXWallet()"
 											class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/finance/fin009.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="assets/media/svg/walletconnect.svg" />
+													src="./assets/media/svg/OKX_Logo.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">WalletConnect</span>
+											<span class="fw-bolder fs-6 d-block pt-3">OKX Wallet</span>
 										</a>
-										<a href="#"
+										<a id="metamask" onclick="connectMetaMask()"
 											class="col text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/arrows/arr077.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="assets/media/svg/metamask.svg" />
+													src="./assets/media/svg/metamask.svg" />
 
 											</span>
 											<!--end::Svg Icon-->
@@ -1047,36 +1061,311 @@
 		// Update the link's href with the new query string
 		homeLink.href = "./index1.html?" + contractAddress;
 		let logo = document.querySelectorAll('[id="logo"]').forEach(
-		element => {element.href = "./index1.html?" + localStorage.contract;});
-		
+			element => { element.href = "./index1.html?" + localStorage.contract; });
 
-		let compile = document.getElementById('compile');
+
+		//let compile = document.getElementById('compile');
 		let adx = [];
 
 
-		compile.addEventListener('click', function () {
+		// compile.addEventListener('click', function () {
 
-			console.log('complie is running!')
+		// 	console.log('complie is running!')
 
-			let owner_count = document.getElementById('initialField').value;
-			let pin = document.getElementById('Pin').value;
-			let reqs = document.getElementById('Requirement').value
-			
-			for (let i = 0; i < owner_count; i++) {
-				let owner = document.getElementById(`owner_${i}`).value;
-				adx.push(owner);
+		// 	let owner_count = document.getElementById('initialField').value;
+		// 	let pin = document.getElementById('Pin').value;
+		// 	let reqs = document.getElementById('Requirement').value
+
+		// 	for (let i = 0; i < owner_count; i++) {
+		// 		let owner = document.getElementById(`owner_${i}`).value;
+		// 		adx.push(owner);
+
+
+		// 	}
+
+
+
+
+
+		// })
+		let selectedType = null;
+		let selectName = null;
+		let selectCount = null;
+		let selectThreshold = null;
+		let selectPin = null;
+
+		function updateReviewContent() {
+			document.getElementById('review_type').innerHTML = selectedType || 'N/A';
+			document.getElementById('review_name').innerHTML = selectName || 'N/A';
+			document.getElementById('review_owners').innerHTML = selectCount || 'N/A';
+			document.getElementById('review_requirement').innerHTML = selectThreshold || 'N/A';
+			document.getElementById('review_pin').innerHTML = selectPin || 'N/A';
+		}
+
+		// General function to handle input changes
+		function handleInputChange(event, variable) {
+			switch (variable) {
+				case 'selectedType':
+					selectedType = event.target.value;
+					break;
+				case 'selectName':
+					selectName = event.target.value;
+					break;
+				case 'selectCount':
+					selectCount = event.target.value;
+					break;
+				case 'selectThreshold':
+					selectThreshold = event.target.value;
+					break;
+				case 'selectPin':
+					selectPin = event.target.value;
+					break;
+				default:
+					console.warn('Unhandled variable:', variable);
+			}
+			updateReviewContent();
+			console.log(`${variable}:`, event.target.value); // You can remove this or replace it with any other logic
+		}
+
+		// Attach event listeners to all radio buttons in the form
+		document.querySelectorAll('input[name="radio_buttons_1[]"]').forEach((radio) => {
+			radio.addEventListener('change', (event) => handleInputChange(event, 'selectedType'));
+		});
+
+		// Attach event listeners to other inputs
+		document.getElementById('companyname').addEventListener('input', (event) => handleInputChange(event, 'selectName'));
+		document.getElementById('initialField').addEventListener('input', (event) => handleInputChange(event, 'selectCount'));
+		document.getElementById('Requirement').addEventListener('input', (event) => handleInputChange(event, 'selectThreshold'));
+		document.getElementById('Pin').addEventListener('input', (event) => handleInputChange(event, 'selectPin'));
+
+
+
+		let gas;
+		let maxFeePerGas;
+		let maxPriorityFeePerGas;
+
+
+		async function getGas(method) {
+
+			gas = await method.estimateGas({ from: selectAddress });
+
+			let feeHistory = await web3.eth.getFeeHistory(1, 'latest', [10, 90]);
+			// Get the gas price
+			let baseFeePerGas = await parseInt(feeHistory.baseFeePerGas[0]);
+			maxPriorityFeePerGas = await web3.utils.toWei('2', 'gwei'); // Default to 2 gwei, you can adjust this
+
+			// Calculate the maxFeePerGas (base fee + max priority fee)
+			maxFeePerGas = await baseFeePerGas + parseInt(maxPriorityFeePerGas);
+		}
+
+
+		function getAccountOwners() {
+			const owners = [];
+			const ownerElements = document.querySelectorAll('#reviewContainer .form-text');
+
+			ownerElements.forEach((element) => {
+				owners.push(element.textContent.trim());
+			});
+
+			console.log(owners)
+
+			return owners;
+		}
+
+		// Event listener for the compile button
+		document.getElementById('compile').addEventListener('click', async () => {
+			try {
+				// Request the user's Ethereum accounts
+				const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+				if (accounts.length === 0) {
+					console.error('No accounts found. Please connect your Ethereum wallet.');
+					return;
+				}
+
+				const selectAddress = accounts[0]; // Use the first account in the list
+				const owners = getAccountOwners(); // Extract owners from #reviewContainer
+				const required = parseInt(selectCount);
+				const pin = parseInt(selectPin);
+
+				// Initialize the contract
+				const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+				// Prepare the transaction data
+				const data = contract.methods.newMSA(owners, required, pin).encodeABI();
+
+				// Send the transaction
+				const txParams = {
+					to: contractAddress,
+					from: selectAddress,
+					data: data,
+					gasLimit: '3000000', // Adjust the gas limit as necessary
+					value: web3.utils.toWei('1', 'ether'), // Replace '1' with the actual ether value to send
+					maxFeePerGas: web3.utils.toHex(web3.utils.toWei('3000', 'gwei')),
+					maxPriorityFeePerGas: web3.utils.toHex(web3.utils.toWei('100', 'gwei'))
+				};
+
+				const txHash = await window.ethereum.request({
+					method: 'eth_sendTransaction',
+					params: [txParams],
+				});
+
+				console.log('Transaction sent, waiting for confirmation...', txHash);
+
+				// Wait for the transaction to be mined
+				const receipt = await web3.eth.getTransactionReceipt(txHash);
+
+				if (receipt && receipt.status) {
+					console.log('Transaction confirmed, checking logs for the new contract address...');
+
+					// Decode the logs to find the NewMSACreated event
+					const newMSAEvent = receipt.logs.find(log => {
+						return log.topics[0] === web3.utils.sha3('NewMSACreated(address)');
+					});
+
+					if (newMSAEvent) {
+						const newContractAddress = web3.eth.abi.decodeParameters(['address'], newMSAEvent.data)[0];
+						console.log('New contract created at address:', newContractAddress);
+					} else {
+						console.error('No NewMSACreated event found in the logs.');
+					}
+				} else {
+					console.error('Transaction failed.');
+				}
+			} catch (error) {
+				console.error('Transaction failed:', error);
+			}
+		});
+
+		// Function to start processing animation
+		function startProcessingAnimation() {
+			document.getElementById('animation-container').style.display = 'block';
+			document.getElementById('processing-animation').style.display = 'block';
+			document.getElementById('success-animation').style.display = 'none';
+		}
+
+		// Function to show success animation
+		function showSuccessAnimation() {
+			document.getElementById('processing-animation').style.display = 'none';
+			document.getElementById('success-animation').style.display = 'block';
+		}
+
+		function showRevokeAnimation() {
+			document.getElementById('processing-animation').style.display = 'none';
+			document.getElementById('revoke-animation').style.display = 'block';
+		}
+
+
+		// Function to hide animations
+		function hideAnimations() {
+			document.getElementById('animation-container').style.display = 'none';
+		}
+
+
+
+		// Function to connect to the user's Ethereum wallet
+		async function connectMetaMask() {
+			if (typeof window.ethereum !== 'undefined') {
+				try {
+					wallet = await MMSDK.getProvider();
+
+					wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+						const accounts = response;
+						console.log(`User's address is ${accounts[0]}`);
+						selectAddress = this.selectAddress
+
+						// Optionally, have the default account set for web3.js
+						web3.eth.defaultAccount = this.selectAddress
+					})
+
+
+
+
+				}
+				catch (error) {
+					console.error('User denied account access or an error occurred:', error);
+
+				}
+
+			}
+			else {
+				alert('This browser is not web3 enabled, please use a different browser.')
+
+			}
+		}
+
+		// Function to connect to the user's Ethereum wallet
+		async function connectOKXWallet() {
+			try {
+
+				wallet = okxwallet;
+				wallet.request({ method: 'eth_requestAccounts' });
+
 
 
 			}
+			catch (error) {
+				window.open('https://www.okx.com/download');
 
-			
+			}
+
+		}
+		// Function to connect to the user's Ethereum wallet
+		async function connectCoinbase() {
+
+			try {
+				wallet = await coinbaseWallet.walletExtension;
+				wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+					console.log(response)
+					const accounts = response;
+					console.log(`User's address is ${accounts[0]}`);
+
+					// Optionally, have the default account set for web3.js
+					web3.eth.defaultAccount = accounts[0];
+				})
+
+				console.log(wallet)
+
+
+			} catch (error) {
+				alert('User denied account access or an error occurred, please refresh browser and try again.');
+			}
+
+		}
+
+		async function connectPhantomWallet() {
+			if (typeof window.phantom !== 'undefined') {
+				try {
+					console.log('helllllo')
+					wallet = await phantom.ethereum;
+					wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+						selectAddress = wallet.selectedAddress;
+						// Optionally, have the default account set for web3.js
+						web3.eth.defaultAccount = wallet.selectedAddress;
+					});
+
+
+				}
+				catch (error) {
+					alert('User denied account access or an error occurred, please refresh browser and try again.');
+
+				}
+
+			}
+			else {
+				window.open('https://phantom.app/', '_blank');
+
+			}
 
 
 
-		})
+		}
 
-		// let full_logo = document.querySelectorAll('logo1');
-		// full_logo.href = "index1.html?" + contractAddress;
+
+
+
+
+
 
 
 
