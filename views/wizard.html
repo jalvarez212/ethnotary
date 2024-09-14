@@ -55,11 +55,128 @@
 	})
 	let wallet;
 
+			// Function to connect to the user's Ethereum wallet
+			async function connectMetaMask() {
+			if (typeof window.ethereum !== 'undefined') {
+				try {
+					wallet = await MMSDK.getProvider();
+
+					wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+						const accounts = response;
+						console.log(`User's address is ${accounts[0]}`);
+						selectAddress = this.selectAddress
+
+						// Optionally, have the default account set for web3.js
+						web3.eth.defaultAccount = this.selectAddress
+					})
+
+
+
+
+				}
+				catch (error) {
+					console.error('User denied account access or an error occurred:', error);
+
+				}
+
+			}
+			else {
+				alert('This browser is not web3 enabled, please use a different browser.')
+
+			}
+		}
+
+		// Function to connect to the user's Ethereum wallet
+		async function connectOKXWallet() {
+			try {
+
+				wallet = okxwallet;
+				wallet.request({ method: 'eth_requestAccounts' });
+
+
+
+			}
+			catch (error) {
+				window.open('https://www.okx.com/download');
+
+			}
+
+		}
+		// Function to connect to the user's Ethereum wallet
+		async function connectCoinbase() {
+
+			try {
+				wallet = await coinbaseWallet.walletExtension;
+				wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+					console.log(response)
+					const accounts = response;
+					console.log(`User's address is ${accounts[0]}`);
+
+					// Optionally, have the default account set for web3.js
+					web3.eth.defaultAccount = accounts[0];
+				})
+
+				console.log(wallet)
+
+
+			} catch (error) {
+				alert('User denied account access or an error occurred, please refresh browser and try again.');
+			}
+
+		}
+
+		async function connectPhantomWallet() {
+			if (typeof window.phantom !== 'undefined') {
+				try {
+					console.log('helllllo')
+					wallet = await phantom.ethereum;
+					wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+						selectAddress = wallet.selectedAddress;
+						// Optionally, have the default account set for web3.js
+						web3.eth.defaultAccount = wallet.selectedAddress;
+					});
+
+
+				}
+				catch (error) {
+					alert('User denied account access or an error occurred, please refresh browser and try again.');
+
+				}
+
+			}
+			else {
+				window.open('https://phantom.app/', '_blank');
+
+			}
+
+
+
+		}
+
 
 </script>
 
 <body id="kt_body" data-sidebar="on"
 	class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled sidebar-enabled">
+
+	<div id="animation-container" style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; display: none; z-index: 99;">
+		<dotlottie-player id="processing-animation"
+			src="https://lottie.host/c0c762b6-fd69-4271-b53c-1c7408d4ac7b/UQ58y0jOJk.json" background="transparent"
+			speed="1"
+			style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
+			loop autoplay></dotlottie-player>
+		<dotlottie-player id="success-animation"
+			src="https://lottie.host/ad8c738b-dc0b-4023-a493-e963160f6374/liHt4pMZnH.json" background="transparent"
+			speed="1"
+			style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
+			loop autoplay></dotlottie-player>
+			<dotlottie-player id="revoke-animation"
+			src="https://lottie.host/717bd718-5d50-42e0-bdca-1afbb11a7591/QX0hRMpiLk.json" background="transparent"
+			speed="1"
+			style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
+			loop autoplay></dotlottie-player>
+			
+	</div>
 	<!--begin::Main-->
 	<!--begin::Root-->
 	<div class="d-flex flex-column flex-root">
@@ -1053,19 +1170,26 @@
 
 	<!--end::Global Javascript Bundle-->
 	<!--begin::Page Custom Javascript(used by this page)-->
-	<script src="assets/js/custom/general/wizard.js"></script>
-	<script src="assets/js/custom/apps/chat/chat.js"></script>
+
 
 	<script>
-		let homeLink = document.getElementById('homeLink'); // Get the link element
+		let homeLink = document.getElementById('homeLink'); 
+		// Get the link element
 		// Update the link's href with the new query string
 		homeLink.href = "./index1.html?" + contractAddress;
 		let logo = document.querySelectorAll('[id="logo"]').forEach(
 			element => { element.href = "./index1.html?" + localStorage.contract; });
 
 
-		//let compile = document.getElementById('compile');
+		let compile = document.getElementById('compile');
 		let adx = [];
+
+		let selectedType = null;
+		let selectName = null;
+		let selectCount = null;
+		let selectThreshold = null;
+		let selectPin = null;
+
 
 
 		// compile.addEventListener('click', function () {
@@ -1088,11 +1212,6 @@
 
 
 		// })
-		let selectedType = null;
-		let selectName = null;
-		let selectCount = null;
-		let selectThreshold = null;
-		let selectPin = null;
 
 		function updateReviewContent() {
 			document.getElementById('review_type').innerHTML = selectedType || 'N/A';
@@ -1140,23 +1259,8 @@
 
 
 
-		let gas;
-		let maxFeePerGas;
-		let maxPriorityFeePerGas;
+	
 
-
-		async function getGas(method) {
-
-			gas = await method.estimateGas({ from: selectAddress });
-
-			let feeHistory = await web3.eth.getFeeHistory(1, 'latest', [10, 90]);
-			// Get the gas price
-			let baseFeePerGas = await parseInt(feeHistory.baseFeePerGas[0]);
-			maxPriorityFeePerGas = await web3.utils.toWei('2', 'gwei'); // Default to 2 gwei, you can adjust this
-
-			// Calculate the maxFeePerGas (base fee + max priority fee)
-			maxFeePerGas = await baseFeePerGas + parseInt(maxPriorityFeePerGas);
-		}
 
 
 		function getAccountOwners() {
@@ -1172,70 +1276,70 @@
 			return owners;
 		}
 
-		// Event listener for the compile button
-		document.getElementById('compile').addEventListener('click', async () => {
-			try {
-				// Request the user's Ethereum accounts
-				const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+		// // Event listener for the compile button
+		// document.getElementById('compile').addEventListener('click', async () => {
+		// 	try {
+		// 		// Request the user's Ethereum accounts
+		// 		const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
 
-				if (accounts.length === 0) {
-					console.error('No accounts found. Please connect your Ethereum wallet.');
-					return;
-				}
+		// 		if (accounts.length === 0) {
+		// 			console.error('No accounts found. Please connect your Ethereum wallet.');
+		// 			return;
+		// 		}
 
-				const selectAddress = accounts[0]; // Use the first account in the list
-				const owners = getAccountOwners(); // Extract owners from #reviewContainer
-				const required = parseInt(selectCount);
-				const pin = parseInt(selectPin);
+		// 		const selectAddress = accounts[0]; // Use the first account in the list
+		// 		const owners = getAccountOwners(); // Extract owners from #reviewContainer
+		// 		const required = parseInt(selectCount);
+		// 		const pin = parseInt(selectPin);
 
-				// Initialize the contract
-				const contract = new web3.eth.Contract(contractABI, contractAddress);
+		// 		// Initialize the contract
+		// 		const contract = new web3.eth.Contract(contractABI, contractAddress);
 
-				// Prepare the transaction data
-				const data = contract.methods.newMSA(owners, required, pin).encodeABI();
+		// 		// Prepare the transaction data
+		// 		const data = contract.methods.newMSA(owners, required, pin).encodeABI();
 
-				// Send the transaction
-				const txParams = {
-					to: contractAddress,
-					from: selectAddress,
-					data: data,
-					gasLimit: '3000000', // Adjust the gas limit as necessary
-					value: web3.utils.toWei('1', 'ether'), // Replace '1' with the actual ether value to send
-					maxFeePerGas: web3.utils.toHex(web3.utils.toWei('3000', 'gwei')),
-					maxPriorityFeePerGas: web3.utils.toHex(web3.utils.toWei('100', 'gwei'))
-				};
+		// 		// Send the transaction
+		// 		const txParams = {
+		// 			to: contractAddress,
+		// 			from: selectAddress,
+		// 			data: data,
+		// 			gasLimit: '3000000', // Adjust the gas limit as necessary
+		// 			value: web3.utils.toWei('1', 'ether'), // Replace '1' with the actual ether value to send
+		// 			maxFeePerGas: web3.utils.toHex(web3.utils.toWei('3000', 'gwei')),
+		// 			maxPriorityFeePerGas: web3.utils.toHex(web3.utils.toWei('100', 'gwei'))
+		// 		};
 
-				const txHash = await window.ethereum.request({
-					method: 'eth_sendTransaction',
-					params: [txParams],
-				});
+		// 		const txHash = await window.ethereum.request({
+		// 			method: 'eth_sendTransaction',
+		// 			params: [txParams],
+		// 		});
 
-				console.log('Transaction sent, waiting for confirmation...', txHash);
+		// 		console.log('Transaction sent, waiting for confirmation...', txHash);
 
-				// Wait for the transaction to be mined
-				const receipt = await web3.eth.getTransactionReceipt(txHash);
+		// 		// Wait for the transaction to be mined
+		// 		const receipt = await web3.eth.getTransactionReceipt(txHash);
 
-				if (receipt && receipt.status) {
-					console.log('Transaction confirmed, checking logs for the new contract address...');
+		// 		if (receipt && receipt.status) {
+		// 			console.log('Transaction confirmed, checking logs for the new contract address...');
 
-					// Decode the logs to find the NewMSACreated event
-					const newMSAEvent = receipt.logs.find(log => {
-						return log.topics[0] === web3.utils.sha3('NewMSACreated(address)');
-					});
+		// 			// Decode the logs to find the NewMSACreated event
+		// 			const newMSAEvent = receipt.logs.find(log => {
+		// 				return log.topics[0] === web3.utils.sha3('NewMSACreated(address)');
+		// 			});
 
-					if (newMSAEvent) {
-						const newContractAddress = web3.eth.abi.decodeParameters(['address'], newMSAEvent.data)[0];
-						console.log('New contract created at address:', newContractAddress);
-					} else {
-						console.error('No NewMSACreated event found in the logs.');
-					}
-				} else {
-					console.error('Transaction failed.');
-				}
-			} catch (error) {
-				console.error('Transaction failed:', error);
-			}
-		});
+		// 			if (newMSAEvent) {
+		// 				const newContractAddress = web3.eth.abi.decodeParameters(['address'], newMSAEvent.data)[0];
+		// 				console.log('New contract created at address:', newContractAddress);
+		// 			} else {
+		// 				console.error('No NewMSACreated event found in the logs.');
+		// 			}
+		// 		} else {
+		// 			console.error('Transaction failed.');
+		// 		}
+		// 	} catch (error) {
+		// 		console.error('Transaction failed:', error);
+		// 	}
+		// });
 
 		// Function to start processing animation
 		function startProcessingAnimation() {
@@ -1263,103 +1367,6 @@
 
 
 
-		// Function to connect to the user's Ethereum wallet
-		async function connectMetaMask() {
-			if (typeof window.ethereum !== 'undefined') {
-				try {
-					wallet = await MMSDK.getProvider();
-
-					wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-						const accounts = response;
-						console.log(`User's address is ${accounts[0]}`);
-						selectAddress = this.selectAddress
-
-						// Optionally, have the default account set for web3.js
-						web3.eth.defaultAccount = this.selectAddress
-					})
-
-
-
-
-				}
-				catch (error) {
-					console.error('User denied account access or an error occurred:', error);
-
-				}
-
-			}
-			else {
-				alert('This browser is not web3 enabled, please use a different browser.')
-
-			}
-		}
-
-		// Function to connect to the user's Ethereum wallet
-		async function connectOKXWallet() {
-			try {
-
-				wallet = okxwallet;
-				wallet.request({ method: 'eth_requestAccounts' });
-
-
-
-			}
-			catch (error) {
-				window.open('https://www.okx.com/download');
-
-			}
-
-		}
-		// Function to connect to the user's Ethereum wallet
-		async function connectCoinbase() {
-
-			try {
-				wallet = await coinbaseWallet.walletExtension;
-				wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-					console.log(response)
-					const accounts = response;
-					console.log(`User's address is ${accounts[0]}`);
-
-					// Optionally, have the default account set for web3.js
-					web3.eth.defaultAccount = accounts[0];
-				})
-
-				console.log(wallet)
-
-
-			} catch (error) {
-				alert('User denied account access or an error occurred, please refresh browser and try again.');
-			}
-
-		}
-
-		async function connectPhantomWallet() {
-			if (typeof window.phantom !== 'undefined') {
-				try {
-					console.log('helllllo')
-					wallet = await phantom.ethereum;
-					wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-						selectAddress = wallet.selectedAddress;
-						// Optionally, have the default account set for web3.js
-						web3.eth.defaultAccount = wallet.selectedAddress;
-					});
-
-
-				}
-				catch (error) {
-					alert('User denied account access or an error occurred, please refresh browser and try again.');
-
-				}
-
-			}
-			else {
-				window.open('https://phantom.app/', '_blank');
-
-			}
-
-
-
-		}
 
 
 
@@ -1369,7 +1376,10 @@
 
 
 
-	</script>
+
+	</script>	
+	<script src="assets/js/custom/general/wizard.js"></script>
+	<script src="assets/js/custom/apps/chat/chat.js"></script>
 	<!--end::Page Custom Javascript-->
 	<!--end::Javascript-->
 </body>

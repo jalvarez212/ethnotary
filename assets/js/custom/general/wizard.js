@@ -1,6 +1,153 @@
 "use strict";
 let fv;
 let currentValue = 0;
+let gas;
+let gasLimit;
+let gasPrice;
+let maxFeePerGas;
+let maxPriorityFeePerGas;
+
+const factoryAddress = '0xae7DBD688062E6c5161402860175fB2ba4B0Bd6F'
+
+const factoryABI = [
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "newFee",
+                "type": "uint256"
+            }
+        ],
+        "name": "changeFee",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address[]",
+                "name": "_owners",
+                "type": "address[]"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_required",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint16",
+                "name": "_pin",
+                "type": "uint16"
+            }
+        ],
+        "name": "newMSA",
+        "outputs": [
+            {
+                "internalType": "contract MultiSigAccount",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [],
+        "name": "withdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
+    }
+]
+
+// async function getGas(method) {
+
+//     gas = await method.estimateGas({ from: selectAddress });
+
+//     let feeHistory = await web3.eth.getFeeHistory(1, 'latest', [10, 90]);
+//     // Get the gas price
+//     let baseFeePerGas = await parseInt(feeHistory.baseFeePerGas[0]);
+//     maxPriorityFeePerGas = await web3.utils.toWei('2', 'gwei'); // Default to 2 gwei, you can adjust this
+
+//     // Calculate the maxFeePerGas (base fee + max priority fee)
+//     maxFeePerGas = await baseFeePerGas + parseInt(maxPriorityFeePerGas);
+// }
+
+async function getGas(dat, senderAddress, val) {
+    // gas = await factoryContractMethod.estimateGas({
+    //     from: selectAddress,
+    //     value: value
+    // });
+
+    gasLimit = await web3.eth.estimateGas({
+        from: senderAddress,    // Address sending the transaction
+        to: factoryAddress,    // Contract or recipient address
+        data: dat,             // The encoded ABI data for contract interaction (if any)
+        value: val // The amount of ETH being sent (if any)
+    });
+
+    console.log('Gas Limit: ' + gasLimit)
+
+    // Get current gas price
+    gasPrice = await web3.eth.getGasPrice();
+
+    // Calculate maxFeePerGas and maxPriorityFeePerGas (for EIP-1559 transactions)
+    maxPriorityFeePerGas = web3.utils.toWei('2', 'gwei'); // Adjust as needed
+    maxFeePerGas = BigInt(gasPrice) + BigInt(maxPriorityFeePerGas);
+
+    console.log('gas limit: ' + gasLimit)
+    console.log('gasprice: ' + gasPrice)
+    console.log('maxfeepergas: ' + maxFeePerGas)
+    console.log('maxpriorityfeepergas: ' + maxPriorityFeePerGas)
+
+
+}
+
+
+// Initialize the contract
+const factoryContract = new web3.eth.Contract(factoryABI, factoryAddress);
+
+// Prepare the transaction data
+function getAccountOwners() {
+    const owners = [];
+    const ownerElements = document.querySelectorAll('#reviewContainer .form-text');
+
+    ownerElements.forEach((element) => {
+        owners.push(element.textContent.trim());
+    });
+
+    return owners;
+}
+
+async function waitForReceipt(txHash) {
+    return new Promise((resolve, reject) => {
+        const interval = setInterval(async () => {
+            try {
+                const receipt = await web3.eth.getTransactionReceipt(txHash);
+                if (receipt) {
+                    console.log(receipt)
+                    clearInterval(interval); // Stop polling when the receipt is found
+                    resolve(receipt); // Resolve with the receipt
+                }
+            } catch (error) {
+                // Instead of rejecting immediately, let's retry
+                console.log('Error fetching receipt, retrying in 2 seconds:', error);
+            }
+        }, 2000); // Poll every 2 seconds
+    });
+}
+
+
 var KTWizardPage = (function () {
     var t,
         e,
@@ -36,22 +183,99 @@ var KTWizardPage = (function () {
                     //console.log("stepper.previous"),
                     t.goPrevious(), KTUtil.scrollTop();
                 }),
-                o.addEventListener("click", function (t) {
-                    t.preventDefault(),
-                        Swal.fire({
-                            text: "All is good! Please confirm the form submission.",
-                            icon: "success",
-                            showCancelButton: !0,
-                            buttonsStyling: !1,
-                            confirmButtonText: "Yes, submit!",
-                            cancelButtonText: "No, cancel",
-                            customClass: { confirmButton: "btn fw-bold btn-primary sendtxn", cancelButton: "btn fw-bold btn-active-light-primary" },
-                        }).then(function (t) {
-                            t.value
-                                ? e.submit()
-                                : "cancel" === t.dismiss &&
-                                Swal.fire({ text: "Your form has not been submitted!.", icon: "error", buttonsStyling: !1, confirmButtonText: "Ok, got it!", customClass: { confirmButton: "btn fw-bold btn-primary" } });
-                        });
+                o.addEventListener("click", async function (t) {
+                    t.preventDefault();
+
+
+                    // Request accounts
+                    const accounts = await wallet.request({ method: 'eth_requestAccounts' });
+                    if (!accounts || accounts.length === 0) {
+                        console.error('No accounts found. Please connect your Ethereum wallet.');
+                        return; // Exit if no accounts are found
+                    }
+
+                    const selectAddress = accounts[0];
+                    console.log(selectAddress) // Use the first account in the list
+                    let owners = getAccountOwners(); // Extract owners from #reviewContainer
+                    console.log(owners)
+                    let required = parseInt(selectCount);
+                    console.log(required)
+                    let pin = parseInt(selectPin);
+                    console.log(pin)
+
+                    let data = factoryContract.methods.newMSA(owners, '1', '1').encodeABI();
+                    console.log(data);
+
+   
+
+                    // Get gas-related values
+                    // await getGas(data, selectAddress, web3.utils.toWei('0.02', 'ether'));
+
+                    // Construct the transaction parameters
+                    const txParams = {
+                        to: factoryAddress,
+                        from: selectAddress,
+                        data: data,
+                        value: '10000000000000', // Sends 0.02 Ether
+                        gasLimit: '3000000',
+                        // maxFeePerGas: web3.utils.toHex(maxFeePerGas),
+                        // maxPriorityFeePerGas: web3.utils.toHex(maxPriorityFeePerGas),
+                    };
+                    console.log(txParams)
+
+
+
+                    //Send the transaction
+                    wallet.request({
+                        method: 'eth_sendTransaction',
+                        params: [txParams],
+                    })
+                    .then(async (txHash) => {
+                        console.log('Transaction Hash:', txHash);
+                        startProcessingAnimation();
+                        
+                        // Wait for the transaction to be mined and get the receipt
+                        let receipt = await waitForReceipt(txHash)
+                        
+                        // Get the new contract address from the receipt
+                        let newContractAddress = receipt.contractAddress;
+                        console.log('New Contract Address:', newContractAddress);
+                        
+                        // Update the confirm button with the new contract address in the href
+                       
+                        setTimeout(showSuccessAnimation, 6000);
+                        setTimeout(hideAnimations, 8700);
+
+                        setTimeout(function () {
+                            Swal.fire({
+                                text: "Your contract has been published to the blockchain!",
+                                icon: "success",
+                                showCancelButton: !0,
+                                buttonsStyling: !1,
+                                confirmButtonText: `<a href="https://etherscan.io/address/${newContractAddress}" target="_blank">Go to Contract Dashboard</a>`,
+                                cancelButtonText: "Get Support",
+                                customClass: { 
+                                    confirmButton: "btn fw-bold btn-primary sendtxn", 
+                                    cancelButton: "btn fw-bold btn-active-light-primary" 
+                                },
+                            }).then(function (t) {
+                                t.value
+                                    ? e.submit()
+                                    : Swal.fire({
+                                        text: "Your form has not been submitted!.",
+                                        icon: "error",
+                                        buttonsStyling: !1,
+                                        confirmButtonText: "Ok, got it!",
+                                        customClass: { confirmButton: "btn fw-bold btn-primary" }
+                                    });
+                            });
+                        }, 8900);
+                    
+                    })
+                    .catch((error) => {
+                        console.error('Transaction failed:', error);
+                        hideAnimations(); // Hide animations immediately if there's an error
+                    });
                 }),
                 i.push(
                     FormValidation.formValidation(e, {
@@ -78,12 +302,13 @@ var KTWizardPage = (function () {
                 i.push(
                     FormValidation.formValidation(e, {
                         fields: {
-                            'owneraddress[]': { validators: { notEmpty: { message: "Please enter a owners" } } }},
+                            'owneraddress[]': { validators: { notEmpty: { message: "Please enter a owners" } } }
+                        },
                         plugins: { trigger: new FormValidation.plugins.Trigger(), bootstrap: new FormValidation.plugins.Bootstrap5({ eleValidClass: "", rowSelector: ".fv-row" }) },
                     })
                 ),
 
-            fv = i;
+                fv = i;
 
         },
     };
@@ -99,12 +324,12 @@ function clearArray(arr) {
 
 
 let radio1 = document.getElementById('kt_radio_buttons_1_option_1');
-radio1.addEventListener('click', function(){
+radio1.addEventListener('click', function () {
 
     let contractType = document.getElementById('review_type')
     contractType.innerText = this.value;
 
-})  
+})
 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -116,43 +341,43 @@ document.addEventListener('DOMContentLoaded', function () {
         // Clear existing fields every time the input value changes
         const numberOfFields = parseInt(initialField.value, 10) || null;
 
-        console.log(`numberOfFields: `+numberOfFields+` currentValue: `+currentValue);
-       
+        console.log(`numberOfFields: ` + numberOfFields + ` currentValue: ` + currentValue);
 
 
 
-        if(currentValue === numberOfFields ){
+
+        if (currentValue === numberOfFields) {
 
             let reviewContainer = document.getElementById('reviewContainer');
             reviewContainer.innerHTML = '';
 
             let companyname = document.getElementById('companyname');
             let review_name = document.getElementById('review_name').innerText;
-            
+
             let Pin = document.getElementById('Pin');
             let review_pin = document.getElementById('review_pin').innerText;
-            
+
             let Owner = document.getElementById('initialField');
             let review_owner = document.getElementById('review_owners').innerText;
-            
+
             let Requirement = document.getElementById('Requirement');
             let review_requirement = document.getElementById('review_requirement').innerText;
 
 
-            for (let i = 0; i < numberOfFields; i++){
+            for (let i = 0; i < numberOfFields; i++) {
 
                 const reviewInput = document.createElement('div');
                 reviewInput.classList.add("fv-row");
                 reviewInput.classList.add("mb-10");
-                let f = `owner_`+i;
+                let f = `owner_` + i;
                 let put = document.getElementById(f);
-            
+
                 reviewInput.innerHTML = `
                         <label class="fs-6 form-label fw-bolder text-dark form-label">Account Owner: </label>
             
                         <span class="form-text ">${put.value}</span>
                 `
-            
+
                 reviewContainer.appendChild(reviewInput);
 
 
@@ -165,7 +390,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(fv);
             clearArray(fv[3].elements['owneraddress[]']);
             fv[3].results.clear();
-    
+
 
             additionalFieldsContainer.innerHTML = `
             <div class="pb-10 pb-lg-15">
@@ -178,9 +403,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             for (let i = 0; i < numberOfFields; i++) {
-                console.log('i: '+i)
-                console.log('numberOFFIelds: '+numberOfFields)
-                let f = `owner_`+i;
+                console.log('i: ' + i)
+                console.log('numberOFFIelds: ' + numberOfFields)
+                let f = `owner_` + i;
                 let q = `owneraddress[${i}]`
 
 
