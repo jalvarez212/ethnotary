@@ -1,16 +1,11 @@
 # 🐘 ethnotary 🐘
 
-ethnotary is a cryptographic utility tool that allows blockchain based individuals and communities to organize and conduct its operations. We accomplish this through our frontend interface that allows users the ability to read, write to, and deploy new smart contract based applications. 
+ethnotary is a smart account platform. Currently built on the Ethereum network with support for various layer 2 networks like Soneium, Polygon, BNB Chain, and Base. 
 
-These applications help users secure funds or treasuries through multisignature logic, manage commerce on blockchains through ERC 721 & 1155 standards, and help decentralized autonomous organizations facilitate its operations. 
+This isn’t intended to be a speculative asset or token. But rather a service for users of blockchains.
 
-We take accepted standards from ethereum and other blockchains communities to provide easy to use interfaces where users can organize and customize these standards to their needs and publish on chain! We strive to provide this utility in a sufficiently distributed architecture that allows for its robust & reliable operation on the world wide web.
+These smart accounts help users secure funds or treasuries for their onchain activities. We strive to provide this utility in a sufficiently distributed architecture that allows for its robust & reliable operation on the world wide web.
 
-This isn’t intended to be a speculative asset or token. But rather a service for users of cryptographic technologies.
-
-As such, we charge a fixed one time fee for the use of the ethnotary tools. After which, the ethnotary tools are yours to keep and can be accessed by users at any time either locally on your machine or through the web. This fee covers the maintenance, upkeep, and iterative improvements for our community of users. 
-
-More to come soon!
 
 
 # Installation
