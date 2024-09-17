@@ -1172,9 +1172,9 @@
 							</div>
 							<!--end::Info-->
 							<!--begin::Nav-->
-							<script> let qw = "./index1.html?" + localStorage.contract; </script>
+							<script> let qw = "./index.html?" + localStorage.contract; </script>
 							<div class="d-flex align-items-center flex-nowrap text-nowrap overflow-auto py-1">
-								<a href="./index1.html" id="homeLink" class="btn btn-active-accent fw-bolder">Home</a>
+								<a href="./index.html" id="homeLink" class="btn btn-active-accent fw-bolder">Home</a>
 								<a href="./views/wizard.html" class="btn btn-active-accent fw-bolder ms-3">Wizard</a>
 								<a href="./views/accountsettings.html"
 									class="btn btn-active-accent fw-bolder ms-3">Settings</a>
@@ -1531,7 +1531,7 @@
 
 
 	// Update the link's href with the new query string
-	homeLink.href = "./index1.html?" + user;
+	homeLink.href = "./index.html?" + user;
 	let c = document.getElementById('confirm');
 	c.addEventListener('click', function () {
 		// Step 1: First, get the first user's own address
@@ -1678,10 +1678,10 @@
 	var homeLink = document.getElementById('homeLink'); // Get the link element
 
 	let logo = document.querySelectorAll('[id="logo"]').forEach(
-		element => {element.href = "./index1.html?" + localStorage.contract;} 
+		element => {element.href = "./index.html?" + localStorage.contract;} 
 	);
 	// Update the link's href with the new query string
-	homeLink.href = "./index1.html?" + encodeURIComponent(user);
+	homeLink.href = "./index.html?" + encodeURIComponent(user);
 
 	async function getAllTxns() {
 			let count = await contract.methods.transactionCount().call().then(function (result) {

@@ -1209,7 +1209,7 @@
 		var homeLink = document.getElementById('homeLink'); // Get the link element
 
 		// Update the link's href with the new query string
-		homeLink.href = "./index1.html?" + user;
+		homeLink.href = "./index.html?" + user;
 
 
 		const ethers = window.ethers;
@@ -1600,7 +1600,7 @@
 
 		window.onload = processNotifications(getAllTxns(), document.getElementById('notificationsTab'))
 		let logo = document.querySelectorAll('[id="logo"]').forEach(
-		element => {element.href = "./index1.html?" + localStorage.contract;} 
+		element => {element.href = "./index.html?" + localStorage.contract;} 
 	);
 
 	</script>
