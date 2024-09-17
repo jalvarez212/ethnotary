@@ -4,7 +4,13 @@
 
 This isn’t intended to be a speculative asset or token, but rather a service for blockchain users. 
 
-ethnotary helps users secure funds or treasuries for their onchain activities. We aim to provide this utility in a sufficiently distributed architecture that ensures robust and reliable operation across the web.
+ethnotary helps users secure funds or treasuries for their onchain activities. 
+
+We take accepted standards from ethereum and other blockchains communities to provide easy to use interfaces where users can organize and customize accounts to their needs and publish on chain! 
+
+We aim to provide this utility in a sufficiently distributed architecture that ensures robust and reliable operation across the web.
+
+As such, we suggest a one-time donation for the use of the ethnotary tools. Once contributed, the ethnotary tools are yours to keep and can be accessed by users at any time, either locally on your machine or through the web. This donation helps support the maintenance, upkeep, and continuous improvements for our community of users.
 
 ---
 
