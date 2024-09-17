@@ -11,7 +11,7 @@ These smart accounts help users secure funds or treasuries for their onchain act
 # Installation
 This guide will walk you through the steps required to run the decentralized application (dApp) on your local machine or access it via the hosted version at ethnotary.io.
 
-##Prerequisites
+## Prerequisites
 
 Before getting started, ensure you have the following:
 
@@ -37,7 +37,7 @@ Make sure your Web3-enabled browser is active and connected to the appropriate E
 **Option 2: Running the dApp Locally**
 If you prefer to run the dApp on your local machine, follow the steps below:
 
-1. Clone the Repository**bold**
+1. Clone the Repository
 
 First, clone the repository to your local machine using Git:
 
@@ -69,7 +69,7 @@ Once the server is running, open your Web3-enabled browser and navigate to the f
 Replace YOUR_ETH_ADDRESS in the URL with your Ethereum account address.
 
 
-##Create a New Account
+## Create a New Account
 
 If you do not have an Ethereum account, you can create one using the local wizard page by navigating to:
 
