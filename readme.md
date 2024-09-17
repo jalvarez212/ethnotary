@@ -68,9 +68,9 @@ This will start an HTTP server on port 8000 and serve files from the current dir
 
 Once the server is running, open your Web3-enabled browser and navigate to the following URL:
 
-```http://localhost:8000/index1.html?YOUR_ETH_ADDRESS```
+```http://localhost:8000/index1.html?YOUR_ACCOUNT_ADDRESS```
 
-Replace YOUR_ETH_ADDRESS in the URL with your Ethereum account address.
+Replace YOUR_ETH_ADDRESS in the URL with your account address.
 
 
 ## Create a New Account
