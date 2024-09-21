@@ -64,6 +64,8 @@
 		darkMode: false
 	})
 	let wallet;
+	let selectAddress;
+
 
 			// Function to connect to the user's Ethereum wallet
 			async function connectMetaMask() {
@@ -96,22 +98,28 @@
 			}
 		}
 
-		// Function to connect to the user's Ethereum wallet
 		async function connectOKXWallet() {
-			try {
+		try {
 
-				wallet = okxwallet;
-				wallet.request({ method: 'eth_requestAccounts' });
+			wallet = okxwallet;
+			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+				selectAddress = okxwallet.selectedAddress;
+				console.log(selectAddress)
+				// Optionally, have the default account set for web3.js
+				web3.eth.defaultAccount = okxwallet.selectedAddress;
+				localStorage.setItem('connectedWallet', selectAddress);
+
+			});
 
 
-
-			}
-			catch (error) {
-				window.open('https://www.okx.com/download');
-
-			}
 
 		}
+		catch (error) {
+			window.open('https://www.okx.com/download');
+
+		}
+
+	}
 		// Function to connect to the user's Ethereum wallet
 		async function connectCoinbase() {
 

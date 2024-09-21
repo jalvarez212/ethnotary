@@ -7,7 +7,11 @@ let gasPrice;
 let maxFeePerGas;
 let maxPriorityFeePerGas;
 
-const factoryAddress = '0xae7DBD688062E6c5161402860175fB2ba4B0Bd6F'
+
+//minato factory
+//const factoryAddress = '0xae7DBD688062E6c5161402860175fB2ba4B0Bd6F'
+
+const factoryAddress = '0x5a57e6f432c6bd3a50506edc79e839dd53f6600e';
 
 const factoryABI = [
     {
@@ -216,8 +220,12 @@ var KTWizardPage = (function () {
                         to: factoryAddress,
                         from: selectAddress,
                         data: data,
-                        value: '10000000000000', // Sends 0.02 Ether
-                        gasLimit: '3000000',
+                        value: '0x470DE4DF820000', // Sends 0.02 Ether
+                        gasLimit: "0x100000",
+                        gas: "0x5208",
+                        //gasPrice: "0x09184e72a000" 
+
+
                         // maxFeePerGas: web3.utils.toHex(maxFeePerGas),
                         // maxPriorityFeePerGas: web3.utils.toHex(maxPriorityFeePerGas),
                     };

@@ -16,7 +16,7 @@ As such, we suggest a one-time donation for the use of the ethnotary tools. Once
 
 ## Installation
 
-This guide will walk you through the steps required to run the decentralized application (dApp) on your local machine or access it via the hosted version at [ethnotary.io](http://ethnotary.io).
+This guide will walk you through the steps required to run this decentralized application (dApp) on your local machine or access it via the hosted version at [ethnotary.io](http://ethnotary.io).
 
 ### Prerequisites
 
@@ -35,7 +35,7 @@ You can access the dApp directly by navigating to:
 
 ```http://ethnotary.io/index1.html?YOUR_ACCOUNT_ADDRESS```
 
-Replace `YOUR_ACCOUNT_ADDRESS` in the URL with your Ethereum account address.
+Replace `YOUR_ACCOUNT_ADDRESS` in the URL with your account address.
 
 If you do not have an Ethereum account, you can create a new account either:
 
@@ -81,7 +81,7 @@ Replace YOUR_ETH_ADDRESS in the URL with your account address.
 
 ## Create a New Account
 
-If you do not have an Ethereum account, you can create one using the local wizard page by navigating to:
+If you do not have an account, you can create one using the local wizard page by navigating to:
 
 
 ```http://localhost:8000/wizard.html```
