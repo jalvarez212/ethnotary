@@ -33,7 +33,7 @@ Before getting started, ensure you have the following:
 
 You can access the dApp directly by navigating to:
 
-```http://ethnotary.io/index1.html?YOUR_ACCOUNT_ADDRESS```
+```http://ethnotary.io?YOUR_ACCOUNT_ADDRESS```
 
 Replace `YOUR_ACCOUNT_ADDRESS` in the URL with your account address.
 
@@ -74,7 +74,7 @@ This will start an HTTP server on port 8000 and serve files from the current dir
 
 Once the server is running, open your Web3-enabled browser and navigate to the following URL:
 
-```http://localhost:8000/index1.html?YOUR_ACCOUNT_ADDRESS```
+```http://localhost:8000/?YOUR_ACCOUNT_ADDRESS```
 
 Replace YOUR_ETH_ADDRESS in the URL with your account address.
 
