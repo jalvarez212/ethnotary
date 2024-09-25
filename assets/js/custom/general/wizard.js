@@ -215,13 +215,24 @@ var KTWizardPage = (function () {
                     // Get gas-related values
                     // await getGas(data, selectAddress, web3.utils.toWei('0.02', 'ether'));
 
+                    gasLimit = await web3.eth.estimateGas({
+                        from: selectAddress,    // Address sending the transaction
+                        to: factoryAddress,    // Contract or recipient address
+                        data: data,             // The encoded ABI data for contract interaction (if any)
+                        value: '0x470DE4DF820000' // The amount of ETH being sent (if any)
+                    });
+
+                    console.log('gl: '+ gasLimit)
+                
+                    
+
                     // Construct the transaction parameters
                     const txParams = {
                         to: factoryAddress,
                         from: selectAddress,
                         data: data,
                         value: '0x470DE4DF820000', // Sends 0.02 Ether
-                        gasLimit: "0x100000",
+                        gasLimit: gasLimit,
                         gas: "0x5208",
                         //gasPrice: "0x09184e72a000" 
 
