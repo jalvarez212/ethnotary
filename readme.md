@@ -15,7 +15,7 @@ As such, we suggest a one-time donation for the use of the ethnotary tools. Once
 
 ## Support today for 
 
-<img align="left" width="20" height="20" src="https://commons.wikimedia.org/wiki/File:Eth-diamond-rainbow.png#/media/File:Eth-diamond-rainbow.png" alt="Mainnet">Mainnet
+<img align="left" width="20" height="20" src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=035" alt="Mainnet">Mainnet
 
 <img align="left" width="20" height="20" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Edge_Logo_2019.svg/200px-Edge_Logo_2019.svg.png" alt="Soneium">Soneium
 
