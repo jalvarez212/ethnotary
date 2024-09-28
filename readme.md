@@ -60,27 +60,27 @@ If you prefer to run ethnotary on your local machine, follow the steps below:
 
 1. **Clone the Repository**
 
-First, clone the repository to your local machine using Git.
+   First, clone the repository to your local machine using Git.
 
-2. Navigate to the ethnotary directory & start a local HTTP server
+2. **Navigate to the ethnotary directory & start a local HTTP server**
 
-To run ethnotary on your local machine, you need to start a simple HTTP server. Run the following command in the terminal:
+   To run ethnotary on your local machine, you need to start a simple HTTP server. Run the following command in the terminal:
 
-```python -m http.server 8000```
+   ```python -m http.server 8000```
 
-3. Open the dApp in a Web3 Enabled Browser
+3. **Open the dApp in a Web3 Enabled Browser**
 
-Once the server is running, open your Web3-enabled browser and navigate to the following URL:
+   Once the server is running, open your Web3-enabled browser and navigate to the following URL:
 
-```http://localhost:8000/?YOUR_ACCOUNT_ADDRESS```
+   ```http://localhost:8000/?YOUR_ACCOUNT_ADDRESS```
 
-Replace YOUR_ETH_ADDRESS in the URL with your account address.
+   Replace YOUR_ETH_ADDRESS in the URL with your account address.
 
-4. If you do not have an account address, you can create one using the wizard page opening your web3 browser and navigating to:
+4. **Creating an account**
 
-http://localhost:8000/wizard.html
+   If you do not have an contract address, you can create one using the wizard page opening your web3 browser and navigating to: http://localhost:8000/wizard.html
 
-Make sure your Web3 enabled browser is connected to the appropriate network.
+   Make sure your Web3 enabled browser is connected to the appropriate network.
 
 
 
