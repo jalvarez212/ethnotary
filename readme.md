@@ -16,7 +16,7 @@ As such, we suggest a one-time donation for the use of the ethnotary tools. This
 - Decentralized architecture, our interface does not collect any user data. All user data is stored onchain!
 
 
-## Support today for 
+## Support for 
 
 <img align="left" width="20" height="20" src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=035" alt="Mainnet">Mainnet
 
