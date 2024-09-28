@@ -215,11 +215,26 @@ var KTWizardPage = (function () {
                     // Get gas-related values
                     // await getGas(data, selectAddress, web3.utils.toWei('0.02', 'ether'));
 
+                    let latestBlock = await web3.eth.getBlock('latest');
+
+                    
+
+                    let maxPriorityFeePerGas = web3.utils.toWei('2', 'gwei'); // Example: 2 Gwei tip
+
+                    let baseFeePerGas = latestBlock.baseFeePerGas;
+
+
+                    let maxFeePerGas = web3.utils.toNumber(baseFeePerGas) + web3.utils.toNumber(maxPriorityFeePerGas);
+                    let buffer = web3.utils.toNumber(1.2) 
+
+                    
+
+
                     gasLimit = await web3.eth.estimateGas({
                         from: selectAddress,    // Address sending the transaction
                         to: factoryAddress,    // Contract or recipient address
                         data: data,             // The encoded ABI data for contract interaction (if any)
-                        value: '0x470DE4DF820000' // The amount of ETH being sent (if any)
+                        value: '0x470DE4DF820000' 
                     });
 
                     console.log('gl: '+ gasLimit)
@@ -232,9 +247,10 @@ var KTWizardPage = (function () {
                         from: selectAddress,
                         data: data,
                         value: '0x470DE4DF820000', // Sends 0.02 Ether
-                        gasLimit: gasLimit,
-                        gas: "0x5208",
-                        //gasPrice: "0x09184e72a000" 
+                        gasLimit: web3.utils.toHex(gasLimit * buffer),
+                        maxFeePerGas: web3.utils.toHex(maxFeePerGas),
+                        maxPriorityFeePerGas: web3.utils.toHex(maxPriorityFeePerGas)
+
 
 
                         // maxFeePerGas: web3.utils.toHex(maxFeePerGas),

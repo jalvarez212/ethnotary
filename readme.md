@@ -12,6 +12,24 @@ We aim to provide this utility in a sufficiently distributed architecture that e
 
 As such, we suggest a one-time donation for the use of the ethnotary tools. Once contributed, the ethnotary tools are yours to keep and can be accessed by users at any time, either locally on your machine or through the web. This donation helps support the maintenance, upkeep, and continuous improvements for our community of users.
 
+
+## Support today for 
+
+<img align="left" width="20" height="20" src="https://en.wikipedia.org/wiki/Ethereum#/media/File:Eth-diamond-rainbow.png" alt="Mainnet">
+Mainnet
+
+<img align="left" width="20" height="20" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Edge_Logo_2019.svg/200px-Edge_Logo_2019.svg.png" alt="Soneium">
+Soneium
+
+<img align="left" width="20" height="20" src="https://commons.wikimedia.org/wiki/File:Polygon_blockchain_logo.png" alt="Polygon">
+Polygon
+
+<img align="left" width="20" height="20" src="https://cryptologos.cc/logos/bnb-bnb-logo.svg?v=035" alt="BNB Chain">
+BNB Chain
+
+<img align="left" width="20" height="20" src="https://github.com/base-org/brand-kit/blob/main/logo/in-product/Base_Network_Logo.svg" alt="Base">
+Base
+
 ---
 
 ## Installation
