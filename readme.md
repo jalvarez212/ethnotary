@@ -34,79 +34,53 @@ ethnotary has not been audited by a third party, a security audit is pending. et
 
 ## Installation
 
-This guide will walk you through the steps required to run ethnotary on your local machine.
-
-You can also access the dApp on the web at [ethnotary.io](http://ethnotary.io).
+This guide will walk you through the steps required to run ethnotary on your local machine. You can also access the dApp on the web at [ethnotary.io](http://ethnotary.io).
 
 ### Prerequisites
 
 Before getting started, ensure you have the following:
 
 - **Web3 Enabled Browser**: Use a browser with Web3 capabilities, such as [MetaMask](https://metamask.io/) for Chrome or Firefox.
-- **ethnotary Account Address** If you do not have an account, you can create one online at [wizard page](http://ethnotary.io/wizard.html).
+- **ethnotary Smart Contract Address** If you do not have an contract address, you can create one at [wizard page](https://ethnotary.io/wizard.html).
 - **Python 3.x** (Only if running locally): [Download and install Python](https://www.python.org/downloads/) if it's not already installed.
 
----
 
-### Accessing via the web @  [ethnotary.io](http://ethnotary.io)**
+### Accessing via the web @  [ethnotary.io](http://ethnotary.io)
 
 You can access ethnotary in your web3 enabled browser by navigating to:
 
 ```http://ethnotary.io?YOUR_ACCOUNT_ADDRESS```
 
-Replace `YOUR_ACCOUNT_ADDRESS` in the URL with your account address.
-
-If you do not have an Ethereum account, you can create a new account either:
-
-- By using the [wizard page](http://ethnotary.io/wizard.html) on the hosted site.
+Replace `YOUR_ACCOUNT_ADDRESS` in the URL with your account address. If you do not have an account, you can create one online at [wizard page](http://ethnotary.io/wizard.html). Make sure your Web3-enabled browser that is connected to the appropriate network.
 
 
+#### Running ethnotary locally
 
-
-Make sure your Web3-enabled browser is active and connected to the appropriate Ethereum network.
-
-## Create a New Account
-
-If you do not have an account, you can create one using the local wizard page by navigating to:
-
-
-```http://localhost:8000/wizard.html```
-
-Make sure your Web3 browser (e.g., MetaMask) is properly set up and connected to the appropriate Ethereum network.
-
-#### Running the ethnotary locally**
-
-If you prefer to run the dApp on your local machine, follow the steps below:
+If you prefer to run ethnotary on your local machine, follow the steps below:
 
 1. **Clone the Repository**
 
-   First, clone the repository to your local machine using Git:
+First, clone the repository to your local machine using Git.
 
-   ``` git clone https://github.com/yourusername/your-repo-name.git ```
+2. Navigate to the ethnotary directory & start a local HTTP server
 
-Replace yourusername and your-repo-name with your actual GitHub username and repository name.
-
-2. Navigate to the Project Directory
-
-Change directory to the root of the project folder:
-
-``` cd your-repo-name ```
-
-3. Start a Local HTTP Server
-
-To serve the dApp files on your local machine, you need to start a simple HTTP server. Run the following command in the terminal:
+To run ethnotary on your local machine, you need to start a simple HTTP server. Run the following command in the terminal:
 
 ```python -m http.server 8000```
 
-This will start an HTTP server on port 8000 and serve files from the current directory.
-
-4. Open the dApp in a Web3 Enabled Browser
+3. Open the dApp in a Web3 Enabled Browser
 
 Once the server is running, open your Web3-enabled browser and navigate to the following URL:
 
 ```http://localhost:8000/?YOUR_ACCOUNT_ADDRESS```
 
 Replace YOUR_ETH_ADDRESS in the URL with your account address.
+
+4. If you do not have an account address, you can create one using the wizard page opening your web3 browser and navigating to:
+
+http://localhost:8000/wizard.html
+
+Make sure your Web3 enabled browser is connected to the appropriate network.
 
 
 
