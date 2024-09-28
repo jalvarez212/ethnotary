@@ -43,6 +43,7 @@ You can also access the dApp on the web at [ethnotary.io](http://ethnotary.io).
 Before getting started, ensure you have the following:
 
 - **Web3 Enabled Browser**: Use a browser with Web3 capabilities, such as [MetaMask](https://metamask.io/) for Chrome or Firefox.
+- **ethnotary Account Address** If you do not have an account, you can create one online at [wizard page](http://ethnotary.io/wizard.html).
 - **Python 3.x** (Only if running locally): [Download and install Python](https://www.python.org/downloads/) if it's not already installed.
 
 ---
@@ -57,12 +58,23 @@ Replace `YOUR_ACCOUNT_ADDRESS` in the URL with your account address.
 
 If you do not have an Ethereum account, you can create a new account either:
 
-- By using the [wizard page](http://ethnotary.io/wizard.html) on the hosted site
-- Or, by navigating to the wizard page locally (see instructions below).
+- By using the [wizard page](http://ethnotary.io/wizard.html) on the hosted site.
+
+
+
 
 Make sure your Web3-enabled browser is active and connected to the appropriate Ethereum network.
 
-#### **Option 2: Running the dApp Locally**
+## Create a New Account
+
+If you do not have an account, you can create one using the local wizard page by navigating to:
+
+
+```http://localhost:8000/wizard.html```
+
+Make sure your Web3 browser (e.g., MetaMask) is properly set up and connected to the appropriate Ethereum network.
+
+#### Running the ethnotary locally**
 
 If you prefer to run the dApp on your local machine, follow the steps below:
 
@@ -97,14 +109,6 @@ Once the server is running, open your Web3-enabled browser and navigate to the f
 Replace YOUR_ETH_ADDRESS in the URL with your account address.
 
 
-## Create a New Account
-
-If you do not have an account, you can create one using the local wizard page by navigating to:
-
-
-```http://localhost:8000/wizard.html```
-
-Make sure your Web3 browser (e.g., MetaMask) is properly set up and connected to the appropriate Ethereum network.
 
 **Notes**
 - Ensure your browser has Web3 integration. You can do this by installing a wallet such as MetaMask or by using a browser that natively supports Web3.
