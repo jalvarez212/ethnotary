@@ -32,7 +32,7 @@ As such, we suggest a one-time donation for the use of the ethnotary tools. This
 
 ethnotary has not been audited by a third party, a security audit is pending. ethnotary does not collect any user data or hold any user fund. Please use ethnotary at your own risk as the application is still in active development. 
 
-## Installation
+## Getting Started
 
 This guide will walk you through the steps required to run ethnotary on your local machine. You can also access the dApp on the web at [ethnotary.io](http://ethnotary.io).
 
@@ -54,7 +54,7 @@ You can access ethnotary in your web3 enabled browser by navigating to:
 Replace `YOUR_ACCOUNT_ADDRESS` in the URL with your account address. If you do not have an account, you can create one online at [wizard page](http://ethnotary.io/wizard.html). Make sure your Web3-enabled browser that is connected to the appropriate network.
 
 
-#### Running ethnotary locally
+### Running ethnotary locally
 
 If you prefer to run ethnotary on your local machine, follow the steps below:
 
