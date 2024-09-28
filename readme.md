@@ -1,16 +1,19 @@
-# 🐘 ethnotary 🐘
+# 🐘 ethnotary 
 
-**ethnotary** is a smart account platform currently built on the Ethereum network with support for various layer 2 networks like Soneium, Polygon, BNB Chain, and Base.
+Designed with decentralization in mind for the worldwide community. 🌐
 
-This isn’t intended to be a speculative asset or token, but rather a service for blockchain users. 
+**ethnotary** helps users secure funds or treasuries for their onchain activities. We take accepted standards from ethereum to provide easy to use interfaces where users can customize smart contracts to fit their needs and manage their assests on the blockchain. We do not collect any user data. We provide our interface in a sufficiently distributed architecture that ensures robust and reliable operation gloablly on the world wide web.
 
-ethnotary helps users secure funds or treasuries for their onchain activities. 
+As such, we suggest a one-time donation for the use of the ethnotary tools. This donation helps support the maintenance, upkeep, and continuous improvements for our community of users.
 
-We take accepted standards from ethereum and other blockchains communities to provide easy to use interfaces where users can organize and customize accounts to their needs and publish on chain! 
 
-We aim to provide this utility in a sufficiently distributed architecture that ensures robust and reliable operation across the web.
+## Features
 
-As such, we suggest a one-time donation for the use of the ethnotary tools. Once contributed, the ethnotary tools are yours to keep and can be accessed by users at any time, either locally on your machine or through the web. This donation helps support the maintenance, upkeep, and continuous improvements for our community of users.
+- Double authentication for extra security. Add multiple wallet approvals to send transactions. 
+- Support for various layer 2 networks like Soneium, Polygon, BNB Chain, and Base.
+- Available globally on the world wide web.
+- Easily connect to dApps and interact with other contracts on your network.
+- Decentralized architecture, our interface does not collect any user data. All user data is stored onchain!
 
 
 ## Support today for 
@@ -25,26 +28,28 @@ As such, we suggest a one-time donation for the use of the ethnotary tools. Once
 
 <img align="left" width="20" height="20" src="https://github.com/base-org/brand-kit/blob/main/logo/in-product/Base_Network_Logo.svg" alt="Base">Base
 
----
+## Security
+
+ethnotary has not been audited by a third party, a security audit is pending. ethnotary does not collect any user data or hold any user fund. Please use ethnotary at your own risk as the application is still in active development. 
 
 ## Installation
 
-This guide will walk you through the steps required to run this decentralized application (dApp) on your local machine or access it via the hosted version at [ethnotary.io](http://ethnotary.io).
+This guide will walk you through the steps required to run ethnotary on your local machine.
+
+You can also access the dApp on the web at [ethnotary.io](http://ethnotary.io).
 
 ### Prerequisites
 
 Before getting started, ensure you have the following:
 
-- **Python 3.x** (if running locally): [Download and install Python](https://www.python.org/downloads/) if it's not already installed.
 - **Web3 Enabled Browser**: Use a browser with Web3 capabilities, such as [MetaMask](https://metamask.io/) for Chrome or Firefox.
+- **Python 3.x** (Only if running locally): [Download and install Python](https://www.python.org/downloads/) if it's not already installed.
 
 ---
 
-### Accessing the dApp
+### Accessing via the web @  [ethnotary.io](http://ethnotary.io)**
 
-#### **Option 1: Access via [ethnotary.io](http://ethnotary.io)**
-
-You can access the dApp directly by navigating to:
+You can access ethnotary in your web3 enabled browser by navigating to:
 
 ```http://ethnotary.io?YOUR_ACCOUNT_ADDRESS```
 
