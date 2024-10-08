@@ -568,7 +568,7 @@ contract MultiSigAccount {
 
 contract MSAFactory {
 
-    uint256 notaryFee = 999999999999999;
+    uint notaryFee = 999999999999999;
     address payable private owner;
 
     event NewMSACreated(address msaAddress);
@@ -597,7 +597,7 @@ contract MSAFactory {
     }
 
   
-    function newMSA(address[] calldata _owners, uint _required, uint16 _pin) payable public returns (MultiSigAccount){
+    function newMSA(address[] calldata _owners, uint _required, uint _pin) payable public returns (MultiSigAccount){
         require(msg.value > notaryFee , "Ether value sent is not correct");
 
         

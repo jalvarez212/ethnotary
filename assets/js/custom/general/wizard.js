@@ -247,9 +247,9 @@ var KTWizardPage = (function () {
                         from: selectAddress,
                         data: data,
                         value: '0x470DE4DF820000', // Sends 0.02 Ether
-                        gasLimit: web3.utils.toHex(gasLimit * buffer),
-                        maxFeePerGas: web3.utils.toHex(maxFeePerGas),
-                        maxPriorityFeePerGas: web3.utils.toHex(maxPriorityFeePerGas)
+                       // gasLimit: web3.utils.toHex(web3.utils.toNumber(gasLimit) * buffer),
+                       // maxFeePerGas: web3.utils.toHex(maxFeePerGas),
+                        //maxPriorityFeePerGas: web3.utils.toHex(maxPriorityFeePerGas)
 
 
 
@@ -273,7 +273,7 @@ var KTWizardPage = (function () {
                         let receipt = await waitForReceipt(txHash)
                         
                         // Get the new contract address from the receipt
-                        let newContractAddress = receipt.contractAddress;
+                        let newContractAddress = '0x'+ receipt.logs[0].data.slice(receipt.logs[0].data.length - 40);
                         console.log('New Contract Address:', newContractAddress);
                         
                         // Update the confirm button with the new contract address in the href
@@ -287,7 +287,7 @@ var KTWizardPage = (function () {
                                 icon: "success",
                                 showCancelButton: !0,
                                 buttonsStyling: !1,
-                                confirmButtonText: `<a href="https://etherscan.io/address/${newContractAddress}" target="_blank">Go to Contract Dashboard</a>`,
+                                confirmButtonText: `<a href="${window.location.origin}?${newContractAddress}" target="_blank">Go to Contract Dashboard</a>`,
                                 cancelButtonText: "Get Support",
                                 customClass: { 
                                     confirmButton: "btn fw-bold btn-primary sendtxn", 
