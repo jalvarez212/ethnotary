@@ -279,16 +279,16 @@ var KTWizardPage = (function () {
                         // Update the confirm button with the new contract address in the href
                        
                         setTimeout(showSuccessAnimation, 6000);
-                        setTimeout(hideAnimations, 8700);
+                        setTimeout(hideAnimations, 8600);
 
                         setTimeout(function () {
                             Swal.fire({
-                                text: "Your contract has been published to the blockchain!",
+                                text: `Your contract has been published to the blockchain! This is your account address: ${newContractAddress}`,
                                 icon: "success",
                                 showCancelButton: !0,
                                 buttonsStyling: !1,
                                 confirmButtonText: `<a href="${window.location.origin}?${newContractAddress}" target="_blank">Go to Contract Dashboard</a>`,
-                                cancelButtonText: "Get Support",
+                                cancelButtonText: `<a style="color:grey;" href="https://discord.gg/2AvvmPCa" target="_blank"> Get Support</a>`,
                                 customClass: { 
                                     confirmButton: "btn fw-bold btn-primary sendtxn", 
                                     cancelButton: "btn fw-bold btn-active-light-primary" 
@@ -297,14 +297,14 @@ var KTWizardPage = (function () {
                                 t.value
                                     ? e.submit()
                                     : Swal.fire({
-                                        text: "Your form has not been submitted!.",
+                                        text: "Warning! Make sure to write down your contract address before you navigate away. Reach out to our team for support,",
                                         icon: "error",
                                         buttonsStyling: !1,
                                         confirmButtonText: "Ok, got it!",
                                         customClass: { confirmButton: "btn fw-bold btn-primary" }
                                     });
                             });
-                        }, 8900);
+                        }, 8700);
                     
                     })
                     .catch((error) => {
