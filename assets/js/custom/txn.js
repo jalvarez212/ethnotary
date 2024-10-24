@@ -1,6 +1,6 @@
 
 // Initialize Web3 connection
-const web3 = new Web3('https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
+let web3 = new Web3('https://mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
 
 
 const Alltxns = [ 'Confirmation','Revocation','Submission','Execution','ExecutionFailure','Deposit','OwnerAddition','OwnerRemoval', 'OwnerReplace','RequirementChange'];
@@ -1404,3 +1404,108 @@ document.getElementById("refresh").addEventListener('click', function(){
 	updateNetworkCongestionBar();	
 
 })
+
+// // Define the network chain IDs and corresponding Infura RPC URLs
+// const networks = {
+// 	mainnet: {
+// 	  chainId: '0x1', // Ethereum Mainnet Chain ID
+// 	  rpcUrl: 'https://mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+// 	},
+// 	sepolia: {
+// 	  chainId: '0xaa36a7', // Sepolia Testnet Chain ID
+// 	  rpcUrl: 'https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+// 	},
+// 	polygon: {
+// 	  chainId: '0x89', // Polygon Mainnet Chain ID
+// 	  rpcUrl: 'https://polygon-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+// 	},
+// 	base: {
+// 	  chainId: '0xa86a', // Base Chain ID (example)
+// 	  rpcUrl: 'https://base-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+// 	},
+// 	opbnb: {
+// 	  chainId: '0x56', // opBNB Mainnet Chain ID (example)
+// 	  rpcUrl: 'https://opbnb-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+// 	},
+// 	optimism: {
+// 	  chainId: '0xa', // Optimism Mainnet Chain ID
+// 	  rpcUrl: 'https://optimism-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+// 	},
+//   };
+  
+
+  
+//   // Function to detect the currently connected network
+//   async function checkNetwork() {
+// 	if (window.ethereum) {
+// 	  try {
+// 		// Get the current chain ID
+// 		const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+  
+// 		switch (chainId) {
+// 		  case networks.mainnet.chainId:
+// 			updateWeb3Provider(networks.mainnet.rpcUrl);
+// 			break;
+// 		  case networks.sepolia.chainId:
+// 			updateWeb3Provider(networks.sepolia.rpcUrl);
+// 			break;
+// 		  case networks.polygon.chainId:
+// 			updateWeb3Provider(networks.polygon.rpcUrl);
+// 			break;
+// 		  case networks.base.chainId:
+// 			updateWeb3Provider(networks.base.rpcUrl);
+// 			break;
+// 		  case networks.opbnb.chainId:
+// 			updateWeb3Provider(networks.opbnb.rpcUrl);
+// 			break;
+// 		  case networks.optimism.chainId:
+// 			updateWeb3Provider(networks.optimism.rpcUrl);
+// 			break;
+// 		  default:
+// 			promptNetworkChange();
+// 			break;
+// 		}
+// 	  } catch (error) {
+// 		console.error('Error detecting network:', error);
+// 	  }
+// 	} else {
+// 	  alert('No Ethereum provider found. Please install MetaMask.');
+// 	}
+//   }
+  
+//   // Function to update the Web3 provider with a new RPC URL
+//   function updateWeb3Provider(rpcUrl) {
+// 	web3 = new Web3(rpcUrl);
+// 	console.log(`Web3 provider updated to: ${rpcUrl}`);
+// 	// Further actions can be performed with the updated web3 instance
+//   }
+  
+//   // Function to prompt the user to change networks
+//   async function promptNetworkChange() {
+// 	const options = [
+// 	  { chainId: networks.mainnet.chainId, name: 'Mainnet' },
+// 	  { chainId: networks.sepolia.chainId, name: 'Sepolia' },
+// 	  { chainId: networks.polygon.chainId, name: 'Polygon' },
+// 	  { chainId: networks.base.chainId, name: 'Base' },
+// 	  { chainId: networks.opbnb.chainId, name: 'opBNB' },
+// 	  { chainId: networks.optimism.chainId, name: 'Optimism' }
+// 	];
+  
+// 	let networkOptions = options.map(option => `${option.name} (Chain ID: ${option.chainId})`).join('\n');
+  
+// 	alert(`You're connected to an unsupported network. Please switch to one of the supported networks:\n\n${networkOptions}`);
+  
+// 	try {
+// 	  // Optional: Prompt user to switch network using MetaMask's "wallet_switchEthereumChain" method
+// 	  await window.ethereum.request({
+// 		method: 'wallet_switchEthereumChain',
+// 		params: [{ chainId: networks.mainnet.chainId }] // Example: Switch to Mainnet
+// 	  });
+// 	} catch (switchError) {
+// 	  console.error('Error switching network:', switchError);
+// 	}
+//   }
+  
+//   // Run the network check on page load
+//   checkNetwork();
+  
