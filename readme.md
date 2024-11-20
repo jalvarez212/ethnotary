@@ -30,7 +30,7 @@ As such, we suggest a one-time donation for the use of the ethnotary tools. This
 
 ## Security
 
-ethnotary has not been audited by a third party, a security audit is pending. ethnotary does not collect any user data or hold any user fund. Please use ethnotary at your own risk as the application is still in active development. 
+ethnotary has not been audited by a third party, a security audit is pending. ethnotary does not collect any user data or hold any user funds. ethnotary contracts are backed by the security of the EVM compatiable blockchains. Please use ethnotary at your own risk as the application is still in active development. 
 
 ## Getting Started
 

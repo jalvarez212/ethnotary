@@ -1,879 +1,1110 @@
 
 // Initialize Web3 connection
-let web3 = new Web3('https://mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
-
-
-const Alltxns = [ 'Confirmation','Revocation','Submission','Execution','ExecutionFailure','Deposit','OwnerAddition','OwnerRemoval', 'OwnerReplace','RequirementChange'];
-const Confirm = [ 'Confirmation','Revocation'];
-const Submit = [ 'Submission'];
-const Execute = ['Execution','ExecutionFailure'];
-const Deposits = ['Deposit', 'NftReceived'];
-const Account = [ 'OwnerAddition','OwnerRemoval', 'OwnerReplace', 'RequirementChange'];
-
-const ETHERSCAN_API_KEY = '85YM7F9JQIE823T4NQS2W3ZMFRUYU6DA23'; // Replace with your Etherscan API key
-const ETHERSCAN_API_URL = 'https://api.etherscan.io/api';
-
-
-
-
-// Contract details
+let web3 = null;
 const contractAddress = localStorage.contract;
 
+// Define the network chain IDs and corresponding Infura RPC URLs
+const networks = {
+	mainnet: {
+		chainId: '0x1', // Ethereum Mainnet Chain ID
+		rpcUrl: 'https://mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+	},
+	sepolia: {
+		chainId: '0xaa36a7', // Sepolia Testnet Chain ID
+		rpcUrl: 'https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+	},
+	polygon: {
+		chainId: '0x89', // Polygon Mainnet Chain ID
+		rpcUrl: 'https://polygon-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+	},
+	base: {
+		chainId: '0x2105', // Base Chain ID (example)
+		rpcUrl: 'https://base-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+	},
+	bnbchain: {
+		chainId: '0x38', // opBNB Mainnet Chain ID (example)
+		rpcUrl: 'https://bsc-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+	},
+	optimism: {
+		chainId: '0xa', // Optimism Mainnet Chain ID
+		rpcUrl: 'https://optimism-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+	},
+};
 
-const erc721Abi = [
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "transferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+const chainIdLookup = Object.keys(networks).reduce((lookup, networkName) => {
+	const networkData = networks[networkName];
+	lookup[networkData.chainId] = { name: networkName, ...networkData };
+	return lookup;
+}, {});
+
+
+// Function to update the Web3 provider with a new RPC URL
+function updateWeb3ProvidermatchedNetwork(rpcUrl) {
+	web3 = new Web3(rpcUrl);
+	console.log(`Web3 provider updated to: ${rpcUrl}`);
+  
   }
-]
-
-const erc20Abi = [
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "transfer",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	}
-  ]
 
 
+// Function to prompt the user to change networks
+async function promptNetworkChange() {
+	const options = [
+		{ chainId: networks.mainnet.chainId, name: 'Mainnet' },
+		{ chainId: networks.sepolia.chainId, name: 'Sepolia' },
+		{ chainId: networks.polygon.chainId, name: 'Polygon' },
+		{ chainId: networks.base.chainId, name: 'Base' },
+		{ chainId: networks.bnbchain.chainId, name: 'Bnbchain' },
+		{ chainId: networks.optimism.chainId, name: 'Optimism' }
+	];
 
+	let networkOptions = options.map(option => `${option.name} (Chain ID: ${option.chainId})`).join('\n');
 
-const contractABI =[
-	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "_owners",
-				"type": "address[]"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_required",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_pin",
-				"type": "uint16"
-			}
-		],
-		"stateMutability": "payable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "Confirmation",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "Deposit",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "Execution",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "ExecutionFailure",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "operator",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "tokenId",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "bytes",
-				"name": "data",
-				"type": "bytes"
-			}
-		],
-		"name": "NftReceived",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			}
-		],
-		"name": "OwnerAddition",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			}
-		],
-		"name": "OwnerRemoval",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "oldOwner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "OwnerReplace",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "required",
-				"type": "uint256"
-			}
-		],
-		"name": "RequirementChange",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "Revocation",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "dest",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "bytes",
-				"name": "func",
-				"type": "bytes"
-			}
-		],
-		"name": "Submission",
-		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "MAX_OWNER_COUNT",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "accountOwner",
-				"type": "address"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_pin",
-				"type": "uint16"
-			}
-		],
-		"name": "addOwner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_required",
-				"type": "uint256"
-			}
-		],
-		"name": "changeRequirement",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "confirmTransaction",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "confirmations",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "execute",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "getConfirmationCount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "count",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "getConfirmations",
-		"outputs": [
-			{
-				"internalType": "address[]",
-				"name": "_confirmations",
-				"type": "address[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getOwners",
-		"outputs": [
-			{
-				"internalType": "address[]",
-				"name": "",
-				"type": "address[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "isConfirmed",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "isOwner",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "operator",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "tokenId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bytes",
-				"name": "data",
-				"type": "bytes"
-			}
-		],
-		"name": "onERC721Received",
-		"outputs": [
-			{
-				"internalType": "bytes4",
-				"name": "",
-				"type": "bytes4"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "owners",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "accountOwner",
-				"type": "address"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_pin",
-				"type": "uint16"
-			}
-		],
-		"name": "removeOwner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "accountOwner",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_pin",
-				"type": "uint16"
-			}
-		],
-		"name": "replaceOwner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "required",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"name": "revokeConfirmation",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "dest",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bytes",
-				"name": "func",
-				"type": "bytes"
-			}
-		],
-		"name": "submitTransaction",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "transactionId",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "erc20ContractAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "submitTransferERC20",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "nftContractAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "tokenId",
-				"type": "uint256"
-			}
-		],
-		"name": "submitTransferNFT",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "transactionCount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "transactions",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "dest",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bytes",
-				"name": "func",
-				"type": "bytes"
-			},
-			{
-				"internalType": "bool",
-				"name": "executed",
-				"type": "bool"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "receive"
-	}
-]
+	alert(`You're connected to an unsupported network. Please switch to one of the supported networks:\n\n${networkOptions}`);
 
-// Creating a contract instance
-const contract = new web3.eth.Contract(contractABI, contractAddress);
+}
 
-
-
-async function findContractMethod(tx) {
-    // Extract method ID from the transaction input
-    const methodId = tx.input.slice(0, 10);
-
-    // Find the ABI entry corresponding to the method ID
-    const abiMethod = await contractABI.find(abiEntry => {
-        return abiEntry.type === 'function' && web3.eth.abi.encodeFunctionSignature(abiEntry) === methodId;
-    });
-
-	let deposit = 'deposit';
-
-    if (!abiMethod) {
-        return deposit
+function normalizeToHex(input) {
+    if (typeof input === 'string' && input.startsWith('0x')) {
+        return input.toLowerCase(); // Ensure lowercase for consistency
+    } else if (typeof input === 'number') {
+        return '0x' + input.toString(16); // Convert decimal to hex
     } else {
-        return abiMethod.name
+        throw new Error("Invalid input type: must be a hex string or a number.");
     }
 }
 
 
+ function checkWalletConnectionAndNetwork() {
+	if (wallet == 'undefined') {
 
-async function getBlockTimestamp(blockNumber) {
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		console.log("step0")
+			// Check if wallet is connected
+			let account =  wallet.request({ method: 'eth_requestAccounts' });
+			let chainId =  wallet.getChainId()
+			console.log("Wallet is connected: ", account);
+			console.log("Network is connected: ", chainId);
+			let matchedNetwork = chainIdLookup[chainId];
 
-    try {
-        const block = await web3.eth.getBlock(blockNumber);
-        const timestamp = await block.timestamp; // Unix timestamp of the block
-
-        // Convert Unix timestamp to milliseconds (JavaScript Date uses milliseconds)
-        const date = await new Date(Number(timestamp) * 1000);
-
-        // Format date to a readable string
-        const day = await date.getDate();
-        const monthIndex = await date.getMonth();
-        const year = await date.getFullYear();
-    
-        const suffixes = ['th', 'st', 'nd', 'rd'];
-        const relevantDigits = (day < 30) ? day % 20 : day % 30;
-        const suffix = (relevantDigits <= 3) ? suffixes[relevantDigits] : suffixes[0];
-    
-        let formattedDate = `${monthNames[monthIndex]} ${day}${suffix}, ${year}`;
-
-        return formattedDate;
-
-
-    } catch (error) {
-        console.error(`Error fetching block ${blockNumber}:`, error);
-        throw error;
-    }
-}
-
-async function getEventLogs(eventName) {
-    try {
-        return await contract.getPastEvents(eventName, {
-            fromBlock: 0,
-            toBlock: 'latest'
-        });
-    } catch (error) {
-        console.error(`Error fetching ${eventName} logs:`, error);
-        throw error;
-    }
-}
-
-
-async function getTransactionDetailsFromLogs(eventLogs, container) {
+			console.log(matchedNetwork)
 	
-    for (const log of eventLogs) {
-        const transaction = await web3.eth.getTransaction(log.transactionHash);
-        container.push(transaction);
-    }
+			if (matchedNetwork) {
+				console.log(`Connected to ${matchedNetwork.name}`);
+				updateWeb3Provider(matchedNetwork.rpcUrl);
+			} else {
+				console.log("Connected to an unsupported network");
+				showModal();
+			}
 
-    //console.log(container)
-    return container;
-}
+	} else {
 
-function updateCount(txn){
-	const txncount = document.getElementById('Txncount');
-
-	txncount.innerText = txn.length + " Txns";
-}
-
-
-async function processEvents(eventNames, container) {
-		let transactions = [];
-    try {
-
+		try{
+			console.log('step1')
 		
-        
-        for (const eventName of eventNames) {
-            //console.log(`Fetching logs for event: ${eventName}`);
-            const logs = await getEventLogs(eventName);
-            //console.log(`Fetching transaction details for ${logs.length} events of type: ${eventName}`);
-			transactions = await getTransactionDetailsFromLogs(logs, transactions);
+			const lastWallet = localStorage.getItem('lastWallet')
+			console.log(lastWallet)
+
+
+			if(lastWallet == 'undefined'){
+				console.log("step2")
+				showModal();
+			}
+			if(lastWallet == 'Metamask'){
+				console.log("step3")
+				connectMetaMask().then(function(){
+					let chainId =  wallet.getChainId();
+					let matchedNetwork = chainIdLookup[chainId];
+					updateWeb3ProvidermatchedNetwork(matchedNetwork.rpcUrl);
+
+
+				}
+					);
+				
+			}
+			if(lastWallet == 'Coinbase'){
+				console.log("step3")
+				connectCoinbase().then(function(){
+					let chainId =  wallet.getChainId();
+					let matchedNetwork = chainIdLookup[chainId];
+					updateWeb3ProvidermatchedNetwork(matchedNetwork.rpcUrl);
+
+
+				}
+					);
+			
+
+			}
+			if(lastWallet == 'Binance'){
+				console.log("step4")
+				connectBinance().then(function(){
+					let chainId =  wallet.getChainId();
+					let matchedNetwork = chainIdLookup[chainId];
+					updateWeb3ProvidermatchedNetwork(matchedNetwork.rpcUrl);
+
+
+				}
+					);
+			}
+			if(lastWallet == 'Phantom'){
+				console.log("step5")
+				connectPhantomWallet().then(function(){
+					let chainId =  wallet.getChainId();
+					let matchedNetwork = chainIdLookup[chainId];
+					updateWeb3ProvidermatchedNetwork(matchedNetwork.rpcUrl);
+
+
+				}
+					)
+			
+
+			}
+			if( lastWallet == 'okx'){
+				console.log("step6")
+				connectOKXWallet().then(function(){
+					let chainId =  wallet.getChainId();
+					let matchedNetwork = chainIdLookup[chainId];
+					updateWeb3ProvidermatchedNetwork(matchedNetwork.rpcUrl);
+
+
+				}
+					)
+
+			}
+			if(lastWallet == 'other'){
+				console.log("step7")
+				connectWallet().then(function(){
+					let chainId =  wallet.getChainId();
+					let matchedNetwork = chainIdLookup[chainId];
+					updateWeb3ProvidermatchedNetwork(matchedNetwork.rpcUrl);
+
+
+				}
+					);
+
+
+			}
+
+		}
+		catch{
+			showModal()
+
 		}
 
-		transactions.sort((a, b) => Number(b.blockNumber) - Number(a.blockNumber));
+	}
+}
+
+checkWalletConnectionAndNetwork();
+async function checkConnectedNetwork() {
+	if (!window.ethereum) {
+		console.log("No Web3 wallet detected");
+		showModal();
+		return;
+	}
+
+	try {
+		// Get the current chain ID in hexadecimal format
+        // Request switch to Sepolia (replace with the correct chain ID for other networks)
+        // await window.ethereum.request({
+        //     method: 'wallet_switchEthereumChain',
+        //     params: [{ chainId: '0x1' }] // Sepolia Testnet Chain ID
+        // });
 
 
-        for (const tx of transactions) {
+		// Use the chainIdLookup map for a direct lookup
+		const matchedNetwork = chainIdLookup[localStorage.getItem('lastChain', rawChainId)];
 
-            const timestamp = await getBlockTimestamp(tx.blockNumber); // Await the timestamp
-            const txElement = document.createElement('tr');
+		console.log(matchedNetwork)
 
-            let method = await findContractMethod(tx);
+		if (matchedNetwork) {
+			console.log(`Connected to ${matchedNetwork.name}`);
+			updateWeb3Provider(matchedNetwork.rpcUrl);
+		} else {
+			console.log("Connected to an unsupported network");
+			showModal();
+		}
+	} catch (error) {
+		console.error("Error fetching chain ID:", error);
+		showModal();
+	}
+}
 
+
+
+
+checkConnectedNetwork().then(function () {
+
+
+
+	const Alltxns = ['Confirmation', 'Revocation', 'Submission', 'Execution', 'ExecutionFailure', 'Deposit', 'OwnerAddition', 'OwnerRemoval', 'OwnerReplace', 'RequirementChange'];
+	const Confirm = ['Confirmation', 'Revocation'];
+	const Submit = ['Submission'];
+	const Execute = ['Execution', 'ExecutionFailure'];
+	const Deposits = ['Deposit', 'NftReceived'];
+	const Account = ['OwnerAddition', 'OwnerRemoval', 'OwnerReplace', 'RequirementChange'];
+
+	const ETHERSCAN_API_KEY = '85YM7F9JQIE823T4NQS2W3ZMFRUYU6DA23'; // Replace with your Etherscan API key
+	const ETHERSCAN_API_URL = 'https://api.etherscan.io/api';
+
+
+
+
+	// Contract details
 	
 
 
-            txElement.innerHTML =               `
+	const erc721Abi = [
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "from",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "transferFrom",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		}
+	]
+
+	const erc20Abi = [
+		{
+			"constant": false,
+			"inputs": [
+				{
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"name": "value",
+					"type": "uint256"
+				}
+			],
+			"name": "transfer",
+			"outputs": [
+				{
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"payable": false,
+			"stateMutability": "nonpayable",
+			"type": "function"
+		}
+	]
+
+
+
+
+	const contractABI = [
+		{
+			"inputs": [
+				{
+					"internalType": "address[]",
+					"name": "_owners",
+					"type": "address[]"
+				},
+				{
+					"internalType": "uint256",
+					"name": "_required",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"stateMutability": "payable",
+			"type": "constructor"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "Confirmation",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				}
+			],
+			"name": "Deposit",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				},
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "amount",
+					"type": "uint256"
+				}
+			],
+			"name": "Execution",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "ExecutionFailure",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "address",
+					"name": "operator",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "address",
+					"name": "from",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "bytes",
+					"name": "data",
+					"type": "bytes"
+				}
+			],
+			"name": "NftReceived",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				}
+			],
+			"name": "OwnerAddition",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				}
+			],
+			"name": "OwnerRemoval",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "oldOwner",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				}
+			],
+			"name": "OwnerReplace",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "required",
+					"type": "uint256"
+				}
+			],
+			"name": "RequirementChange",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "Revocation",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "address",
+					"name": "dest",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "bytes",
+					"name": "func",
+					"type": "bytes"
+				}
+			],
+			"name": "Submission",
+			"type": "event"
+		},
+		{
+			"inputs": [],
+			"name": "MAX_OWNER_COUNT",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "accountOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"name": "addOwner",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "_required",
+					"type": "uint256"
+				}
+			],
+			"name": "changeRequirement",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "confirmTransaction",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "confirmations",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "execute",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "getConfirmationCount",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "count",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "getConfirmations",
+			"outputs": [
+				{
+					"internalType": "address[]",
+					"name": "_confirmations",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "getOwners",
+			"outputs": [
+				{
+					"internalType": "address[]",
+					"name": "",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "isConfirmed",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "isOwner",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "operator",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "from",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes",
+					"name": "data",
+					"type": "bytes"
+				}
+			],
+			"name": "onERC721Received",
+			"outputs": [
+				{
+					"internalType": "bytes4",
+					"name": "",
+					"type": "bytes4"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "owners",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "accountOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"name": "removeOwner",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "accountOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint16",
+					"name": "_pin",
+					"type": "uint16"
+				}
+			],
+			"name": "replaceOwner",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "required",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"name": "revokeConfirmation",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "dest",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes",
+					"name": "func",
+					"type": "bytes"
+				}
+			],
+			"name": "submitTransaction",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "transactionId",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "erc20ContractAddress",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "amount",
+					"type": "uint256"
+				}
+			],
+			"name": "submitTransferERC20",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "nftContractAddress",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "submitTransferNFT",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "transactionCount",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "transactions",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "dest",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes",
+					"name": "func",
+					"type": "bytes"
+				},
+				{
+					"internalType": "bool",
+					"name": "executed",
+					"type": "bool"
+				},
+				{
+					"internalType": "uint256",
+					"name": "id",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"stateMutability": "payable",
+			"type": "receive"
+		}
+	]
+
+	// Creating a contract instance
+	const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+
+
+	async function findContractMethod(tx) {
+		// Extract method ID from the transaction input
+		const methodId = tx.input.slice(0, 10);
+
+		// Find the ABI entry corresponding to the method ID
+		const abiMethod = await contractABI.find(abiEntry => {
+			return abiEntry.type === 'function' && web3.eth.abi.encodeFunctionSignature(abiEntry) === methodId;
+		});
+
+		let deposit = 'deposit';
+
+		if (!abiMethod) {
+			return deposit
+		} else {
+			return abiMethod.name
+		}
+	}
+
+
+
+	async function getBlockTimestamp(blockNumber) {
+		const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+		try {
+			const block = await web3.eth.getBlock(blockNumber);
+			const timestamp = await block.timestamp; // Unix timestamp of the block
+
+			// Convert Unix timestamp to milliseconds (JavaScript Date uses milliseconds)
+			const date = await new Date(Number(timestamp) * 1000);
+
+			// Format date to a readable string
+			const day = await date.getDate();
+			const monthIndex = await date.getMonth();
+			const year = await date.getFullYear();
+
+			const suffixes = ['th', 'st', 'nd', 'rd'];
+			const relevantDigits = (day < 30) ? day % 20 : day % 30;
+			const suffix = (relevantDigits <= 3) ? suffixes[relevantDigits] : suffixes[0];
+
+			let formattedDate = `${monthNames[monthIndex]} ${day}${suffix}, ${year}`;
+
+			return formattedDate;
+
+
+		} catch (error) {
+			console.error(`Error fetching block ${blockNumber}:`, error);
+			throw error;
+		}
+	}
+
+	async function getEventLogs(eventName) {
+		try {
+			return await contract.getPastEvents(eventName, {
+				fromBlock: 0,
+				toBlock: 'latest'
+			});
+		} catch (error) {
+			console.error(`Error fetching ${eventName} logs:`, error);
+			throw error;
+		}
+	}
+
+
+	async function getTransactionDetailsFromLogs(eventLogs, container) {
+
+		for (const log of eventLogs) {
+			const transaction = await web3.eth.getTransaction(log.transactionHash);
+			container.push(transaction);
+		}
+
+		//console.log(container)
+		return container;
+	}
+
+	function updateCount(txn) {
+		const txncount = document.getElementById('Txncount');
+
+		txncount.innerText = txn.length + " Txns";
+	}
+
+
+	async function processEvents(eventNames, container) {
+		let transactions = [];
+		try {
+
+
+
+			for (const eventName of eventNames) {
+				//console.log(`Fetching logs for event: ${eventName}`);
+				const logs = await getEventLogs(eventName);
+				//console.log(`Fetching transaction details for ${logs.length} events of type: ${eventName}`);
+				transactions = await getTransactionDetailsFromLogs(logs, transactions);
+			}
+
+			transactions.sort((a, b) => Number(b.blockNumber) - Number(a.blockNumber));
+
+
+			for (const tx of transactions) {
+
+				const timestamp = await getBlockTimestamp(tx.blockNumber); // Await the timestamp
+				const txElement = document.createElement('tr');
+
+				let method = await findContractMethod(tx);
+
+
+
+
+				txElement.innerHTML = `
                 <th class="px-0 py-3" style="width: 20px;">
                     <div class="symbol symbol-65px me-5">
                         <span class="symbol-label bg-light-primary">
@@ -963,7 +1194,7 @@ async function processEvents(eventNames, container) {
                     flex: .1;
                     overflow: hidden; /* Hide overflow */
                     white-space: nowrap; /* Prevent text from wrapping to the next line */
-                    text-overflow: ellipsis; /* Add ellipsis to overflow text */" class="text-muted fw-bold d-block mt-1">${web3.utils.fromWei(tx.gas*tx.gasPrice, 'ether')}</span>
+                    text-overflow: ellipsis; /* Add ellipsis to overflow text */" class="text-muted fw-bold d-block mt-1">${web3.utils.fromWei(tx.gas * tx.gasPrice, 'ether')}</span>
                 </td>
     
                 
@@ -986,114 +1217,115 @@ async function processEvents(eventNames, container) {
                 </td>
             `;
 				container.appendChild(txElement);
-            }
-        
-    } catch (error) {
-        console.error('Error in processing events:', error);
-    }
-}
+			}
 
-async function isConfirmed(id){
-	let confirmed = await contract.methods.isConfirmed(id).call();
-	return confirmed;
-}
-
-async function parseWei(value){
-	let valueInEther = await web3.utils.fromWei(value, 'ether');
-	return valueInEther;
-}
-
-
-async function getAllTxns() {
-	let count = await contract.methods.transactionCount().call().then(function(result){
-		let x = Number(result);
-		return x;})
-    let promises = [];
-
-
-	for (let i=0; i < count; i++){
-		trans = await contract.methods.transactions(i).call();
-		if(trans.executed==false){
-			promises.push(trans);
-
-		}	
+		} catch (error) {
+			console.error('Error in processing events:', error);
+		}
 	}
-	document.getElementById('notifications').innerText = promises.length;
-	document.getElementById('nn').innerText = promises.length + " New Notifications";
 
-	return promises;
-}
+	async function isConfirmed(id) {
+		let confirmed = await contract.methods.isConfirmed(id).call();
+		return confirmed;
+	}
 
-async function getConfirmed() {
-    let count = await contract.methods.transactionCount().call().then(result => Number(result));
-    let promises = [];
-
-    for (let i = 0; i < count; i++) {
-        let trans = await contract.methods.transactions(i).call();
-        let confirmed = await isConfirmed(trans.id);
-
-        if (trans.executed === false && confirmed === true) {
-            // Check if transaction is already in promises to avoid duplicates
-            if (!promises.some(t => t.id === trans.id)) {
-                promises.push(trans);
-            }
-        }
-    }
-    return promises;
-}
+	async function parseWei(value) {
+		let valueInEther = await web3.utils.fromWei(value, 'ether');
+		return valueInEther;
+	}
 
 
+	async function getAllTxns() {
+		let count = await contract.methods.transactionCount().call().then(function (result) {
+			let x = Number(result);
+			return x;
+		})
+		let promises = [];
 
 
+		for (let i = 0; i < count; i++) {
+			trans = await contract.methods.transactions(i).call();
+			if (trans.executed == false) {
+				promises.push(trans);
 
-async function getPending() {
-    let count = await contract.methods.transactionCount().call().then(result => Number(result));
-    let promises = [];
+			}
+		}
+		document.getElementById('notifications').innerText = promises.length;
+		document.getElementById('nn').innerText = promises.length + " New Notifications";
 
-    for (let i = 0; i < count; i++) {
-        let trans = await contract.methods.transactions(i).call();
-        let confirmed = await isConfirmed(trans.id);
+		return promises;
+	}
 
-        if (trans.executed === false && confirmed === false) {
-            // Check if transaction is already in promises to avoid duplicates
-            if (!promises.some(t => t.id === trans.id)) {
-                promises.push(trans);
-            }
-        }
-    }
-    return promises;
-}
+	async function getConfirmed() {
+		let count = await contract.methods.transactionCount().call().then(result => Number(result));
+		let promises = [];
 
+		for (let i = 0; i < count; i++) {
+			let trans = await contract.methods.transactions(i).call();
+			let confirmed = await isConfirmed(trans.id);
 
-
-
-
-
-
-
-
-async function processPending(promise, container) {
-	
-    try {
-
-
-		let pending = await promise;
-		console.log(pending)
-
-		
+			if (trans.executed === false && confirmed === true) {
+				// Check if transaction is already in promises to avoid duplicates
+				if (!promises.some(t => t.id === trans.id)) {
+					promises.push(trans);
+				}
+			}
+		}
+		return promises;
+	}
 
 
 
-		
-        for (const tx of pending) {
-			let status = await isConfirmed(tx.id);
-			let value = await parseWei(tx.value);
-			
-		
 
-            const txElement = document.createElement('tr');
 
-            txElement.innerHTML =               `
+	async function getPending() {
+		let count = await contract.methods.transactionCount().call().then(result => Number(result));
+		let promises = [];
+
+		for (let i = 0; i < count; i++) {
+			let trans = await contract.methods.transactions(i).call();
+			let confirmed = await isConfirmed(trans.id);
+
+			if (trans.executed === false && confirmed === false) {
+				// Check if transaction is already in promises to avoid duplicates
+				if (!promises.some(t => t.id === trans.id)) {
+					promises.push(trans);
+				}
+			}
+		}
+		return promises;
+	}
+
+
+
+
+
+
+
+
+
+	async function processPending(promise, container) {
+
+		try {
+
+
+			let pending = await promise;
+			console.log(pending)
+
+
+
+
+
+
+			for (const tx of pending) {
+				let status = await isConfirmed(tx.id);
+				let value = await parseWei(tx.value);
+
+
+
+				const txElement = document.createElement('tr');
+
+				txElement.innerHTML = `
 			<td class="px-0 py-3">
 				<div class="symbol symbol-55px mt-1 me-5">
 					<span class="symbol-label bg-light-primary align-items-end">
@@ -1108,7 +1340,7 @@ async function processPending(promise, container) {
 			<td></td>
 			<td class="text-end">
 				<span class="text-gray-800 fw-bolder d-block fs-6">Value</span>
-				<span class="text-muted fw-bold d-block mt-1 fs-7" style="font-size: 12px;">${value+" eth"}</span>
+				<span class="text-muted fw-bold d-block mt-1 fs-7" style="font-size: 12px;">${value + " eth"}</span>
 			</td>
 
 			<td class="text-end">
@@ -1130,39 +1362,39 @@ async function processPending(promise, container) {
 
             `
 
-				
-
-			
-			;
-			container.appendChild(txElement);
-            }
-        
-    } catch (error) {
-        console.error('Error in processing events:', error);
-    }
-}
-
-async function processNotifications(promise, container){
-
-	try{
-
-
-		let pending = await promise;
-
-		
 
 
 
-		
-        for (const tx of pending) {
-			console.log(tx)
+					;
+				container.appendChild(txElement);
+			}
 
-		const notElement = document.createElement('div');
-		notElement.classList.add('menu-item');
-		notElement.classList.add('mx-3');
-	
-	
-		notElement.innerHTML = `
+		} catch (error) {
+			console.error('Error in processing events:', error);
+		}
+	}
+
+	async function processNotifications(promise, container) {
+
+		try {
+
+
+			let pending = await promise;
+
+
+
+
+
+
+			for (const tx of pending) {
+				console.log(tx)
+
+				const notElement = document.createElement('div');
+				notElement.classList.add('menu-item');
+				notElement.classList.add('mx-3');
+
+
+				notElement.innerHTML = `
 		<a href="./views/txn.html?${tx.id}" class="menu-link px-4 py-3">
 			<div class="symbol symbol-35px">
 				<span class="symbol-label bg-light-warning">
@@ -1188,199 +1420,397 @@ async function processNotifications(promise, container){
 		</a>
 
 	`
-	container.appendChild(notElement);
+				container.appendChild(notElement);
+
+
+			}
+		}
+		catch (error) {
+			console.error('Error in processing events:', error)
+		}
+
 
 
 	}
-}
-	catch(error){
-		console.error('Error in processing events:', error)
+
+
+	// Function to get Ether balance
+	async function getEtherBalance(address, container) {
+		const balance = await web3.eth.getBalance(address);
+		const ethbalance = web3.utils.fromWei(balance, 'ether');
+
+		container.innerText = ethbalance;
+
+	}
+
+	async function getEthereumPrice() {
+		const e_url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
+
+		const b_url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=btc';
+
+
+		try {
+			const responseE = await fetch(e_url);
+			const responseB = await fetch(b_url);
+			const dataE = await responseE.json();
+			const dataB = await responseB.json();
+			const ethPrice = dataE.ethereum.usd;
+			const ethPriceInBtc = dataB.ethereum.btc;
+
+			document.getElementById('etherPrice').innerText = "$" + ethPrice + " @ " + ethPriceInBtc + " BTC";
+
+			const now = new Date();
+			const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+			const timeString = now.toLocaleString('en-US', options);
+			document.getElementById('time').innerText = "As of " + timeString;
+
+		} catch (error) {
+			console.error('Error fetching Ethereum price:', error);
+		}
+	}
+
+	async function getAverageGasPrice(blockCount = 1) {
+		try {
+			let totalGasPrice = BigInt(0);
+			const latestBlock = await web3.eth.getBlock();
+
+
+			const gasPrice = BigInt(latestBlock.baseFeePerGas); // Convert to BigInt
+			totalGasPrice += gasPrice;
+
+
+			const averageGasPrice = totalGasPrice / BigInt(blockCount);
+			const averageGasPriceInGwei = web3.utils.fromWei(averageGasPrice.toString(), 'gwei');
+
+			console.log(`Average Gas Price for the last ${blockCount} blocks: ${averageGasPriceInGwei} Gwei`);
+			document.getElementById('gasPrice').innerText = averageGasPriceInGwei + ' Gwei';
+		} catch (error) {
+			console.error('Error fetching average gas price:', error);
+		}
+	}
+
+	async function getGasEstimates() {
+
+		const url = `${ETHERSCAN_API_URL}?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`;
+
+		try {
+			const response = await fetch(url);
+			const data = await response.json();
+
+			if (data.status === '1' && data.message === 'OK') {
+				const { SafeGasPrice, ProposeGasPrice, FastGasPrice } = data.result;
+
+				document.getElementById("gasPrice").innerText = ProposeGasPrice + " Gwei"
+
+			} else {
+				console.error('Error fetching gas estimates:', data.result);
+			}
+		} catch (error) {
+			console.error('Error:', error);
+		}
 	}
 
 
 
-}
 
 
-// Function to get Ether balance
-async function getEtherBalance(address, container) {
-    const balance = await web3.eth.getBalance(address);
-    const ethbalance = web3.utils.fromWei(balance, 'ether');
+	async function getBlockTransactionCount(blockNumber) {
+		const url = `${ETHERSCAN_API_URL}?module=proxy&action=eth_getBlockTransactionCountByNumber&tag=${blockNumber}&apikey=${ETHERSCAN_API_KEY}`;
+		const response = await fetch(url);
+		const data = await response.json();
 
-	container.innerText = ethbalance;
+		if (data.status !== '1') {
+			throw new Error('Error fetching block transaction count');
+		}
 
-}
-
-async function getEthereumPrice() {
-    const e_url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
-
-	const b_url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=btc';
-
-
-    try {
-        const responseE = await fetch(e_url);
-		const responseB = await fetch(b_url);
-		const dataE = await responseE.json();
-        const dataB = await responseB.json();
-        const ethPrice = dataE.ethereum.usd;
-		const ethPriceInBtc = dataB.ethereum.btc;
-
-		document.getElementById('etherPrice').innerText = "$"+ethPrice+" @ "+ethPriceInBtc +" BTC";
-
-		const now = new Date();
-		const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-		const timeString = now.toLocaleString('en-US', options);
-		document.getElementById('time').innerText = "As of "+timeString;
-
-    } catch (error) {
-        console.error('Error fetching Ethereum price:', error);
-    }
-}
-
-async function getAverageGasPrice(blockCount = 1) {
-    try {
-        let totalGasPrice = BigInt(0);
-        const latestBlock = await web3.eth.getBlock();
-
-     
-            const gasPrice = BigInt(latestBlock.baseFeePerGas); // Convert to BigInt
-            totalGasPrice += gasPrice;
-    
-
-        const averageGasPrice = totalGasPrice / BigInt(blockCount);
-        const averageGasPriceInGwei = web3.utils.fromWei(averageGasPrice.toString(), 'gwei');
-        
-        console.log(`Average Gas Price for the last ${blockCount} blocks: ${averageGasPriceInGwei} Gwei`);
-        document.getElementById('gasPrice').innerText = averageGasPriceInGwei +' Gwei';
-    } catch (error) {
-        console.error('Error fetching average gas price:', error);
-    }
-}
-
-async function getGasEstimates() {
-
-    const url = `${ETHERSCAN_API_URL}?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`;
-
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (data.status === '1' && data.message === 'OK') {
-            const { SafeGasPrice, ProposeGasPrice, FastGasPrice } = data.result;
-           
-            document.getElementById("gasPrice").innerText = ProposeGasPrice+ " Gwei"
-            
-        } else {
-            console.error('Error fetching gas estimates:', data.result);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
+		return parseInt(data.result, 16); // Convert hex to integer
+	}
 
 
 
 
+	async function getTransactionsLastBlock(blockCount = 1) {
+		try {
+			const latest = await web3.eth.getBlock('latest');
 
-async function getBlockTransactionCount(blockNumber) {
-    const url = `${ETHERSCAN_API_URL}?module=proxy&action=eth_getBlockTransactionCountByNumber&tag=${blockNumber}&apikey=${ETHERSCAN_API_KEY}`;
-    const response = await fetch(url);
-    const data = await response.json();
+			console.log(latest);
 
-    if (data.status !== '1') {
-        throw new Error('Error fetching block transaction count');
-    }
-
-    return parseInt(data.result, 16); // Convert hex to integer
-}
-
+			document.getElementById("TPS").innerText = latest.transactions.length + " txns in last block.";
+		} catch (error) {
+			console.error('Error calculating transactions per second:', error);
+		}
+	}
 
 
+	async function getLatestBlock() {
+		try {
+			const latestBlock = await web3.eth.getBlock('latest');
+			console.log(latestBlock)
 
-async function getTransactionsLastBlock(blockCount = 1) {
-    try {
-        const latest = await web3.eth.getBlock('latest');
+			document.getElementById("block").innerText = latestBlock.number;
+		} catch (error) {
+			console.error('Error fetching the latest block:', error);
+		}
+	}
 
-		console.log(latest);
+	async function updateNetworkCongestionBar() {
+		const url = `${ETHERSCAN_API_URL}?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`;
 
-        document.getElementById("TPS").innerText = latest.transactions.length + " txns in last block.";
-    } catch (error) {
-        console.error('Error calculating transactions per second:', error);
-    }
-}
+		try {
+			const response = await fetch(url);
+			const data = await response.json();
+
+			if (data.status === '1' && data.message === 'OK') {
+				const averageGasPrice = parseInt(data.result.ProposeGasPrice, 10);
+				updateBarGraph(averageGasPrice);
+			} else {
+				console.error('Error fetching gas prices:', data.result);
+			}
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	}
+
+	function updateBarGraph(gasPrice) {
+		// Assuming gas price ranges. Adjust these based on your analysis of what constitutes low, medium, and high congestion.
+		const MAX_GAS_PRICE = 200; // Example value, adjust as needed
+		const percentage = Math.min((gasPrice / MAX_GAS_PRICE) * 100, 100);
+
+		const congestionBar = document.getElementById('percentageBar');
+		const congestionPercent = document.getElementById('percentage');
+
+		congestionBar.style.width = `${percentage}%`;
+		congestionPercent.innerText = `${percentage}%`
+
+		if (percentage < 35) {
+			congestionBar.classList.add('bg-primary');
+			congestionBar.classList.remove('bg-warning');
+			congestionBar.classList.remove('bg-danger');
+
+		}
+		if (percentage > 35 && percentage < 65) {
+			congestionBar.classList.add('bg-warning');
+			congestionBar.classList.remove('bg-light');
+			congestionBar.classList.remove('bg-danger');
+
+		}
+		if (percentage > 65) {
+			congestionBar.classList.add('bg-danger');
+			congestionBar.classList.remove('bg-light');
+			congestionBar.classList.remove('bg-warning');
+
+		}
+	}
+
+	window.DOMContentLoaded = getEthereumPrice();
+	window.DOMContentLoaded = getGasEstimates();
+	window.DOMContentLoaded = getTransactionsLastBlock();
+	window.DOMContentLoaded = getLatestBlock();
+	window.DOMContentLoaded = updateNetworkCongestionBar();
+
+	window.onload = processPending(getAllTxns(), document.getElementById('alltxns'));
+	window.onload = processPending(getPending(), document.getElementById('pending'));
+	window.onload = processPending(getConfirmed(), document.getElementById('confirmed'));
+	window.onload = getEtherBalance(contractAddress, document.getElementById('ethbalance'));
+	window.onload = processNotifications(getAllTxns(), document.getElementById('notificationsTab'))
 
 
-async function getLatestBlock() {
-    try {
-        const latestBlock = await web3.eth.getBlock('latest');
-		console.log(latestBlock)
 
-        document.getElementById("block").innerText = latestBlock.number;
-    } catch (error) {
-        console.error('Error fetching the latest block:', error);
-    }
-}
 
-async function updateNetworkCongestionBar() {
-    const url = `${ETHERSCAN_API_URL}?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`;
 
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
 
-        if (data.status === '1' && data.message === 'OK') {
-            const averageGasPrice = parseInt(data.result.ProposeGasPrice, 10);
-            updateBarGraph(averageGasPrice);
-        } else {
-            console.error('Error fetching gas prices:', data.result);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
 
-function updateBarGraph(gasPrice) {
-    // Assuming gas price ranges. Adjust these based on your analysis of what constitutes low, medium, and high congestion.
-    const MAX_GAS_PRICE = 200; // Example value, adjust as needed
-    const percentage = Math.min((gasPrice / MAX_GAS_PRICE) * 100, 100);
 
-    const congestionBar = document.getElementById('percentageBar');
-	const congestionPercent = document.getElementById('percentage');
+	window.onload = processEvents(Alltxns, document.getElementById('main'));
+	window.onload = processEvents(Confirm, document.getElementById('confirms'));
+	window.onload = processEvents(Submit, document.getElementById('submits'));
+	window.onload = processEvents(Execute, document.getElementById('executes'));
+	window.onload = processEvents(Deposits, document.getElementById('deposits'));
+	window.onload = processEvents(Account, document.getElementById('accounts'));
 
-    congestionBar.style.width = `${percentage}%`;
-	congestionPercent.innerText = `${percentage}%`
+	document.getElementById("refresh").addEventListener('click', function () {
+		getEthereumPrice();
+		getTransactionsLastBlock();
+		getLatestBlock();
+		getGasEstimates();
+		updateNetworkCongestionBar();
 
-	if (percentage < 35){
-        congestionBar.classList.add('bg-primary');
-		congestionBar.classList.remove('bg-warning');
-		congestionBar.classList.remove('bg-danger');
+	})
+
+
+	async function fetchTokenBalances(data) {
+		const abiFunctions = [
+			{
+				"constant": true,
+				"inputs": [
+					{
+						"name": "owner",
+						"type": "address"
+					}
+				],
+				"name": "balanceOf",
+				"outputs": [
+					{
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"constant": true,
+				"inputs": [
+					{
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"name": "index",
+						"type": "uint256"
+					}
+				],
+				"name": "tokenOfOwnerByIndex",
+				"outputs": [
+					{
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "transfer",
+				"outputs": [
+					{
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+
+			{
+				"constant": true,
+				"inputs": [],
+				"name": "decimals",
+				"outputs": [
+					{
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
+			}
+		];
+		document.getElementById('tokenHoldings1').innerHTML = "<option></option>";
+		document.getElementById('tokenHoldings2').innerHTML = "<option>Select Token</option>";
+
+
+
+		let tokens = JSON.parse(data);
+
+		console.log('these are the toks my boyy, ' + data)
+
+		for (const token of tokens) {
+			let tokenContract = new web3.eth.Contract(abiFunctions, token.address);
+			let balance = await tokenContract.methods.balanceOf(localStorage.getItem('contract')).call();
+
+			token.balance = balance.toString();
+
+
+
+			console.log('token balance =' + token.balance)
+			console.log(token)
+
+			if (token.balance !== '0') {
+
+
+				if (token.sym == 'erc721') {
+
+					let tokenId;
+					let optionHtml;
+
+
+					for (let i = 0; i < token.balance; i++) {
+						tokenId = await tokenContract.methods.tokenOfOwnerByIndex(contractAddress, i).call();
+
+						console.log(tokenId)
+						optionHtml = `<option class="${token.type}" data-id="${tokenId.toString()}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">#${tokenId.toString()} ${token.type}</option>`;
+						document.getElementById('tokenHoldings1').innerHTML += optionHtml;
+						document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+
+					}
+
+					console.log(token.balance)
+
+				}
+
+				if (token.sym == 'erc20') {
+					console.log("new token: " + JSON.stringify(token))
+
+
+
+
+					let decimals = await tokenContract.methods.decimals().call();
+
+					const balanceBigInt = BigInt(balance);
+					const decimalsBigInt = BigInt(decimals);
+					const factor = BigInt(10) ** decimalsBigInt;
+					const formattedBalance = Number(balanceBigInt) / Number(factor);
+
+					//let formattedBalance = await web3.utils.fromWei(balance, 'ether') * Math.pow(10, 18 - decimals);
+
+					console.log('token balance =' + formattedBalance.toFixed(4))
+					console.log('decimals =' + decimals.toString())
+
+					// Constructing the option element to append to the dropdown
+
+					const optionHtml = `<option class="${token.type}" value="${formattedBalance}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}" data-dec="${decimals.toString()}">${formattedBalance.toFixed(4)} ${token.type}</option>`;
+					document.getElementById('tokenHoldings1').innerHTML += optionHtml;
+					document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+					//document.querySelectorAll(`.clickable`).addEventListener('click', function(){console.log('hellollloolololoo')});
+
+
+				}
+
+
+
+
+
+
+
+
+			}
+
+
+		}
+
+		console.log(tokens);
+		document.getElementsByClassName(`clickable`).forEach(element => {
+			element.addEventListener('click', function () { console.log('hellollloolololoo') });
+		});
 
 	}
-	if (percentage > 35 && percentage < 65){
-		congestionBar.classList.add('bg-warning');
-		congestionBar.classList.remove('bg-light');
-		congestionBar.classList.remove('bg-danger');
-
-	}
-    if (percentage > 65){
-		congestionBar.classList.add('bg-danger');
-		congestionBar.classList.remove('bg-light');
-		congestionBar.classList.remove('bg-warning');
-
-	}
-}
-
-window.DOMContentLoaded = getEthereumPrice();
-window.DOMContentLoaded = getGasEstimates();
-window.DOMContentLoaded = getTransactionsLastBlock();
-window.DOMContentLoaded = getLatestBlock();
-window.DOMContentLoaded = updateNetworkCongestionBar();
-
-window.onload = processPending( getAllTxns(), document.getElementById('alltxns'));
-window.onload = processPending( getPending(), document.getElementById('pending'));
-window.onload = processPending( getConfirmed(), document.getElementById('confirmed'));
-window.onload = getEtherBalance( contractAddress, document.getElementById('ethbalance'));
-window.onload = processNotifications(getAllTxns(),document.getElementById('notificationsTab'))
+	fetchTokenBalances(localStorage.token_contracts);
 
 
 
@@ -1389,123 +1819,11 @@ window.onload = processNotifications(getAllTxns(),document.getElementById('notif
 
 
 
-window.onload = processEvents(Alltxns, document.getElementById('main'));
-window.onload = processEvents(Confirm, document.getElementById('confirms'));
-window.onload = processEvents(Submit, document.getElementById('submits'));
-window.onload = processEvents(Execute, document.getElementById('executes'));
-window.onload = processEvents(Deposits, document.getElementById('deposits'));
-window.onload = processEvents(Account, document.getElementById('accounts'));
 
-document.getElementById("refresh").addEventListener('click', function(){
-	getEthereumPrice();
-	getTransactionsLastBlock();
-	getLatestBlock();
-	getGasEstimates();
-	updateNetworkCongestionBar();	
+	//   // Run the network check on page load
+	//   
 
-})
 
-// // Define the network chain IDs and corresponding Infura RPC URLs
-// const networks = {
-// 	mainnet: {
-// 	  chainId: '0x1', // Ethereum Mainnet Chain ID
-// 	  rpcUrl: 'https://mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
-// 	},
-// 	sepolia: {
-// 	  chainId: '0xaa36a7', // Sepolia Testnet Chain ID
-// 	  rpcUrl: 'https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
-// 	},
-// 	polygon: {
-// 	  chainId: '0x89', // Polygon Mainnet Chain ID
-// 	  rpcUrl: 'https://polygon-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
-// 	},
-// 	base: {
-// 	  chainId: '0xa86a', // Base Chain ID (example)
-// 	  rpcUrl: 'https://base-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
-// 	},
-// 	opbnb: {
-// 	  chainId: '0x56', // opBNB Mainnet Chain ID (example)
-// 	  rpcUrl: 'https://opbnb-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
-// 	},
-// 	optimism: {
-// 	  chainId: '0xa', // Optimism Mainnet Chain ID
-// 	  rpcUrl: 'https://optimism-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
-// 	},
-//   };
-  
+});
 
-  
-//   // Function to detect the currently connected network
-//   async function checkNetwork() {
-// 	if (window.ethereum) {
-// 	  try {
-// 		// Get the current chain ID
-// 		const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-  
-// 		switch (chainId) {
-// 		  case networks.mainnet.chainId:
-// 			updateWeb3Provider(networks.mainnet.rpcUrl);
-// 			break;
-// 		  case networks.sepolia.chainId:
-// 			updateWeb3Provider(networks.sepolia.rpcUrl);
-// 			break;
-// 		  case networks.polygon.chainId:
-// 			updateWeb3Provider(networks.polygon.rpcUrl);
-// 			break;
-// 		  case networks.base.chainId:
-// 			updateWeb3Provider(networks.base.rpcUrl);
-// 			break;
-// 		  case networks.opbnb.chainId:
-// 			updateWeb3Provider(networks.opbnb.rpcUrl);
-// 			break;
-// 		  case networks.optimism.chainId:
-// 			updateWeb3Provider(networks.optimism.rpcUrl);
-// 			break;
-// 		  default:
-// 			promptNetworkChange();
-// 			break;
-// 		}
-// 	  } catch (error) {
-// 		console.error('Error detecting network:', error);
-// 	  }
-// 	} else {
-// 	  alert('No Ethereum provider found. Please install MetaMask.');
-// 	}
-//   }
-  
-//   // Function to update the Web3 provider with a new RPC URL
-//   function updateWeb3Provider(rpcUrl) {
-// 	web3 = new Web3(rpcUrl);
-// 	console.log(`Web3 provider updated to: ${rpcUrl}`);
-// 	// Further actions can be performed with the updated web3 instance
-//   }
-  
-//   // Function to prompt the user to change networks
-//   async function promptNetworkChange() {
-// 	const options = [
-// 	  { chainId: networks.mainnet.chainId, name: 'Mainnet' },
-// 	  { chainId: networks.sepolia.chainId, name: 'Sepolia' },
-// 	  { chainId: networks.polygon.chainId, name: 'Polygon' },
-// 	  { chainId: networks.base.chainId, name: 'Base' },
-// 	  { chainId: networks.opbnb.chainId, name: 'opBNB' },
-// 	  { chainId: networks.optimism.chainId, name: 'Optimism' }
-// 	];
-  
-// 	let networkOptions = options.map(option => `${option.name} (Chain ID: ${option.chainId})`).join('\n');
-  
-// 	alert(`You're connected to an unsupported network. Please switch to one of the supported networks:\n\n${networkOptions}`);
-  
-// 	try {
-// 	  // Optional: Prompt user to switch network using MetaMask's "wallet_switchEthereumChain" method
-// 	  await window.ethereum.request({
-// 		method: 'wallet_switchEthereumChain',
-// 		params: [{ chainId: networks.mainnet.chainId }] // Example: Switch to Mainnet
-// 	  });
-// 	} catch (switchError) {
-// 	  console.error('Error switching network:', switchError);
-// 	}
-//   }
-  
-//   // Run the network check on page load
-//   checkNetwork();
-  
+

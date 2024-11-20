@@ -25,6 +25,7 @@
 	<script src="assets/js/bundle.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
 	<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+	<!-- <script src="assets/js/custom/txn.js"></script> -->
 
 	<!--end::Global Stylesheets Bundle-->
 </head>
@@ -42,21 +43,29 @@
 </script>
 
 <script type="text/javascript">
+	let rawChainId;
+
+	// Function to update the Web3 provider with a new RPC URL
+	function updateWeb3Provider(rpcUrl) {
+		web3 = new Web3(rpcUrl);
+		console.log(`Web3 provider updated to: ${rpcUrl}`);
+		// Further actions can be performed with the updated web3 instance
+	}
 
 
-function showModal() {
+	function showModal() {
 		var modalElement = document.getElementById('kt_modal_wallet');
 		var modal = new bootstrap.Modal(modalElement);
 		modal.show(); // Show the modal
 	}
 
 	function hideModal() {
-    var modalElement = document.getElementById('kt_modal_wallet');
-    var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
-    if (modal) {
-        modal.hide(); // Hide the modal
-    }
-}
+		var modalElement = document.getElementById('kt_modal_wallet');
+		var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
+		if (modal) {
+			modal.hide(); // Hide the modal
+		}
+	}
 
 	//load contract
 
@@ -65,6 +74,16 @@ function showModal() {
 
 	localStorage.setItem('contract', contractValue);
 	// Ensure ethers is available in the global scope
+
+	// Function to detect network change and re-run `checkConnectedNetwork`
+	function detectNetworkChange(wallet) {
+		wallet.on('chainChanged', async () => {
+			console.log("Network changed");
+			await checkConnectedNetwork();
+		});
+
+	}
+
 
 
 	const ethers = window.ethers;
@@ -98,7 +117,13 @@ function showModal() {
 					web3.eth.defaultAccount = accounts[0]
 					localStorage.setItem('connectedWallet', accounts[0]);
 
+
 				})
+				rawChainId = await normalizeToHex(wallet.getChainId());
+				localStorage.setItem('lastChain', rawChainId);
+				localStorage.setItem('lastWallet', 'Metamask');
+				detectNetworkChange(wallet);
+				console.log("Detected Chain ID:", rawChainId);
 				hideModal()
 
 
@@ -127,9 +152,15 @@ function showModal() {
 				// Optionally, have the default account set for web3.js
 				web3.eth.defaultAccount = okxwallet.selectedAddress;
 				localStorage.setItem('connectedWallet', selectedAccount);
+				localStorage.setItem('lastWallet', 'okx');
 				hideModal()
 
 			});
+			rawChainId = await normalizeToHex(wallet.getChainId());
+			localStorage.setItem('lastChain', rawChainId);
+			detectNetworkChange(wallet);
+			console.log("Detected Chain ID:", rawChainId);
+			hideModal()
 
 
 
@@ -154,10 +185,15 @@ function showModal() {
 
 				// Optionally, have the default account set for web3.js
 				web3.eth.defaultAccount = accounts[0];
-				localStorage.setItem('connectedWallet', selectedAccount);
-				hideModal()
+				localStorage.setItem('connectedWallet', selectAddress);
+				localStorage.setItem('lastWallet', 'Coinbase');
+
 
 			})
+			rawChainId = await normalizeToHex(wallet.getChainId());
+			localStorage.setItem('lastChain', rawChainId);
+			detectNetworkChange(wallet);
+			console.log("Detected Chain ID:", rawChainId);
 
 
 		} catch (error) {
@@ -176,9 +212,14 @@ function showModal() {
 					// Optionally, have the default account set for web3.js
 					web3.eth.defaultAccount = wallet.selectedAddress;
 					localStorage.setItem('connectedWallet', selectedAccount);
+					localStorage.setItem('lastWallet', 'Phanton');
 					hideModal();
 
 				});
+				rawChainId = await normalizeToHex(wallet.getChainId());
+				localStorage.setItem('lastChain', rawChainId);
+				detectNetworkChange(wallet);
+				console.log("Detected Chain ID:", rawChainId);
 
 
 			}
@@ -197,6 +238,30 @@ function showModal() {
 
 	}
 
+	async function connectBinance() {
+		if (typeof window.BinanceChain !== 'undefined') {
+			try {
+				const accounts = await window.BinanceChain.request({ method: 'eth_requestAccounts' });
+				console.log('Connected account:', accounts[0]);
+
+				// Store the connected account in localStorage
+				localStorage.setItem('connectedAccount', accounts[0]);
+
+				rawChainId = await normalizeToHex(wallet.getChainId());
+				localStorage.setItem('lastChain', rawChainId);
+				localStorage.setItem('lastWallet', 'other');
+				detectNetworkChange(wallet);
+				console.log("Detected Chain ID:", rawChainId);
+				checkNetwork();
+				hideModal()
+			} catch (error) {
+				console.error('User denied account access or there was an issue:', error);
+			}
+		} else {
+			console.log('No Ethereum provider detected. Please install web3.');
+		}
+	}
+
 	async function connectWallet() {
 		if (typeof window.ethereum !== 'undefined') {
 			try {
@@ -206,15 +271,18 @@ function showModal() {
 				// Store the connected account in localStorage
 				localStorage.setItem('connectedAccount', accounts[0]);
 
-				// Initialize Web3 instance
-				const web3 = new Web3(window.ethereum);
 				checkNetwork();
 				hideModal()
+				rawChainId = await normalizeToHex(wallet.getChainId());
+				localStorage.setItem('lastChain', rawChainId);
+				localStorage.setItem('lastWallet', 'other');
+				detectNetworkChange(wallet);
+				console.log("Detected Chain ID:", rawChainId);
 			} catch (error) {
 				console.error('User denied account access or there was an issue:', error);
 			}
 		} else {
-			console.log('No Ethereum provider detected. Please install MetaMask.');
+			console.log('No Ethereum provider detected. Please install web3.');
 		}
 	}
 
@@ -231,49 +299,50 @@ function showModal() {
 
 
 	async function checkWalletConnectionAndNetwork() {
-		if (typeof window.ethereum !== 'undefined') {
-			try {
-				// Check if wallet is connected
-				const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-				if (accounts.length > 0) {
-					console.log("Wallet is connected: ", accounts[0]);
+		if (typeof wallet !== 'undefined') {
+			// Check if wallet is connected
+			const account = await wallet.request({ method: 'eth_accounts' });
+			const chainId = await wallet.getChainId()
+			console.log("Wallet is connected: ", account);
+			console.log("Network is connected: ", chainId);
 
-					// Check the network the wallet is connected to
-					const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-
-					// Convert chainId to decimal if necessary
-					const decimalChainId = parseInt(chainId, 16);
-
-					// List of allowed network chain IDs
-					const allowedNetworks = {
-						'1': 'Mainnet',
-						'0x64': 'Soneium',
-						'137': 'Polygon',
-						'56': 'BNB Chain',
-						'8453': 'Base'
-					};
-
-					if (allowedNetworks[decimalChainId]) {
-						console.log("Connected to network: ", allowedNetworks[decimalChainId]);
-					} else {
-						alert("Please connect to one of the following networks: Mainnet, Soneium, Polygon, BNB Chain, or Base.");
-					}
-
-					return true; // Wallet is connected
-				} else {
-					console.log("No wallet connected");
-					showModal(); // Show the modal if no wallet is connected
-					return false; // Wallet is not connected
-				}
-			} catch (error) {
-				console.error("Error checking wallet connection or network:", error);
-				showModal(); // Show the modal if there is an error
-				return false;
-			}
 		} else {
-			console.log("No Web3 wallet found");
-			showModal(); // Show the modal if no Web3 wallet is found
-			return false; // Web3 wallet not found
+
+			try {
+
+				const lastWallet = localStorage.getItem('lastWallet')
+				const lastChain = localStorage.getItem('lastChain')
+
+
+				if (typeof lastWallet == 'undefined') {
+					showModal();
+				}
+				if (typeof lastWallet == 'Metamask') {
+					connectMetaMask();
+				}
+				if (typeof lastWallet == 'Coinbase') {
+					connectCoinbase();
+
+				}
+				if (typeof lastWallet == 'Binance') {
+					connectBinance();
+				}
+				if (typeof lastWallet == 'Phantom') {
+					connectPhantomWallet();
+				}
+				if (typeof lastWallet == 'okx') {
+					connectOKXWallet();
+				}
+				if (typeof lastWallet == 'other') {
+					connectWallet();
+				}
+
+			}
+			catch {
+				showModal();
+
+			}
+
 		}
 	}
 
@@ -312,53 +381,79 @@ function showModal() {
 				</div>
 
 				<!-- Wallet connection menu -->
-	
-						<div class="">
-							<span class="text-white fw-bolder fs-4">Connect a wallet</span>
-						</div>
-					</div>
-					<!--begin::Row-->
-					<div class="row row-cols-2 g-0">
-						<a onclick="connectPhantomWallet()"
-							class="border-bottom border-end text-center py-10 btn btn-active-color-primary rounded-0">
-							<span class="svg-icon svg-icon-3x me-n1">
-								<img style="width: 30px; height: 30px;" alt="Phantom Wallet Logo"
-									src="./assets/media/svg/Phantom_SVG_Icon.svg" />
-							</span>
-							<span class="fw-bolder fs-6 d-block pt-3">Phantom Wallet</span>
-						</a>
-						<a id="coinbase" onclick="connectCoinbase()"
-							class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
-							<span class="svg-icon svg-icon-3x me-n1">
-								<img style="width: 30px; height: 30px;" alt="Coinbase Wallet Logo"
-									src="./assets/media/svg/coinbase.svg" />
-							</span>
-							<span class="fw-bolder fs-6 d-block pt-3">Coinbase Wallet</span>
-						</a>
-						<a onclick="connectOKXWallet()"
-							class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
-							<span class="svg-icon svg-icon-3x me-n1">
-								<img alt="OKX Wallet Logo" style="width: 50px; height: 50px;"
-									src="./assets/media/svg/OKX_Logo.svg" />
-							</span>
-							<span class="fw-bolder fs-6 d-block pt-3">OKX Wallet</span>
-						</a>
-						<a id="metamask" onclick="connectMetaMask()"
-							class="col text-center py-10 btn btn-active-color-primary rounded-0">
-							<span class="svg-icon svg-icon-3x me-n1">
-								<img alt="MetaMask Logo" style="width: 50px; height: 50px;"
-									src="./assets/media/svg/metamask.svg" />
-							</span>
-							<span class="fw-bolder fs-6 d-block pt-3">MetaMask</span>
-						</a>
-					</div>
-					<!--end::Row-->
+
+				<div class="">
+					<span class="text-white fw-bolder fs-4">Connect a wallet</span>
 				</div>
 			</div>
-
-		
+			<!--begin::Row-->
+			<div class="row row-cols-2 g-0">
+				<a onclick="connectPhantomWallet()"
+					class="border-bottom border-end text-center py-10 btn btn-active-color-primary rounded-0">
+					<span class="svg-icon svg-icon-3x me-n1">
+						<img style="width: 30px; height: 30px;" alt="Phantom Wallet Logo"
+							src="./assets/media/svg/Phantom_SVG_Icon.svg" />
+					</span>
+					<span class="fw-bolder fs-6 d-block pt-3">Phantom</span>
+				</a>
+				<a id="coinbase" onclick="connectCoinbase()"
+					class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
+					<span class="svg-icon svg-icon-3x me-n1">
+						<img style="width: 30px; height: 30px;" alt="Coinbase Wallet Logo"
+							src="./assets/media/svg/coinbase.svg" />
+					</span>
+					<span class="fw-bolder fs-6 d-block pt-3">Coinbase</span>
+				</a>
+				<a onclick="connectOKXWallet()"
+					class="col border-bottom text-center border-end py-10 btn btn-active-color-primary rounded-0">
+					<span class="svg-icon svg-icon-3x me-n1">
+						<img alt="OKX Wallet Logo" style="width: 50px; height: 50px;"
+							src="./assets/media/svg/OKX_Logo.svg" />
+					</span>
+					<span class="fw-bolder fs-6 d-block pt-3">OKX</span>
+				</a>
+				<a id="metamask" onclick="connectMetaMask()"
+					class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
+					<span class="svg-icon svg-icon-3x me-n1">
+						<img alt="MetaMask Logo" style="width: 50px; height: 50px;"
+							src="./assets/media/svg/metamask.svg" />
+					</span>
+					<span class="fw-bolder fs-6 d-block pt-3">MetaMask</span>
+				</a>
+				<a id="binance" onclick="connectBinance()"
+					class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
+					<span class="svg-icon svg-icon-3x me-n1">
+						<img alt="Binance Logo" style="width: 40px; height: 40px;"
+							src="./assets/media/svg/Binance_Logo.svg" />
+					</span>
+					<span class="fw-bolder fs-6 d-block pt-3">Binance</span>
+				</a>
+				<a id="other" onclick="connectWallet()"
+					class="col text-center py-10 btn btn-active-color-primary rounded-0">
+					<span class="svg-icon svg-icon-1 svg-icon-dark">
+						<svg xmlns="http://www.w3.org/2000/svg" width="65px" height="65px" viewBox="0 0 24 24"
+							fill="none" style="width: 65px; height: 65px;">
+							<path opacity="0.3"
+								d="M3.20001 5.91897L16.9 3.01895C17.4 2.91895 18 3.219 18.1 3.819L19.2 9.01895L3.20001 5.91897Z"
+								fill="grey"></path>
+							<path opacity="0.3"
+								d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21C21.6 10.9189 22 11.3189 22 11.9189V15.9189C22 16.5189 21.6 16.9189 21 16.9189H16C14.3 16.9189 13 15.6189 13 13.9189ZM16 12.4189C15.2 12.4189 14.5 13.1189 14.5 13.9189C14.5 14.7189 15.2 15.4189 16 15.4189C16.8 15.4189 17.5 14.7189 17.5 13.9189C17.5 13.1189 16.8 12.4189 16 12.4189Z"
+								fill="grey"></path>
+							<path
+								d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21V7.91895C21 6.81895 20.1 5.91895 19 5.91895H3C2.4 5.91895 2 6.31895 2 6.91895V20.9189C2 21.5189 2.4 21.9189 3 21.9189H19C20.1 21.9189 21 21.0189 21 19.9189V16.9189H16C14.3 16.9189 13 15.6189 13 13.9189Z"
+								fill="grey"></path>
+						</svg>
+					</span>
+					<span class="fw-bolder fs-6 d-block pt-3">Other Wallet</span>
+				</a>
+			</div>
+			<!--end::Row-->
 		</div>
 	</div>
+
+
+</div>
+</div>
 </div>
 
 
@@ -588,7 +683,7 @@ function showModal() {
 													src="./assets/media/svg/Phantom_SVG_Icon.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Phantom Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Phantom</span>
 										</a>
 										<a id="coinbase" onclick="connectCoinbase()"
 											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
@@ -598,20 +693,20 @@ function showModal() {
 													src="./assets/media/svg/coinbase.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Coinbase Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Coinbase</span>
 										</a>
 										<a onclick="connectOKXWallet()"
-											class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
+											class="col border-bottom text-center border-end py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/finance/fin009.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
 													src="./assets/media/svg/OKX_Logo.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">OKX Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">OKX</span>
 										</a>
 										<a id="metamask" onclick="connectMetaMask()"
-											class="col text-center py-10 btn btn-active-color-primary rounded-0">
+											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/arrows/arr077.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
@@ -620,6 +715,33 @@ function showModal() {
 											</span>
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">MetaMask</span>
+										</a>
+
+										<a id="binance" onclick="connectBinance()"
+											class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
+											<span class="svg-icon svg-icon-3x me-n1">
+												<img alt="Binance Logo" style="width: 40px; height: 40px;"
+													src="./assets/media/svg/Binance_Logo.svg" />
+											</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Binance</span>
+										</a>
+										<a id="other" onclick="connectWallet()"
+											class="col text-center py-10 btn btn-active-color-primary rounded-0">
+											<span class="svg-icon svg-icon-1 svg-icon-dark">
+												<svg xmlns="http://www.w3.org/2000/svg" width="65px" height="65px"
+													viewBox="0 0 24 24" fill="none" style="width: 65px; height: 65px;">
+													<path opacity="0.3"
+														d="M3.20001 5.91897L16.9 3.01895C17.4 2.91895 18 3.219 18.1 3.819L19.2 9.01895L3.20001 5.91897Z"
+														fill="grey"></path>
+													<path opacity="0.3"
+														d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21C21.6 10.9189 22 11.3189 22 11.9189V15.9189C22 16.5189 21.6 16.9189 21 16.9189H16C14.3 16.9189 13 15.6189 13 13.9189ZM16 12.4189C15.2 12.4189 14.5 13.1189 14.5 13.9189C14.5 14.7189 15.2 15.4189 16 15.4189C16.8 15.4189 17.5 14.7189 17.5 13.9189C17.5 13.1189 16.8 12.4189 16 12.4189Z"
+														fill="grey"></path>
+													<path
+														d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21V7.91895C21 6.81895 20.1 5.91895 19 5.91895H3C2.4 5.91895 2 6.31895 2 6.91895V20.9189C2 21.5189 2.4 21.9189 3 21.9189H19C20.1 21.9189 21 21.0189 21 19.9189V16.9189H16C14.3 16.9189 13 15.6189 13 13.9189Z"
+														fill="grey"></path>
+												</svg>
+											</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Other Wallet</span>
 										</a>
 									</div>
 									<!--end::Row-->
@@ -1847,178 +1969,178 @@ function showModal() {
 		}
 	}
 
-	async function fetchTokenBalances(data) {
-		const abiFunctions = [
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"name": "owner",
-						"type": "address"
-					}
-				],
-				"name": "balanceOf",
-				"outputs": [
-					{
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"name": "index",
-						"type": "uint256"
-					}
-				],
-				"name": "tokenOfOwnerByIndex",
-				"outputs": [
-					{
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": false,
-				"inputs": [
-					{
-						"name": "to",
-						"type": "address"
-					},
-					{
-						"name": "value",
-						"type": "uint256"
-					}
-				],
-				"name": "transfer",
-				"outputs": [
-					{
-						"name": "",
-						"type": "bool"
-					}
-				],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
+	// async function fetchTokenBalances(data) {
+	// 	const abiFunctions = [
+	// 		{
+	// 			"constant": true,
+	// 			"inputs": [
+	// 				{
+	// 					"name": "owner",
+	// 					"type": "address"
+	// 				}
+	// 			],
+	// 			"name": "balanceOf",
+	// 			"outputs": [
+	// 				{
+	// 					"name": "",
+	// 					"type": "uint256"
+	// 				}
+	// 			],
+	// 			"payable": false,
+	// 			"stateMutability": "view",
+	// 			"type": "function"
+	// 		},
+	// 		{
+	// 			"constant": true,
+	// 			"inputs": [
+	// 				{
+	// 					"name": "owner",
+	// 					"type": "address"
+	// 				},
+	// 				{
+	// 					"name": "index",
+	// 					"type": "uint256"
+	// 				}
+	// 			],
+	// 			"name": "tokenOfOwnerByIndex",
+	// 			"outputs": [
+	// 				{
+	// 					"name": "",
+	// 					"type": "uint256"
+	// 				}
+	// 			],
+	// 			"payable": false,
+	// 			"stateMutability": "view",
+	// 			"type": "function"
+	// 		},
+	// 		{
+	// 			"constant": false,
+	// 			"inputs": [
+	// 				{
+	// 					"name": "to",
+	// 					"type": "address"
+	// 				},
+	// 				{
+	// 					"name": "value",
+	// 					"type": "uint256"
+	// 				}
+	// 			],
+	// 			"name": "transfer",
+	// 			"outputs": [
+	// 				{
+	// 					"name": "",
+	// 					"type": "bool"
+	// 				}
+	// 			],
+	// 			"payable": false,
+	// 			"stateMutability": "nonpayable",
+	// 			"type": "function"
+	// 		},
 
-			{
-				"constant": true,
-				"inputs": [],
-				"name": "decimals",
-				"outputs": [
-					{
-						"name": "",
-						"type": "uint8"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			}
-		];
-		document.getElementById('tokenHoldings1').innerHTML = "<option></option>";
-		document.getElementById('tokenHoldings2').innerHTML = "<option>Select Token</option>";
-
-
-
-		let tokens = JSON.parse(data);
-
-		console.log('these are the toks my boyy, ' + data)
-
-		for (const token of tokens) {
-			let tokenContract = new web3.eth.Contract(abiFunctions, token.address);
-			let balance = await tokenContract.methods.balanceOf(localStorage.getItem('contract')).call();
-
-			token.balance = balance.toString();
+	// 		{
+	// 			"constant": true,
+	// 			"inputs": [],
+	// 			"name": "decimals",
+	// 			"outputs": [
+	// 				{
+	// 					"name": "",
+	// 					"type": "uint8"
+	// 				}
+	// 			],
+	// 			"payable": false,
+	// 			"stateMutability": "view",
+	// 			"type": "function"
+	// 		}
+	// 	];
+	// 	document.getElementById('tokenHoldings1').innerHTML = "<option></option>";
+	// 	document.getElementById('tokenHoldings2').innerHTML = "<option>Select Token</option>";
 
 
 
-			console.log('token balance =' + token.balance)
-			console.log(token)
+	// 	let tokens = JSON.parse(data);
 
-			if (token.balance !== '0') {
+	// 	console.log('these are the toks my boyy, ' + data)
 
+	// 	for (const token of tokens) {
+	// 		let tokenContract = new web3.eth.Contract(abiFunctions, token.address);
+	// 		let balance = await tokenContract.methods.balanceOf(localStorage.getItem('contract')).call();
 
-				if (token.sym == 'erc721') {
-
-					let tokenId;
-					let optionHtml;
-
-
-					for (let i = 0; i < token.balance; i++) {
-						tokenId = await tokenContract.methods.tokenOfOwnerByIndex(contractAddress, i).call();
-
-						console.log(tokenId)
-						optionHtml = `<option class="${token.type}" data-id="${tokenId.toString()}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">#${tokenId.toString()} ${token.type}</option>`;
-						document.getElementById('tokenHoldings1').innerHTML += optionHtml;
-						document.getElementById('tokenHoldings2').innerHTML += optionHtml;
-
-					}
-
-					console.log(token.balance)
-
-				}
-
-				if (token.sym == 'erc20') {
-					console.log("new token: " + JSON.stringify(token))
+	// 		token.balance = balance.toString();
 
 
 
+	// 		console.log('token balance =' + token.balance)
+	// 		console.log(token)
 
-					let decimals = await tokenContract.methods.decimals().call();
-
-					const balanceBigInt = BigInt(balance);
-					const decimalsBigInt = BigInt(decimals);
-					const factor = BigInt(10) ** decimalsBigInt;
-					const formattedBalance = Number(balanceBigInt) / Number(factor);
-
-					//let formattedBalance = await web3.utils.fromWei(balance, 'ether') * Math.pow(10, 18 - decimals);
-
-					console.log('token balance =' + formattedBalance.toFixed(4))
-					console.log('decimals =' + decimals.toString())
-
-					// Constructing the option element to append to the dropdown
-
-					const optionHtml = `<option class="${token.type}" value="${formattedBalance}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}" data-dec="${decimals.toString()}">${formattedBalance.toFixed(4)} ${token.type}</option>`;
-					document.getElementById('tokenHoldings1').innerHTML += optionHtml;
-					document.getElementById('tokenHoldings2').innerHTML += optionHtml;
-					//document.querySelectorAll(`.clickable`).addEventListener('click', function(){console.log('hellollloolololoo')});
+	// 		if (token.balance !== '0') {
 
 
-				}
+	// 			if (token.sym == 'erc721') {
+
+	// 				let tokenId;
+	// 				let optionHtml;
 
 
+	// 				for (let i = 0; i < token.balance; i++) {
+	// 					tokenId = await tokenContract.methods.tokenOfOwnerByIndex(contractAddress, i).call();
+
+	// 					console.log(tokenId)
+	// 					optionHtml = `<option class="${token.type}" data-id="${tokenId.toString()}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">#${tokenId.toString()} ${token.type}</option>`;
+	// 					document.getElementById('tokenHoldings1').innerHTML += optionHtml;
+	// 					document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+
+	// 				}
+
+	// 				console.log(token.balance)
+
+	// 			}
+
+	// 			if (token.sym == 'erc20') {
+	// 				console.log("new token: " + JSON.stringify(token))
+
+
+
+
+	// 				let decimals = await tokenContract.methods.decimals().call();
+
+	// 				const balanceBigInt = BigInt(balance);
+	// 				const decimalsBigInt = BigInt(decimals);
+	// 				const factor = BigInt(10) ** decimalsBigInt;
+	// 				const formattedBalance = Number(balanceBigInt) / Number(factor);
+
+	// 				//let formattedBalance = await web3.utils.fromWei(balance, 'ether') * Math.pow(10, 18 - decimals);
+
+	// 				console.log('token balance =' + formattedBalance.toFixed(4))
+	// 				console.log('decimals =' + decimals.toString())
+
+	// 				// Constructing the option element to append to the dropdown
+
+	// 				const optionHtml = `<option class="${token.type}" value="${formattedBalance}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}" data-dec="${decimals.toString()}">${formattedBalance.toFixed(4)} ${token.type}</option>`;
+	// 				document.getElementById('tokenHoldings1').innerHTML += optionHtml;
+	// 				document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+	// 				//document.querySelectorAll(`.clickable`).addEventListener('click', function(){console.log('hellollloolololoo')});
+
+
+	// 			}
 
 
 
 
 
 
-			}
 
 
-		}
+	// 		}
 
-		console.log(tokens);
-		document.getElementsByClassName(`clickable`).forEach(element => {
-			element.addEventListener('click', function () { console.log('hellollloolololoo') });
-		});
 
-	}
+	// 	}
+
+	// 	console.log(tokens);
+	// 	document.getElementsByClassName(`clickable`).forEach(element => {
+	// 		element.addEventListener('click', function () { console.log('hellollloolololoo') });
+	// 	});
+
+	// }
 
 	function addEventListenerToSelect() {
 		// Get the select element by its id
@@ -2105,7 +2227,7 @@ function showModal() {
 	});
 
 
-	fetchTokenBalances(localStorage.token_contracts);
+	// fetchTokenBalances(localStorage.token_contracts);
 
 	async function saveToken(tokenAddress, symbol, tokenType) {
 		// Retrieve the existing tokens from localStorage, or initialize with an empty array if none exist.
