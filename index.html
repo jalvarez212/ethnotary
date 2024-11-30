@@ -25,7 +25,9 @@
 	<script src="assets/js/bundle.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
 	<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
-	<!-- <script src="assets/js/custom/txn.js"></script> -->
+	<script src="assets/js/custom/env.js"></script>
+	<script src="assets/js/custom/wallet.js"></script>
+
 
 	<!--end::Global Stylesheets Bundle-->
 </head>
@@ -43,14 +45,14 @@
 </script>
 
 <script type="text/javascript">
-	let rawChainId;
+	// let rawChainId;
 
-	// Function to update the Web3 provider with a new RPC URL
-	function updateWeb3Provider(rpcUrl) {
-		web3 = new Web3(rpcUrl);
-		console.log(`Web3 provider updated to: ${rpcUrl}`);
-		// Further actions can be performed with the updated web3 instance
-	}
+	// // Function to update the Web3 provider with a new RPC URL
+	// function updateWeb3Provider(rpcUrl) {
+	// 	web3 = new Web3(rpcUrl);
+	// 	console.log(`Web3 provider updated to: ${rpcUrl}`);
+	// 	// Further actions can be performed with the updated web3 instance
+	// }
 
 
 	function showModal() {
@@ -76,277 +78,277 @@
 	// Ensure ethers is available in the global scope
 
 	// Function to detect network change and re-run `checkConnectedNetwork`
-	function detectNetworkChange(wallet) {
-		wallet.on('chainChanged', async () => {
-			console.log("Network changed");
-			await checkConnectedNetwork();
-		});
-
-	}
+	// function detectNetworkChange(wallet) {
+	// 	wallet.on('chainChanged', async () => {
+	// 		console.log("Network changed");
+	// 		await checkConnectedNetwork();
+	// 	});
+
+	// }
 
 
-
-	const ethers = window.ethers;
-	const MMSDK = new MetaMaskSDK.MetaMaskSDK(
-		dappMetadata = {
-			name: "ethnotary",
-			url: "ethnotary.io",
-		}
-		// Other options
-	)
-	const coinbaseWallet = new CoinbaseWalletSDK({
-		appName: 'ethnotary',
-		appLogoUrl: 'ethnotary.io',
-		darkMode: false
-	})
-	let wallet;
-	let selectAddress;
+
+	// const ethers = window.ethers;
+	// const MMSDK = new MetaMaskSDK.MetaMaskSDK(
+	// 	dappMetadata = {
+	// 		name: "ethnotary",
+	// 		url: "ethnotary.io",
+	// 	}
+	// 	// Other options
+	// )
+	// const coinbaseWallet = new CoinbaseWalletSDK({
+	// 	appName: 'ethnotary',
+	// 	appLogoUrl: 'ethnotary.io',
+	// 	darkMode: false
+	// })
+	// let wallet;
+	// let selectAddress;
 
-	async function connectMetaMask() {
-		if (typeof window.ethereum !== 'undefined') {
-			try {
-				wallet = await MMSDK.getProvider();
+	// async function connectMetaMask() {
+	// 	if (typeof window.ethereum !== 'undefined') {
+	// 		try {
+	// 			wallet = await MMSDK.getProvider();
 
-				wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-					const accounts = response;
-					console.log(`User's address is ${accounts[0]}`);
-					console.log(response)
-					selectAddress = this.selectAddress
-
-					// Optionally, have the default account set for web3.js
-					web3.eth.defaultAccount = accounts[0]
-					localStorage.setItem('connectedWallet', accounts[0]);
-
-
-				})
-				rawChainId = await normalizeToHex(wallet.getChainId());
-				localStorage.setItem('lastChain', rawChainId);
-				localStorage.setItem('lastWallet', 'Metamask');
-				detectNetworkChange(wallet);
-				console.log("Detected Chain ID:", rawChainId);
-				hideModal()
-
-
-
+	// 			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+	// 				const accounts = response;
+	// 				console.log(`User's address is ${accounts[0]}`);
+	// 				console.log(response)
+	// 				selectAddress = this.selectAddress
+
+	// 				// Optionally, have the default account set for web3.js
+	// 				web3.eth.defaultAccount = accounts[0]
+	// 				localStorage.setItem('connectedWallet', accounts[0]);
+
+
+	// 			})
+	// 			rawChainId = await normalizeToHex(wallet.getChainId());
+	// 			localStorage.setItem('lastChain', rawChainId);
+	// 			localStorage.setItem('lastWallet', 'Metamask');
+	// 			detectNetworkChange(wallet);
+	// 			console.log("Detected Chain ID:", rawChainId);
+	// 			hideModal()
+
+
+
 
-			}
-			catch (error) {
-				console.error('User denied account access or an error occurred:', error);
+	// 		}
+	// 		catch (error) {
+	// 			console.error('User denied account access or an error occurred:', error);
 
-			}
+	// 		}
 
-		}
-		else {
-			alert('This browser is not web3 enabled, please use a different browser.')
+	// 	}
+	// 	else {
+	// 		alert('This browser is not web3 enabled, please use a different browser.')
 
-		}
-	}
+	// 	}
+	// }
 
-	// Function to connect to the user's Ethereum wallet
-	async function connectOKXWallet() {
-		try {
+	// // Function to connect to the user's Ethereum wallet
+	// async function connectOKXWallet() {
+	// 	try {
 
-			wallet = okxwallet;
-			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-				selectAddress = okxwallet.selectedAddress;
-				// Optionally, have the default account set for web3.js
-				web3.eth.defaultAccount = okxwallet.selectedAddress;
-				localStorage.setItem('connectedWallet', selectedAccount);
-				localStorage.setItem('lastWallet', 'okx');
-				hideModal()
+	// 		wallet = okxwallet;
+	// 		wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+	// 			selectAddress = okxwallet.selectedAddress;
+	// 			// Optionally, have the default account set for web3.js
+	// 			web3.eth.defaultAccount = okxwallet.selectedAddress;
+	// 			localStorage.setItem('connectedWallet', selectedAccount);
+	// 			localStorage.setItem('lastWallet', 'okx');
+	// 			hideModal()
 
-			});
-			rawChainId = await normalizeToHex(wallet.getChainId());
-			localStorage.setItem('lastChain', rawChainId);
-			detectNetworkChange(wallet);
-			console.log("Detected Chain ID:", rawChainId);
-			hideModal()
-
-
-
-		}
-		catch (error) {
-			window.open('https://www.okx.com/download');
-
-		}
-
-	}
-	// Function to connect to the user's Ethereum wallet
-	async function connectCoinbase() {
-
-		try {
-			const cbwallet = await coinbaseWallet.makeWeb3Provider('https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '11155111');
-
-			wallet = await cbwallet;
-			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-				const accounts = response;
-				console.log(`User's address is ${accounts[0]}`);
-				selectAddress = accounts[0];
-
-				// Optionally, have the default account set for web3.js
-				web3.eth.defaultAccount = accounts[0];
-				localStorage.setItem('connectedWallet', selectAddress);
-				localStorage.setItem('lastWallet', 'Coinbase');
-
-
-			})
-			rawChainId = await normalizeToHex(wallet.getChainId());
-			localStorage.setItem('lastChain', rawChainId);
-			detectNetworkChange(wallet);
-			console.log("Detected Chain ID:", rawChainId);
-
+	// 		});
+	// 		rawChainId = await normalizeToHex(wallet.getChainId());
+	// 		localStorage.setItem('lastChain', rawChainId);
+	// 		detectNetworkChange(wallet);
+	// 		console.log("Detected Chain ID:", rawChainId);
+	// 		hideModal()
+
+
+
+	// 	}
+	// 	catch (error) {
+	// 		window.open('https://www.okx.com/download');
+
+	// 	}
+
+	// }
+	// // Function to connect to the user's Ethereum wallet
+	// async function connectCoinbase() {
+
+	// 	try {
+	// 		const cbwallet = await coinbaseWallet.makeWeb3Provider('https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '11155111');
+
+	// 		wallet = await cbwallet;
+	// 		wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+	// 			const accounts = response;
+	// 			console.log(`User's address is ${accounts[0]}`);
+	// 			selectAddress = accounts[0];
+
+	// 			// Optionally, have the default account set for web3.js
+	// 			web3.eth.defaultAccount = accounts[0];
+	// 			localStorage.setItem('connectedWallet', selectAddress);
+	// 			localStorage.setItem('lastWallet', 'Coinbase');
+
+
+	// 		})
+	// 		rawChainId = await normalizeToHex(wallet.getChainId());
+	// 		localStorage.setItem('lastChain', rawChainId);
+	// 		detectNetworkChange(wallet);
+	// 		console.log("Detected Chain ID:", rawChainId);
+
 
-		} catch (error) {
-			alert('User denied account access or an error occurred, please refresh browser and try again.');
-		}
+	// 	} catch (error) {
+	// 		alert('User denied account access or an error occurred, please refresh browser and try again.');
+	// 	}
 
-	}
+	// }
 
-	async function connectPhantomWallet() {
-		if (typeof window.phantom !== 'undefined') {
-			try {
-				console.log('helllllo')
-				wallet = await phantom.ethereum;
-				wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-					selectAddress = wallet.selectedAddress;
-					// Optionally, have the default account set for web3.js
-					web3.eth.defaultAccount = wallet.selectedAddress;
-					localStorage.setItem('connectedWallet', selectedAccount);
-					localStorage.setItem('lastWallet', 'Phanton');
-					hideModal();
+	// async function connectPhantomWallet() {
+	// 	if (typeof window.phantom !== 'undefined') {
+	// 		try {
+	// 			console.log('helllllo')
+	// 			wallet = await phantom.ethereum;
+	// 			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+	// 				selectAddress = wallet.selectedAddress;
+	// 				// Optionally, have the default account set for web3.js
+	// 				web3.eth.defaultAccount = wallet.selectedAddress;
+	// 				localStorage.setItem('connectedWallet', selectedAccount);
+	// 				localStorage.setItem('lastWallet', 'Phanton');
+	// 				hideModal();
 
-				});
-				rawChainId = await normalizeToHex(wallet.getChainId());
-				localStorage.setItem('lastChain', rawChainId);
-				detectNetworkChange(wallet);
-				console.log("Detected Chain ID:", rawChainId);
+	// 			});
+	// 			rawChainId = await normalizeToHex(wallet.getChainId());
+	// 			localStorage.setItem('lastChain', rawChainId);
+	// 			detectNetworkChange(wallet);
+	// 			console.log("Detected Chain ID:", rawChainId);
 
 
-			}
-			catch (error) {
-				alert('User denied account access or an error occurred, please refresh browser and try again.');
+	// 		}
+	// 		catch (error) {
+	// 			alert('User denied account access or an error occurred, please refresh browser and try again.');
 
-			}
+	// 		}
 
-		}
-		else {
-			window.open('https://phantom.app/', '_blank');
-
-		}
-
-
-
-	}
-
-	async function connectBinance() {
-		if (typeof window.BinanceChain !== 'undefined') {
-			try {
-				const accounts = await window.BinanceChain.request({ method: 'eth_requestAccounts' });
-				console.log('Connected account:', accounts[0]);
-
-				// Store the connected account in localStorage
-				localStorage.setItem('connectedAccount', accounts[0]);
-
-				rawChainId = await normalizeToHex(wallet.getChainId());
-				localStorage.setItem('lastChain', rawChainId);
-				localStorage.setItem('lastWallet', 'other');
-				detectNetworkChange(wallet);
-				console.log("Detected Chain ID:", rawChainId);
-				checkNetwork();
-				hideModal()
-			} catch (error) {
-				console.error('User denied account access or there was an issue:', error);
-			}
-		} else {
-			console.log('No Ethereum provider detected. Please install web3.');
-		}
-	}
-
-	async function connectWallet() {
-		if (typeof window.ethereum !== 'undefined') {
-			try {
-				const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-				console.log('Connected account:', accounts[0]);
-
-				// Store the connected account in localStorage
-				localStorage.setItem('connectedAccount', accounts[0]);
-
-				checkNetwork();
-				hideModal()
-				rawChainId = await normalizeToHex(wallet.getChainId());
-				localStorage.setItem('lastChain', rawChainId);
-				localStorage.setItem('lastWallet', 'other');
-				detectNetworkChange(wallet);
-				console.log("Detected Chain ID:", rawChainId);
-			} catch (error) {
-				console.error('User denied account access or there was an issue:', error);
-			}
-		} else {
-			console.log('No Ethereum provider detected. Please install web3.');
-		}
-	}
-
-
-	function getTokens(array) {
-
-		for (i = 0; i < array.length; i++) {
-
-
-
-		}
-
-	}
-
-
-	async function checkWalletConnectionAndNetwork() {
-		if (typeof wallet !== 'undefined') {
-			// Check if wallet is connected
-			const account = await wallet.request({ method: 'eth_accounts' });
-			const chainId = await wallet.getChainId()
-			console.log("Wallet is connected: ", account);
-			console.log("Network is connected: ", chainId);
-
-		} else {
-
-			try {
-
-				const lastWallet = localStorage.getItem('lastWallet')
-				const lastChain = localStorage.getItem('lastChain')
-
-
-				if (typeof lastWallet == 'undefined') {
-					showModal();
-				}
-				if (typeof lastWallet == 'Metamask') {
-					connectMetaMask();
-				}
-				if (typeof lastWallet == 'Coinbase') {
-					connectCoinbase();
-
-				}
-				if (typeof lastWallet == 'Binance') {
-					connectBinance();
-				}
-				if (typeof lastWallet == 'Phantom') {
-					connectPhantomWallet();
-				}
-				if (typeof lastWallet == 'okx') {
-					connectOKXWallet();
-				}
-				if (typeof lastWallet == 'other') {
-					connectWallet();
-				}
-
-			}
-			catch {
-				showModal();
-
-			}
-
-		}
-	}
-
-	checkWalletConnectionAndNetwork();
+	// 	}
+	// 	else {
+	// 		window.open('https://phantom.app/', '_blank');
+
+	// 	}
+
+
+
+	// }
+
+	// async function connectBinance() {
+	// 	if (typeof window.BinanceChain !== 'undefined') {
+	// 		try {
+	// 			const accounts = await window.BinanceChain.request({ method: 'eth_requestAccounts' });
+	// 			console.log('Connected account:', accounts[0]);
+
+	// 			// Store the connected account in localStorage
+	// 			localStorage.setItem('connectedAccount', accounts[0]);
+
+	// 			rawChainId = await normalizeToHex(wallet.getChainId());
+	// 			localStorage.setItem('lastChain', rawChainId);
+	// 			localStorage.setItem('lastWallet', 'other');
+	// 			detectNetworkChange(wallet);
+	// 			console.log("Detected Chain ID:", rawChainId);
+	// 			checkNetwork();
+	// 			hideModal()
+	// 		} catch (error) {
+	// 			console.error('User denied account access or there was an issue:', error);
+	// 		}
+	// 	} else {
+	// 		console.log('No Ethereum provider detected. Please install web3.');
+	// 	}
+	// }
+
+	// async function connectWallet() {
+	// 	if (typeof window.ethereum !== 'undefined') {
+	// 		try {
+	// 			const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+	// 			console.log('Connected account:', accounts[0]);
+
+	// 			// Store the connected account in localStorage
+	// 			localStorage.setItem('connectedAccount', accounts[0]);
+
+	// 			checkNetwork();
+	// 			hideModal()
+	// 			rawChainId = await normalizeToHex(wallet.getChainId());
+	// 			localStorage.setItem('lastChain', rawChainId);
+	// 			localStorage.setItem('lastWallet', 'other');
+	// 			detectNetworkChange(wallet);
+	// 			console.log("Detected Chain ID:", rawChainId);
+	// 		} catch (error) {
+	// 			console.error('User denied account access or there was an issue:', error);
+	// 		}
+	// 	} else {
+	// 		console.log('No Ethereum provider detected. Please install web3.');
+	// 	}
+	// }
+
+
+	// function getTokens(array) {
+
+	// 	for (i = 0; i < array.length; i++) {
+
+
+
+	// 	}
+
+	// }
+
+
+	// async function checkWalletConnectionAndNetwork() {
+	// 	if (typeof wallet !== 'undefined') {
+	// 		// Check if wallet is connected
+	// 		const account = await wallet.request({ method: 'eth_accounts' });
+	// 		const chainId = await wallet.getChainId()
+	// 		console.log("Wallet is connected: ", account);
+	// 		console.log("Network is connected: ", chainId);
+
+	// 	} else {
+
+	// 		try {
+
+	// 			const lastWallet = localStorage.getItem('lastWallet')
+	// 			const lastChain = localStorage.getItem('lastChain')
+
+
+	// 			if (typeof lastWallet == 'undefined') {
+	// 				showModal();
+	// 			}
+	// 			if (typeof lastWallet == 'Metamask') {
+	// 				connectMetaMask();
+	// 			}
+	// 			if (typeof lastWallet == 'Coinbase') {
+	// 				connectCoinbase();
+
+	// 			}
+	// 			if (typeof lastWallet == 'Binance') {
+	// 				connectBinance();
+	// 			}
+	// 			if (typeof lastWallet == 'Phantom') {
+	// 				connectPhantomWallet();
+	// 			}
+	// 			if (typeof lastWallet == 'okx') {
+	// 				connectOKXWallet();
+	// 			}
+	// 			if (typeof lastWallet == 'other') {
+	// 				connectWallet();
+	// 			}
+
+	// 		}
+	// 		catch {
+	// 			showModal();
+
+	// 		}
+
+	// 	}
+	// }
+
+	// checkWalletConnectionAndNetwork();
 
 
 
@@ -373,7 +375,6 @@
 					Please make sure you're connected to one of the supported networks:
 					<ul>
 						<li>Mainnet (Ethereum)</li>
-						<li>Soneium</li>
 						<li>Polygon</li>
 						<li>BNB Chain</li>
 						<li>Base</li>
@@ -1911,6 +1912,9 @@
 	<!--begin::Page Custom Javascript(used by this page)-->
 	<script src="assets/js/custom/widgets.js"></script>
 	<script src="assets/js/custom/txn.js"></script>
+	<script src="assets/js/custom/dv.js"></script>
+
+	
 
 	<!--end::Page Custom Javascript-->
 	<!--end::Javascript-->
@@ -2268,211 +2272,208 @@
 
 
 
-	let submitTxn = document.getElementById('submitTxn');
-	submitTxn.addEventListener('click', function (tokenType) {
-
-
-		let to = document.getElementById('toAddress').value;
-		let rawAmount = document.getElementById('ethAmount').value;
-		let amount = web3.utils.toWei(rawAmount, 'ether');
-
-		let callData = contract.methods.submitTransaction(to, amount, '0x').encodeABI();
-		console.log(callData);
-
-		getGas(contract.methods.submitTransaction(to, amount, '0x'))
+	// let submitTxn = document.getElementById('submitTxn');
+	// submitTxn.addEventListener('click', function (tokenType) {
 
 
 
-		wallet.request({ method: 'eth_requestAccounts' })
-			.then(accounts => {
-				if (accounts.length === 0) {
-					console.error('No accounts found. Please connect your Ethereum wallet.');
-				} else {
-					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
+	// 	let callData = contract.methods.submitTransaction(to, amount, '0x').encodeABI();
+	// 	console.log(callData);
 
-					// Contract interaction steps come here after getting the active wallet
-
-
-					wallet.request({
-						method: 'eth_sendTransaction',
-						params: [
-							{
-								to: localStorage.contract, // This now dynamically points to the user's account
-								from: selectAddress,
-								data: callData, // Ensure this is well defined in your original script
-								gasLimit: gas,
-								maxFeePerGas: maxFeePerGas,
-								maxPriorityFeePerGas: maxPriorityFeePerGas,
-								gas: gas,
-							},
-						],
-					})
-						.then((txHash) => {
-							closeModal('#kt_modal_1')
-							console.log('Transaction Hash:', txHash);
-							startProcessingAnimation();
-							setTimeout(showSuccessAnimation, 6000);
-
-							// Hide animations after a short delay (optional)
-							setTimeout(hideAnimations, 8500);
-
-						})
-						.catch((error) => {
-							console.error('Transaction failed:', error);
-							// Optionally handle error animation or message here
-							hideAnimations(); // Hide animations immediately if there's an error
-						});
-				}
-			})
-			.catch(error => {
-				console.error('An error occurred while fetching the connected accounts.', error);
-			});
-	});
-
-	let transferToken = document.getElementById('transferToken');
-	transferToken.addEventListener('click', function () {
-
-
-		let tokenSelect = document.getElementById('tokenHoldings2');
-		let to = document.getElementById('toAddress1').value;
-		let from = contractAddress;
-		let tokenAddress = tokenSelect[tokenSelect.selectedIndex].getAttribute('data-add');
-
-
-		if (tokenSelect[tokenSelect.selectedIndex].getAttribute('data-type') == 'erc721') {
-
-			let id = parseInt(tokenSelect[tokenSelect.selectedIndex].getAttribute('data-id'));
-			let erc721Contract = new web3.eth.Contract(erc721Abi, tokenAddress);
-
-
-			let erc721Data = erc721Contract.methods.transferFrom(from, to, id).encodeABI();
-
-			console.log(erc721Data)
-
-			let callData = contract.methods.submitTransferNFT(tokenAddress, to, id).encodeABI();
-
-			console.log("beep beep compute compute, here is the calldata: " + erc721Data)
-
-			console.log('heyo heyo')
-
-			getGas(contract.methods.submitTransferNFT(tokenAddress, to, id))
-			wallet.request({ method: 'eth_requestAccounts' })
-				.then(accounts => {
-					if (accounts.length === 0) {
-						console.error('No accounts found. Please connect your Ethereum wallet.');
-					} else {
-						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
-
-						// Contract interaction steps come here after getting the active wallet
-						wallet.request({
-							method: 'eth_sendTransaction',
-							params: [
-								{
-									to: localStorage.contract, // This now dynamically points to the user's account
-									from: selectAddress,
-									data: callData, // Ensure this is well defined in your original script
-									gasLimit: gas,
-									maxFeePerGas: maxFeePerGas,
-									maxPriorityFeePerGas: maxPriorityFeePerGas,
-									gas: gas,
-								},
-							],
-						})
-							.then((txHash) => {
-								closeModal('#kt_modal_2')
-								console.log('Transaction Hash:', txHash);
-								startProcessingAnimation();
-								setTimeout(showSuccessAnimation, 6000);
-
-								// Hide animations after a short delay (optional)
-								setTimeout(hideAnimations, 8500);
-
-							})
-							.catch((error) => {
-								console.error('Transaction failed:', error);
-								// Optionally handle error animation or message here
-								hideAnimations(); // Hide animations immediately if there's an error
-							});
-					}
-				})
-				.catch(error => {
-					console.error('An error occurred while fetching the connected accounts.', error);
-				});
-
-		}
-		if (tokenSelect[tokenSelect.selectedIndex].getAttribute('data-type') == 'erc20') {
-
-			let value = parseFloat(document.getElementById('erc20Amount').value);
-			let erc20Contract = new web3.eth.Contract(erc20Abi, tokenAddress);
-
-			let decimals = parseInt(tokenSelect[tokenSelect.selectedIndex].getAttribute('data-dec'));
-
-
-			const amountInSmallestUnit = web3.utils.toBigInt(value * Math.pow(10, decimals));
+	// 	getGas(contract.methods.submitTransaction(to, amount, '0x'))
 
 
 
-			let erc20Data = erc20Contract.methods.transfer(to, amountInSmallestUnit).encodeABI();
+	// 	wallet.request({ method: 'eth_requestAccounts' })
+	// 		.then(accounts => {
+	// 			if (accounts.length === 0) {
+	// 				console.error('No accounts found. Please connect your Ethereum wallet.');
+	// 			} else {
+	// 				const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
-			console.log(erc20Data)
+	// 				// Contract interaction steps come here after getting the active wallet
 
-			let callData = contract.methods.submitTransferERC20(tokenAddress, to, amountInSmallestUnit).encodeABI();
+
+	// 				wallet.request({
+	// 					method: 'eth_sendTransaction',
+	// 					params: [
+	// 						{
+	// 							to: localStorage.contract, // This now dynamically points to the user's account
+	// 							from: selectAddress,
+	// 							data: callData, // Ensure this is well defined in your original script
+	// 							gasLimit: gas,
+	// 							maxFeePerGas: maxFeePerGas,
+	// 							maxPriorityFeePerGas: maxPriorityFeePerGas,
+	// 							gas: gas,
+	// 						},
+	// 					],
+	// 				})
+	// 					.then((txHash) => {
+	// 						closeModal('#kt_modal_1')
+	// 						console.log('Transaction Hash:', txHash);
+	// 						startProcessingAnimation();
+	// 						setTimeout(showSuccessAnimation, 6000);
+
+	// 						// Hide animations after a short delay (optional)
+	// 						setTimeout(hideAnimations, 8500);
+
+	// 					})
+	// 					.catch((error) => {
+	// 						console.error('Transaction failed:', error);
+	// 						// Optionally handle error animation or message here
+	// 						hideAnimations(); // Hide animations immediately if there's an error
+	// 					});
+	// 			}
+	// 		})
+	// 		.catch(error => {
+	// 			console.error('An error occurred while fetching the connected accounts.', error);
+	// 		});
+	// });
+
+	// let transferToken = document.getElementById('transferToken');
+	// transferToken.addEventListener('click', function () {
+
+
+	// 	let tokenSelect = document.getElementById('tokenHoldings2');
+	// 	let to = document.getElementById('toAddress1').value;
+	// 	let from = contractAddress;
+	// 	let tokenAddress = tokenSelect[tokenSelect.selectedIndex].getAttribute('data-add');
+
+
+	// 	if (tokenSelect[tokenSelect.selectedIndex].getAttribute('data-type') == 'erc721') {
+
+	// 		let id = parseInt(tokenSelect[tokenSelect.selectedIndex].getAttribute('data-id'));
+	// 		let erc721Contract = new web3.eth.Contract(erc721Abi, tokenAddress);
+
+
+	// 		let erc721Data = erc721Contract.methods.transferFrom(from, to, id).encodeABI();
+
+	// 		console.log(erc721Data)
+
+	// 		let callData = contract.methods.submitTransferNFT(tokenAddress, to, id).encodeABI();
+
+	// 		console.log("beep beep compute compute, here is the calldata: " + erc721Data)
+
+	// 		console.log('heyo heyo')
+
+	// 		getGas(contract.methods.submitTransferNFT(tokenAddress, to, id))
+	// 		wallet.request({ method: 'eth_requestAccounts' })
+	// 			.then(accounts => {
+	// 				if (accounts.length === 0) {
+	// 					console.error('No accounts found. Please connect your Ethereum wallet.');
+	// 				} else {
+	// 					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
+
+	// 					// Contract interaction steps come here after getting the active wallet
+	// 					wallet.request({
+	// 						method: 'eth_sendTransaction',
+	// 						params: [
+	// 							{
+	// 								to: localStorage.contract, // This now dynamically points to the user's account
+	// 								from: selectAddress,
+	// 								data: callData, // Ensure this is well defined in your original script
+	// 								gasLimit: gas,
+	// 								maxFeePerGas: maxFeePerGas,
+	// 								maxPriorityFeePerGas: maxPriorityFeePerGas,
+	// 								gas: gas,
+	// 							},
+	// 						],
+	// 					})
+	// 						.then((txHash) => {
+	// 							closeModal('#kt_modal_2')
+	// 							console.log('Transaction Hash:', txHash);
+	// 							startProcessingAnimation();
+	// 							setTimeout(showSuccessAnimation, 6000);
+
+	// 							// Hide animations after a short delay (optional)
+	// 							setTimeout(hideAnimations, 8500);
+
+	// 						})
+	// 						.catch((error) => {
+	// 							console.error('Transaction failed:', error);
+	// 							// Optionally handle error animation or message here
+	// 							hideAnimations(); // Hide animations immediately if there's an error
+	// 						});
+	// 				}
+	// 			})
+	// 			.catch(error => {
+	// 				console.error('An error occurred while fetching the connected accounts.', error);
+	// 			});
+
+	// 	}
+	// 	if (tokenSelect[tokenSelect.selectedIndex].getAttribute('data-type') == 'erc20') {
+
+	// 		let value = parseFloat(document.getElementById('erc20Amount').value);
+	// 		let erc20Contract = new web3.eth.Contract(erc20Abi, tokenAddress);
+
+	// 		let decimals = parseInt(tokenSelect[tokenSelect.selectedIndex].getAttribute('data-dec'));
+
+
+	// 		const amountInSmallestUnit = web3.utils.toBigInt(value * Math.pow(10, decimals));
+
+
+
+	// 		let erc20Data = erc20Contract.methods.transfer(to, amountInSmallestUnit).encodeABI();
+
+	// 		console.log(erc20Data)
+
+	// 		let callData = contract.methods.submitTransferERC20(tokenAddress, to, amountInSmallestUnit).encodeABI();
 
 
 
 
-			getGas(contract.methods.submitTransferERC20(tokenAddress, to, amountInSmallestUnit))
-			console.log('heyo heyo')
-			wallet.request({ method: 'eth_requestAccounts' })
-				.then(accounts => {
-					if (accounts.length === 0) {
-						console.error('No accounts found. Please connect your Ethereum wallet.');
-					} else {
-						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
+	// 		getGas(contract.methods.submitTransferERC20(tokenAddress, to, amountInSmallestUnit))
+	// 		console.log('heyo heyo')
+	// 		wallet.request({ method: 'eth_requestAccounts' })
+	// 			.then(accounts => {
+	// 				if (accounts.length === 0) {
+	// 					console.error('No accounts found. Please connect your Ethereum wallet.');
+	// 				} else {
+	// 					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
-						// Start the processing animation
-
-
-						// Send the transaction
-						wallet.request({
-							method: 'eth_sendTransaction',
-							params: [
-								{
-									to: localStorage.contract, // This now dynamically points to the user's account
-									from: selectAddress,
-									data: callData, // Ensure this is well defined in your original script
-									gasLimit: gas,
-									maxFeePerGas: maxFeePerGas,
-									maxPriorityFeePerGas: maxPriorityFeePerGas,
-									gas: gas,
-								},
-							],
-						})
-							.then((txHash) => {
-								closeModal('#kt_modal_2')
-								console.log('Transaction Hash:', txHash);
-								startProcessingAnimation();
-								setTimeout(showSuccessAnimation, 6000);
-
-								// Hide animations after a short delay (optional)
-								setTimeout(hideAnimations, 8500);
-
-							})
-							.catch((error) => {
-								console.error('Transaction failed:', error);
-								// Optionally handle error animation or message here
-								hideAnimations(); // Hide animations immediately if there's an error
-							});
-					}
-				})
-				.catch(error => {
-					console.error('An error occurred while fetching the connected accounts.', error);
-				});
-
-		}
+	// 					// Start the processing animation
 
 
-	});
+	// 					// Send the transaction
+	// 					wallet.request({
+	// 						method: 'eth_sendTransaction',
+	// 						params: [
+	// 							{
+	// 								to: localStorage.contract, // This now dynamically points to the user's account
+	// 								from: selectAddress,
+	// 								data: callData, // Ensure this is well defined in your original script
+	// 								gasLimit: gas,
+	// 								maxFeePerGas: maxFeePerGas,
+	// 								maxPriorityFeePerGas: maxPriorityFeePerGas,
+	// 								gas: gas,
+	// 							},
+	// 						],
+	// 					})
+	// 						.then((txHash) => {
+	// 							closeModal('#kt_modal_2')
+	// 							console.log('Transaction Hash:', txHash);
+	// 							startProcessingAnimation();
+	// 							setTimeout(showSuccessAnimation, 6000);
+
+	// 							// Hide animations after a short delay (optional)
+	// 							setTimeout(hideAnimations, 8500);
+
+	// 						})
+	// 						.catch((error) => {
+	// 							console.error('Transaction failed:', error);
+	// 							// Optionally handle error animation or message here
+	// 							hideAnimations(); // Hide animations immediately if there's an error
+	// 						});
+	// 				}
+	// 			})
+	// 			.catch(error => {
+	// 				console.error('An error occurred while fetching the connected accounts.', error);
+	// 			});
+
+	// 	}
+
+
+	// });
 
 	let logo = document.getElementById('logo');
 

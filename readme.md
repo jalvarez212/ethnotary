@@ -20,8 +20,6 @@ As such, we suggest a one-time donation for the use of the ethnotary tools. This
 
 <img align="left" width="20" height="20" src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=035" alt="Mainnet">Mainnet
 
-<img align="left" width="20" height="20" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Sony_logo.svg" alt="Soneium">Soneium
-
 <img align="left" width="20" height="20" src="https://cryptologos.cc/logos/polygon-matic-logo.svg?v=035" alt="Polygon">Polygon
 
 <img align="left" width="20" height="20" src="https://cryptologos.cc/logos/bnb-bnb-logo.svg?v=035" alt="BNB Chain">BNB Chain

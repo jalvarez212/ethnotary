@@ -11,7 +11,7 @@ let maxPriorityFeePerGas;
 //minato factory
 //const factoryAddress = '0xae7DBD688062E6c5161402860175fB2ba4B0Bd6F'
 
-const factoryAddress = '0x5a57e6f432c6bd3a50506edc79e839dd53f6600e';
+const factoryAddress = '0xbda6bfa2db55d12f0852c676eba85e2d74cbfd3e';
 
 const factoryABI = [
     {
@@ -234,7 +234,7 @@ var KTWizardPage = (function () {
                         from: selectAddress,    // Address sending the transaction
                         to: factoryAddress,    // Contract or recipient address
                         data: data,             // The encoded ABI data for contract interaction (if any)
-                        value: '0x470DE4DF820000' 
+                        value: '0x2AA1EFB94E0000' 
                     });
 
                     console.log('gl: '+ gasLimit)
@@ -246,7 +246,7 @@ var KTWizardPage = (function () {
                         to: factoryAddress,
                         from: selectAddress,
                         data: data,
-                        value: '0x470DE4DF820000', // Sends 0.02 Ether
+                        value: '0x2AA1EFB94E0000', // Sends 0.02 Ether
                        // gasLimit: web3.utils.toHex(web3.utils.toNumber(gasLimit) * buffer),
                        // maxFeePerGas: web3.utils.toHex(maxFeePerGas),
                         //maxPriorityFeePerGas: web3.utils.toHex(maxPriorityFeePerGas)
@@ -257,7 +257,7 @@ var KTWizardPage = (function () {
                         // maxPriorityFeePerGas: web3.utils.toHex(maxPriorityFeePerGas),
                     };
                     console.log(txParams)
-
+                    
 
 
                     //Send the transaction
