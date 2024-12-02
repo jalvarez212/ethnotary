@@ -5,11 +5,11 @@ Designed with decentralization in mind for the worldwide community. 🌐
 **ethnotary** helps users secure funds or treasuries for their onchain activities. We take accepted standards from ethereum to provide easy to use interfaces where users can customize smart contracts to fit their needs and manage their assets on the blockchain. We do not collect any user data. We provide our interface in a sufficiently distributed architecture that ensures robust and reliable operation globally on the world wide web.
 
 ![ethnotary Demo](/assets/media/demo/demo_gif1.gif) 
+
 ![ethnotary Demo](/assets/media/demo/demo_gif2.gif) 
+
 ![ethnotary Demo](/assets/media/demo/demo_gif3.gif)
 
-
-test
 
 
 As such, we suggest a one-time donation for the use of the ethnotary tools. This donation helps support the maintenance, upkeep, and continuous improvements for our community of users.
