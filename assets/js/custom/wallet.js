@@ -335,6 +335,7 @@ async function checkWalletConnectionAndNetwork() {
 
 checkConnectedNetwork().then(function () {
     contract = new web3.eth.Contract(contractABI, contractAddress);
+    console.log("yoyo, this the contract :"+contract)
 });
 
 checkWalletConnectionAndNetwork();

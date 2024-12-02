@@ -7,16 +7,45 @@ Designed with decentralization in mind for the worldwide community. 🌐
 As such, we suggest a one-time donation for the use of the ethnotary tools. This donation helps support the maintenance, upkeep, and continuous improvements for our community of users.
 
 
-## Features
+## ✨ Features
 
 - Double authentication for extra security. Add multiple wallet approvals to send transactions. 
 - Support for various layer 2 networks like Soneium, Polygon, BNB Chain, and Base.
 - Available globally on the world wide web.
-- Easily connect to dApps and interact with other contracts on your network.
 - Decentralized architecture, our interface does not collect any user data. All user data is stored onchain!
 
+## 📍 Roadmap
 
-## Support for 
+We’re continually working to improve **ethnotary** and expand its capabilities. Here’s what’s coming next:
+
+- [x] **Multi-Signature Approvals** for enhanced security
+- [x] **Layer 2 Network Support** for Polygon, BNB Chain, and Base
+- [x] **Interoperability between Layer 2 Networks** for easier user experience
+- [ ] **Mobile-Optimized Interface** for seamless access on the go
+- [ ] **Multi-Language Support** to better serve our global community
+- [ ] **Third-Party Security Audit** for increased reliability and trust
+- [ ] **Customizable Dashboard** for personalized user experience
+- [ ] **Integration with DeFi Tools** like DEXes and yield farms
+- [ ] **Support for ERC-721 contracts** to enable commmerce of media
+
+### Got an idea? 💡
+See the [open issues] (https://github.com/jalvarez212/ethnotary/issues) for a full list of proposed features (and known issues).
+
+---
+
+## Connect
+
+### 💬 Need Help?
+
+Join our **Support Discord Channel** to get assistance, share feedback, or connect with the ethnotary community! We're here to help you make the most of ethnotary.
+
+[![Join our Discord](https://img.shields.io/badge/Join_Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/1293602554470469773/1293707747065462804)
+
+Click the button above or visit [our Discord support channel](https://discord.com/channels/1293602554470469773/1293707747065462804).
+
+
+
+## Supported Networks
 
 <img align="left" width="20" height="20" src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=035" alt="Mainnet">Mainnet
 
@@ -81,7 +110,6 @@ If you prefer to run ethnotary on your local machine, follow the steps below:
    Make sure your Web3 enabled browser is connected to the appropriate network.
 
 
-
 **Notes**
 - Ensure your browser has Web3 integration. You can do this by installing a wallet such as MetaMask or by using a browser that natively supports Web3.
 - The dApp will not function properly without connecting to a Web3 network, so double-check that your Web3 provider (MetaMask or similar) is working as expected.
@@ -91,5 +119,16 @@ If you prefer to run ethnotary on your local machine, follow the steps below:
 - Make sure you are in the correct directory when running the Python HTTP server.
 - Ensure your web browser has Web3 enabled and is connected to the correct network.
 - If you encounter port-related issues, ensure that port 8000 is not in use by another application.
+
+
+### Contributing ###
+
+1. Fork the Project
+2. Create your Feature Branch (git checkout -b feature/AmazingFeature)
+3. Commit your Changes (git commit -m 'Add some AmazingFeature')
+4. Push to the Branch (git push origin feature/AmazingFeature)
+5. Open a Pull Request
+
+
 
 
