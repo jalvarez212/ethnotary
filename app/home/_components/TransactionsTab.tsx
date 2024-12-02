@@ -38,7 +38,7 @@ export function TransactionsTab() {
     <div className="w-full h-full p-5 ">
       <Tabs defaultValue="All Txn" className="w-full h-full flex flex-col">
         <div className="flex items-center mb-2">
-          <h2 className="font-bold text-white mr-4">Transactions</h2>
+          <h2 className="font-bold text-black mr-4">Transactions</h2>
           <TabsList className="grid grid-cols-6 gap-2">
             {tabContents.map(({ value, label }) => (
               <TabsTrigger key={value} value={value}>

@@ -26,9 +26,7 @@ export function PendingTransactions() {
         className="w-full h-full flex flex-col"
       >
         <div className="flex items-center mb-2">
-          <h3 className="whitespace-nowrap px-1.5 py-1.5 text-white mr-4">
-            Pending Transactions
-          </h3>
+          <h3 className="font-bold text-black mr-4">Pending Transactions</h3>
           <TabsList className="grid grid-cols-3">
             {tabContents.map(({ value, label }) => (
               <TabsTrigger key={value} value={value}>

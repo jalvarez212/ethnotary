@@ -10,7 +10,7 @@ import { TransactionsTab } from "./_components/TransactionsTab";
 
 export default function page() {
   return (
-    <div className="min-h-screen  bgd-clay-primary bg-black">
+    <div className="min-h-screen  bg-clay-primary">
       {/* Main Layout Grid */}
       <div className="grid grid-cols-[80px_1fr] min-h-screen">
         {/* Sidebar */}
@@ -50,8 +50,8 @@ export default function page() {
               </div>
             </header>
           </>
-          <div className="grid md:grid-cols-5 gap-10 my-10">
-            <div className="md:col-span-2 bg-gray-800 p-10 rounded-xl">
+          <div className="grid md:grid-cols-6 gap-10 my-10">
+            <div className="md:col-span-2 bg-white p-10 rounded-xl">
               {/* Content Grid */}
               <div className="grid gap-6">
                 {/* Balance Card */}
@@ -106,14 +106,14 @@ export default function page() {
                 </div>
               </div>
             </div>
-            <div className="md:col-span-3  bg-gray-800 h-full w-full rounded-xl p-5">
+            <div className="md:col-span-4  bg-white h-full w-full rounded-xl p-5">
               <PendingTransactions />{" "}
             </div>
           </div>
-          <div className="grid grid-cols-5 gap-10 ">
-            <div className="col-span-2 flex flex-col gap-10 ">
+          <div className="grid md:grid-cols-6 gap-10 ">
+            <div className="md:col-span-2 flex flex-col gap-10 ">
               {/* Price Section */}
-              <div className=" bg-gray-800 rounded-xl p-10">
+              <div className=" bg-white rounded-xl p-10">
                 <h3 className="text-[#7e8299] mb-2">Ether Price</h3>
                 <div className="flex items-baseline gap-2">
                   <span className="text-2xl font-bold text-[#20d489]">
@@ -135,7 +135,7 @@ export default function page() {
               </div>
 
               {/* Stats */}
-              <div className=" bg-gray-800 rounded-xl p-10">
+              <div className=" bg-white rounded-xl p-10">
                 <h3 className="text-[#7e8299] mb-4">Ethereum Stats</h3>
                 <div className="space-y-4">
                   <div>
@@ -156,7 +156,7 @@ export default function page() {
                 </div>
               </div>
             </div>
-            <div className="col-span-3 bg-gray-800 rounded-xl ">
+            <div className="md:col-span-4 bg-white rounded-xl ">
               <TransactionsTab />
             </div>
           </div>
