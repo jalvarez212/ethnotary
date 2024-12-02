@@ -10,7 +10,7 @@ As such, we suggest a one-time donation for the use of the ethnotary tools. This
 ## ✨ Features
 
 - Double authentication for extra security. Add multiple wallet approvals to send transactions. 
-- Support for various layer 2 networks like Soneium, Polygon, BNB Chain, and Base.
+- Support for various layer 2 networks like Polygon, BNB Chain, OP, and Base.
 - Available globally on the world wide web.
 - Decentralized architecture, our interface does not collect any user data. All user data is stored onchain!
 
@@ -33,7 +33,7 @@ See the [open issues] (https://github.com/jalvarez212/ethnotary/issues) for a fu
 
 ---
 
-## Connect
+## 🔗 Connect
 
 ### 💬 Need Help?
 
@@ -45,7 +45,7 @@ Click the button above or visit [our Discord support channel](https://discord.co
 
 
 
-## Supported Networks
+## 🌐 Supported Networks
 
 <img align="left" width="20" height="20" src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=035" alt="Mainnet">Mainnet
 
@@ -55,15 +55,23 @@ Click the button above or visit [our Discord support channel](https://discord.co
 
 <img align="left" width="20" height="20" src="https://github.com/base-org/brand-kit/blob/main/logo/in-product/Base_Network_Logo.svg" alt="Base">Base
 
-## Security
+<img align="left" width="20" height="20" src="https://cryptologos.cc/logos/optimism-ethereum-logo.svg" alt="Optimism">Optimism
+
+
+
+
+
+
+
+## 🔒 Security
 
 ethnotary has not been audited by a third party, a security audit is pending. ethnotary does not collect any user data or hold any user funds. ethnotary contracts are backed by the security of the EVM compatiable blockchains. Please use ethnotary at your own risk as the application is still in active development. 
 
-## Getting Started
+## 🚀 Getting Started
 
 This guide will walk you through the steps required to run ethnotary on your local machine. You can also access the dApp on the web at [ethnotary.io](http://ethnotary.io).
 
-### Prerequisites
+### ✅ Prerequisites
 
 Before getting started, ensure you have the following:
 
@@ -121,7 +129,7 @@ If you prefer to run ethnotary on your local machine, follow the steps below:
 - If you encounter port-related issues, ensure that port 8000 is not in use by another application.
 
 
-### Contributing ###
+### 🤝 Contributing ###
 
 1. Fork the Project
 2. Create your Feature Branch (git checkout -b feature/AmazingFeature)
