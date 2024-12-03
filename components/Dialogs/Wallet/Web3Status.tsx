@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 import { Button } from "@/components/ui/button";
-import useIsChainSupported from "@/hooks/useIsChainSupported";
+import useIsChainSupported from "@/src/app/hooks/useIsChainSupported";
 import { DialogType, useDialog } from "@/components/ui/dialog";
 interface Props {
   className?: string;

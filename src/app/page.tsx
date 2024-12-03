@@ -1,10 +1,10 @@
 import { BarChart3, Send, FileText, Link2, RefreshCw } from "lucide-react";
 import Image from "next/image";
-import SwitchChainDialog from "@/app/components/Dialogs/switchChainDialog";
-import ConnectorDialog from "@/app/components/Dialogs/connector";
-import Navbar from "@/app/components/Header/Navbar";
-import { PendingTransactions } from "./components/Tabs/PendingTransactions";
-import { TransactionsTab } from "./components/Tabs/TransactionsTab";
+import SwitchChainDialog from "@/components/Dialogs/switchChainDialog";
+import ConnectorDialog from "@/components/Dialogs/connector";
+import Navbar from "@/components/Header/Navbar";
+import { PendingTransactions } from "../../components/Tabs/PendingTransactions";
+import { TransactionsTab } from "../../components/Tabs/TransactionsTab";
 
 export default function Home() {
   return (

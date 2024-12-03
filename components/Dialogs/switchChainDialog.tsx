@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { useAccount, useSwitchChain } from "wagmi";
 import Image from "next/image";
-import useIsChainSupported from "@/hooks/useIsChainSupported";
-import { useToast } from "@/hooks/use-toast";
+import useIsChainSupported from "@/src/app/hooks/useIsChainSupported";
+import { useToast } from "@/src/app/hooks/use-toast";
 
 type ChainType = 8453;
 

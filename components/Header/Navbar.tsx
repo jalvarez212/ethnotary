@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { CrossIcon, HamburgerIcon } from "@/app/components/Icons";
 import { useRouter } from "next/navigation";
 import { Web3Status } from "../Dialogs/Wallet/Web3Status";
 import { Button } from "@/components/ui/button";
+import { CrossIcon, HamburgerIcon } from "../Icons";
 
 const Navbar: React.FC = ({}) => {
   const [nav, setNav] = useState<boolean>(false);

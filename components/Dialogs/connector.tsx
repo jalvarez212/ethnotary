@@ -12,7 +12,7 @@ import {
   useDialog,
 } from "@/components/ui/dialog";
 
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/src/app/hooks/use-toast";
 import { Icons } from "@/utils/constants";
 
 const ConnectorDialog: FC = () => {

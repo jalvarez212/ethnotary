@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/src/app/hooks/use-toast";
 import React from "react";
 
 const ToastDemo: React.FC = () => {

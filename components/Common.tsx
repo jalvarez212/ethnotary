@@ -1,5 +1,5 @@
 import React from "react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/src/app/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 const Common = () => {
   const { toast } = useToast();
