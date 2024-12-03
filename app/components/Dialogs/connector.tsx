@@ -1,3 +1,4 @@
+"use client";
 import { FC, useCallback, useMemo, useState } from "react";
 import { useConnect } from "wagmi";
 import Image from "next/image";
