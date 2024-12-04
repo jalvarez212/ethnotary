@@ -1,18 +1,14 @@
 import { Send, FileText, Link2 } from "lucide-react";
 import Image from "next/image";
-import SwitchChainDialog from "@/components/Dialogs/switchChainDialog";
-import ConnectorDialog from "@/components/Dialogs/connector";
-import Navbar from "@/components/Header/Navbar";
-import { PendingTransactions } from "../../components/Tabs/PendingTransactions";
-import { TransactionsTab } from "../../components/Tabs/TransactionsTab";
+import { PendingTransactions } from "./components/Tabs/PendingTransactions";
+import { TransactionsTab } from "./components/Tabs/TransactionsTab";
 import {
   Card,
   CardContent,
-  CardHeader,
   CardTitle,
   CardDescription,
   CardFooter,
-} from "@/components/ui/card";
+} from "@/src/app/components/ui/card";
 
 const ACTIONS = [
   { icon: <Send className="w-5 h-5" />, title: "Send ETH" },

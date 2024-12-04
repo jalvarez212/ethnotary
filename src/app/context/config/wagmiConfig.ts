@@ -2,7 +2,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { createClient } from "viem";
 import { createConfig, http } from "wagmi";
 import { coinbaseWallet, injected, walletConnect } from "wagmi/connectors";
-import { base, sepolia } from "wagmi/chains";
+import { base, bsc, bscTestnet, mainnet, sepolia } from "wagmi/chains";
 import { createConnector } from "wagmi";
 import { HiChevronDoubleDown } from "react-icons/hi";
 import MetaMaskIcon from "@/public/chainwalletIxon/MetaMask.svg";
@@ -47,9 +47,9 @@ function injectedWithFallback() {
 export const WC_PARAMS = {
   projectId: WALLET_CONNECT_PROJECT_ID,
   metadata: {
-    name: "DegenMarket",
-    description: "THE DECENTRALIZED PREDICTION MARKET ON BASE",
-    url: "https://www.degenmarkets.com/",
+    name: "Ethnotary",
+    description: "Manage you wallet activity",
+    url: "https://www.ethnotary.io/",
     icons: [""],
   },
   qrModalOptions: {
@@ -61,7 +61,7 @@ export const WC_PARAMS = {
 };
 
 export const wagmiConfig = createConfig({
-  chains: [base],
+  chains: [mainnet, sepolia, bsc, base, bscTestnet],
   connectors: [
     injectedWithFallback(),
     walletConnect(WC_PARAMS),
