@@ -1,3 +1,231 @@
+// // Define the network chain IDs and corresponding Infura RPC URLs
+// const networks = {
+// 	mainnet: {
+// 		chainId: '0x1', // Ethereum Mainnet Chain ID
+// 		rpcUrl: 'https://mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+// 	},
+// 	sepolia: {
+// 		chainId: '0xaa36a7', // Sepolia Testnet Chain ID
+// 		rpcUrl: 'https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+// 	},
+// 	polygon: {
+// 		chainId: '0x89', // Polygon Mainnet Chain ID
+// 		rpcUrl: 'https://polygon-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+// 	},
+// 	base: {
+// 		chainId: '0x2105', // Base Chain ID (example)
+// 		rpcUrl: 'https://base-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+// 	},
+// 	bnbchain: {
+// 		chainId: '0x38', // opBNB Mainnet Chain ID (example)
+// 		rpcUrl: 'https://bsc-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+// 	},
+// 	optimism: {
+// 		chainId: '0xa', // Optimism Mainnet Chain ID
+// 		rpcUrl: 'https://optimism-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+// 	},
+// };
+
+
+
+
+// const chainIdLookup = Object.keys(networks).reduce((lookup, networkName) => {
+// 	const networkData = networks[networkName];
+// 	lookup[networkData.chainId] = { name: networkName, ...networkData };
+// 	return lookup;
+// }, {});
+
+
+// // Function to update the Web3 provider with a new RPC URL
+// function updateWeb3ProvidermatchedNetwork(rpcUrl) {
+// 	web3 = new Web3(rpcUrl);
+// 	console.log(`Web3 provider updated to: ${rpcUrl}`);
+
+// }
+
+
+// // Function to prompt the user to change networks
+// async function promptNetworkChange() {
+// 	const options = [
+// 		{ chainId: networks.mainnet.chainId, name: 'Mainnet' },
+// 		{ chainId: networks.sepolia.chainId, name: 'Sepolia' },
+// 		{ chainId: networks.polygon.chainId, name: 'Polygon' },
+// 		{ chainId: networks.base.chainId, name: 'Base' },
+// 		{ chainId: networks.bnbchain.chainId, name: 'Bnbchain' },
+// 		{ chainId: networks.optimism.chainId, name: 'Optimism' }
+// 	];
+
+// 	let networkOptions = options.map(option => `${option.name} (Chain ID: ${option.chainId})`).join('\n');
+
+// 	alert(`You're connected to an unsupported network. Please switch to one of the supported networks:\n\n${networkOptions}`);
+
+// }
+
+// function normalizeToHex(input) {
+// 	if (typeof input === 'string' && input.startsWith('0x')) {
+// 		return input.toLowerCase(); // Ensure lowercase for consistency
+// 	} else if (typeof input === 'number') {
+// 		return '0x' + input.toString(16); // Convert decimal to hex
+// 	} else {
+// 		throw new Error("Invalid input type: must be a hex string or a number.");
+// 	}
+// }
+
+
+// function checkWalletConnectionAndNetwork() {
+// 	if (wallet == 'undefined') {
+
+// 		console.log("step0")
+// 		// Check if wallet is connected
+// 		let account = wallet.request({ method: 'eth_requestAccounts' });
+// 		let chainId = wallet.getChainId()
+// 		console.log("Wallet is connected: ", account);
+// 		console.log("Network is connected: ", chainId);
+// 		let matchedNetwork = chainIdLookup[chainId];
+
+// 		console.log(matchedNetwork)
+
+// 		if (matchedNetwork) {
+// 			console.log(`Connected to ${matchedNetwork.name}`);
+// 			updateWeb3Provider(matchedNetwork.rpcUrl);
+// 		} else {
+// 			console.log("Connected to an unsupported network");
+// 			showModal();
+// 		}
+
+// 	} else {
+
+// 		try {
+// 			console.log('step1')
+
+// 			const lastWallet = localStorage.getItem('lastWallet')
+// 			console.log(lastWallet)
+
+
+// 			if (lastWallet == 'undefined') {
+// 				console.log("step2")
+// 				showModal();
+// 			}
+// 			if (lastWallet == 'Metamask') {
+// 				console.log("step3")
+// 				connectMetaMask().then(function () {
+// 					let chainId = wallet.getChainId();
+// 					let matchedNetwork = chainIdLookup[chainId];
+// 					updateWeb3ProvidermatchedNetwork(matchedNetwork.rpcUrl);
+
+
+// 				}
+// 				);
+
+// 			}
+// 			if (lastWallet == 'Coinbase') {
+// 				console.log("step3")
+// 				connectCoinbase().then(function () {
+// 					let chainId = wallet.getChainId();
+// 					let matchedNetwork = chainIdLookup[chainId];
+// 					updateWeb3ProvidermatchedNetwork(matchedNetwork.rpcUrl);
+
+
+// 				}
+// 				);
+
+
+// 			}
+// 			if (lastWallet == 'Binance') {
+// 				console.log("step4")
+// 				connectBinance().then(function () {
+// 					let chainId = wallet.getChainId();
+// 					let matchedNetwork = chainIdLookup[chainId];
+// 					updateWeb3ProvidermatchedNetwork(matchedNetwork.rpcUrl);
+
+
+// 				}
+// 				);
+// 			}
+// 			if (lastWallet == 'Phantom') {
+// 				console.log("step5")
+// 				connectPhantomWallet().then(function () {
+// 					let chainId = wallet.getChainId();
+// 					let matchedNetwork = chainIdLookup[chainId];
+// 					updateWeb3ProvidermatchedNetwork(matchedNetwork.rpcUrl);
+
+
+// 				}
+// 				)
+
+
+// 			}
+// 			if (lastWallet == 'okx') {
+// 				console.log("step6")
+// 				connectOKXWallet().then(function () {
+// 					let chainId = wallet.getChainId();
+// 					let matchedNetwork = chainIdLookup[chainId];
+// 					updateWeb3ProvidermatchedNetwork(matchedNetwork.rpcUrl);
+
+
+// 				}
+// 				)
+
+// 			}
+// 			if (lastWallet == 'other') {
+// 				console.log("step7")
+// 				connectWallet().then(function () {
+// 					let chainId = wallet.getChainId();
+// 					let matchedNetwork = chainIdLookup[chainId];
+// 					updateWeb3ProvidermatchedNetwork(matchedNetwork.rpcUrl);
+
+
+// 				}
+// 				);
+
+
+// 			}
+
+// 		}
+// 		catch {
+// 			showModal()
+
+// 		}
+
+// 	}
+// }
+
+// checkWalletConnectionAndNetwork();
+// async function checkConnectedNetwork() {
+// 	if (!window.ethereum) {
+// 		console.log("No Web3 wallet detected");
+// 		showModal();
+// 		return;
+// 	}
+
+// 	try {
+// 		// Get the current chain ID in hexadecimal format
+// 		// Request switch to Sepolia (replace with the correct chain ID for other networks)
+// 		// await window.ethereum.request({
+// 		//     method: 'wallet_switchEthereumChain',
+// 		//     params: [{ chainId: '0x1' }] // Sepolia Testnet Chain ID
+// 		// });
+
+
+// 		// Use the chainIdLookup map for a direct lookup
+// 		const matchedNetwork = chainIdLookup[localStorage.getItem('lastChain', rawChainId)];
+
+// 		console.log(matchedNetwork)
+
+// 		if (matchedNetwork) {
+// 			console.log(`Connected to ${matchedNetwork.name}`);
+// 			updateWeb3Provider(matchedNetwork.rpcUrl);
+// 		} else {
+// 			console.log("Connected to an unsupported network");
+// 			showModal();
+// 		}
+// 	} catch (error) {
+// 		console.error("Error fetching chain ID:", error);
+// 		showModal();
+// 	}
+// }
+
+
 
 
 checkConnectedNetwork().then(function () {
