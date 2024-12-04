@@ -46,12 +46,7 @@ async function checkConnectedNetwork() {
     }
 
     try {
-        // Get the current chain ID in hexadecimal format
-        // Request switch to Sepolia (replace with the correct chain ID for other networks)
-        // await window.ethereum.request({
-        //     method: 'wallet_switchEthereumChain',
-        //     params: [{ chainId: '0x1' }] // Sepolia Testnet Chain ID
-        // });
+
 
 
         // Use the chainIdLookup map for a direct lookup
