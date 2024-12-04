@@ -1,20 +1,21 @@
-"use client";
-import Link from "next/link";
-
-import { FC } from "react";
-import ConnectorDialog from "../Dialogs/connector";
-import SwitchChainDialog from "../Dialogs/switchChainDialog";
+import React from "react";
+import { Card, CardContent } from "../ui/card";
 import Navbar from "./Navbar";
 
-const Header: FC = () => {
+const Header = () => {
   return (
-    <header className="w-full text-white bg-transparent z-50 py-4">
-      <div className="flex flex-row justify-between items-center mx-9">
-        <Link href="/" className="uppercase text-2xl md:text-8xl te">
-          Degen Markets
-        </Link>
-      </div>
-    </header>
+    <div className="px-5">
+      <Card className="mb-6">
+        <CardContent className="flex justify-end p-4">
+          <div className="flex gap-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="w-10 h-10 bg-black rounded-full" />
+            ))}
+            <Navbar />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
