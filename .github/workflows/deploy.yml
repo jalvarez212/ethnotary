@@ -19,10 +19,6 @@ jobs:
         run: |
           echo "const ENV = { ETHERSCAN_API_KEY: '${{ secrets.ETHERSCAN_API_KEY }}', RPC_NODE_KEY: '${{ secrets.RPC_NODE_KEY}}'};" > keys.js
 
-      # Step 6: Copy keys.js to the build directory
-      - name: Move keys.js to the build directory
-        run: mv keys.js dist/keys.js
-
       # Step 7: Deploy the built files to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
