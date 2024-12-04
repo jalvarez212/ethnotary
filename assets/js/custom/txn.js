@@ -1,30 +1,4 @@
-// // Define the network chain IDs and corresponding Infura RPC URLs
-// const networks = {
-// 	mainnet: {
-// 		chainId: '0x1', // Ethereum Mainnet Chain ID
-// 		rpcUrl: 'https://mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
-// 	},
-// 	sepolia: {
-// 		chainId: '0xaa36a7', // Sepolia Testnet Chain ID
-// 		rpcUrl: 'https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
-// 	},
-// 	polygon: {
-// 		chainId: '0x89', // Polygon Mainnet Chain ID
-// 		rpcUrl: 'https://polygon-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
-// 	},
-// 	base: {
-// 		chainId: '0x2105', // Base Chain ID (example)
-// 		rpcUrl: 'https://base-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
-// 	},
-// 	bnbchain: {
-// 		chainId: '0x38', // opBNB Mainnet Chain ID (example)
-// 		rpcUrl: 'https://bsc-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
-// 	},
-// 	optimism: {
-// 		chainId: '0xa', // Optimism Mainnet Chain ID
-// 		rpcUrl: 'https://optimism-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
-// 	},
-// };
+
 
 
 

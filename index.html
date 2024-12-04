@@ -174,36 +174,7 @@
 	// 	}
 
 	// }
-	// // Function to connect to the user's Ethereum wallet
-	// async function connectCoinbase() {
 
-	// 	try {
-	// 		const cbwallet = await coinbaseWallet.makeWeb3Provider('https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '11155111');
-
-	// 		wallet = await cbwallet;
-	// 		wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-	// 			const accounts = response;
-	// 			console.log(`User's address is ${accounts[0]}`);
-	// 			selectAddress = accounts[0];
-
-	// 			// Optionally, have the default account set for web3.js
-	// 			web3.eth.defaultAccount = accounts[0];
-	// 			localStorage.setItem('connectedWallet', selectAddress);
-	// 			localStorage.setItem('lastWallet', 'Coinbase');
-
-
-	// 		})
-	// 		rawChainId = await normalizeToHex(wallet.getChainId());
-	// 		localStorage.setItem('lastChain', rawChainId);
-	// 		detectNetworkChange(wallet);
-	// 		console.log("Detected Chain ID:", rawChainId);
-
-
-	// 	} catch (error) {
-	// 		alert('User denied account access or an error occurred, please refresh browser and try again.');
-	// 	}
-
-	// }
 
 	// async function connectPhantomWallet() {
 	// 	if (typeof window.phantom !== 'undefined') {
