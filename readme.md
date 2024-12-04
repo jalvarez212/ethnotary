@@ -109,7 +109,7 @@ If you prefer to run ethnotary on your local machine, follow the steps below:
 
    ```const ENV = {ETHERSCAN_API_KEY: 'your-etherscan-api-key',RPC_NODE_KEY: 'your-infura-project-id'};```
 
-   Users can obtain a free Etherscan API key by signing up at [Etherscan.io](https://etherscan.io/apis) and a free Infura API key by creating an account at [Infura.io](https://infura.io/pricing).
+   Replace 'your-etherscan-api-key' and 'your-infura-project-id'with your API keys. Users can obtain a free Etherscan API key by signing up at [Etherscan.io](https://etherscan.io/apis) and a free Infura API key by creating an account at [Infura.io](https://infura.io/pricing).
 
 3. **Navigate to the ethnotary directory & start a local HTTP server**
 
