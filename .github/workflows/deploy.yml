@@ -14,16 +14,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 4: Create env.js dynamically
-      - name: Create keys.js with secrets
+     # Step 2: Create keys.js
+      - name: Create keys.js
         run: |
-          echo "const ENV = { ETHERSCAN_API_KEY: '${{ secrets.ETHERSCAN_API_KEY }}', RPC_NODE_KEY:  '${{ secrets.ETHERSCAN_API_KEY }}'};" > keys.js
+          echo "const ENV = { ETHERSCAN_API_KEY: '${{ secrets.ETHERSCAN_API_KEY }}', RPC_NODE_KEY: '${{ secrets.RPC_NODE_KEY }}' };" > keys.js
 
-      # # Step 6: Copy env.js to the build directory
-      - name: Move keys.js to the build directory
-        run: mv keys.js /keys.js
+      # Step 3: Verify keys.js exists
+      - name: Check for keys.js
+        run: ls -l keys.js
 
-      # Step 7: Deploy the built files to GitHub Pages
+      # Step 4: Create dist directory
+      - name: Create dist directory
+        run: mkdir -p dist
+
+      # Step 5: Move keys.js to dist
+      - name: Move keys.js to dist
+        run: mv keys.js dist/keys.js
+
+      # Step 6: Deploy the built files to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
