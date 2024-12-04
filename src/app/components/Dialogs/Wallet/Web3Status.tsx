@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useAccount, useDisconnect } from "wagmi";
+import { useAccount, useBalance, useDisconnect } from "wagmi";
 import { DialogType, useDialog } from "@/src/app/components/ui/dialog";
 import { Wallet, Check, Copy, LogOut, SwitchCamera } from "lucide-react";
 import Image from "next/image";
@@ -15,6 +15,7 @@ import { shortenAddress } from "@/src/app/lib/utils";
 
 export const Web3Status = () => {
   const { address, isConnected } = useAccount();
+  const { data } = useBalance();
   const { disconnect } = useDisconnect();
   const { setOpen: setOpenSwitchChain } = useDialog(DialogType.SwitchChain);
   const { setOpen: setOpenConnector } = useDialog(DialogType.Connector);
@@ -36,6 +37,9 @@ export const Web3Status = () => {
     copyToClipboard(address!);
   };
 
+  console.log({
+    data,
+  });
   return (
     <div className="flex items-center justify-center">
       {!isConnected && (
@@ -60,7 +64,7 @@ export const Web3Status = () => {
               />
               <div className="text-center flex-col flex space-y-1">
                 <span>{shortenAddress(address)}</span>
-                <span className="text-sm text-gray-400">0 ETH</span>
+                <span className="text-sm text-gray-400">{data?.value} ETH</span>
               </div>
             </div>
             <div className="flex justify-between w-full gap-2">

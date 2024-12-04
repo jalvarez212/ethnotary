@@ -16,12 +16,12 @@ const Header = () => {
     {
       icon: <Settings className="w-6 h-6 text-clay-secondary" />,
       title: "Setting",
-      link: "/views?tab=settings",
+      link: "/view?tab=settings",
     },
     {
       icon: <File className="w-6 h-6 text-clay-secondary" />,
       title: "Wizard",
-      link: "/views?tab=wizard",
+      link: "/view?tab=wizard",
     },
   ];
   return (

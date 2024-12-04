@@ -25,6 +25,9 @@ interface SettingsQueryParams {
 export default function AccountSetting() {
   const { queryParams, setQueryParams } = useQueryParams<SettingsQueryParams>();
 
+  if (!queryParams) {
+    return <div>Error: Unable to fetch query parameters.</div>;
+  }
   const mainTabContents = [
     {
       value: "wizard",
