@@ -82,7 +82,7 @@ Before getting started, ensure you have the following:
 - **Web3-Enabled Browser** Web3-Enabled Browser: Use a browser with Web3 capabilities.
 - **ethnotary Smart Contract Address** If you do not have a contract address, you can create one on the wizard page.
 - **Etherscan API Key** Get a free API key at Etherscan.
-- **RPC Provider URL** Get a free RPC provider API key at Infura or use another provider.
+- **RPC Provider API Key** Get a free RPC provider API key at Infura or use another provider.
 - **Python 3.x** (Only if running locally): [Download and install Python](https://www.python.org/downloads/) if it's not already installed.
 
 
@@ -106,11 +106,15 @@ If you prefer to run ethnotary on your local machine, follow the steps below:
 2. **Set  Up RPC API Provider Keys**
    
    Create a file named keys.js in the root directory and add your keys:
+
    ```const ENV = {ETHERSCAN_API_KEY: 'your-etherscan-api-key',RPC_NODE_KEY: 'your-infura-project-id'};```
+
+   Users can obtain a free Etherscan API key by signing up at [Etherscan.io](https://etherscan.io/apis) and a free Infura API key by creating an account at [Infura.io](https://infura.io/pricing).
 
 3. **Navigate to the ethnotary directory & start a local HTTP server**
 
    To run ethnotary on your local machine, you need to start a simple HTTP server. Run the following command in the terminal:
+
    ```python -m http.server 8000```
 
 4. **Open the dApp in a Web3 Enabled Browser**
