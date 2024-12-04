@@ -21,7 +21,7 @@ jobs:
 
       # # Step 6: Copy env.js to the build directory
       - name: Move keys.js to the build directory
-        run: sudo mv keys.js dist/keys.js
+        run: mv keys.js dist/keys.js
 
       # Step 7: Deploy the built files to GitHub Pages
       - name: Deploy to GitHub Pages
