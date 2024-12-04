@@ -29,7 +29,7 @@ jobs:
 
       # Step 5: Move keys.js to dist
       - name: Move keys.js to dist
-        run: mv keys.js dist/keys.js
+        run: mv keys.js ./keys.js
 
       # Step 6: Deploy the built files to GitHub Pages
       - name: Deploy to GitHub Pages
