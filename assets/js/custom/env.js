@@ -5,7 +5,7 @@ const Execute = ['Execution', 'ExecutionFailure'];
 const Deposits = ['Deposit', 'NftReceived'];
 const Account = ['OwnerAddition', 'OwnerRemoval', 'OwnerReplace', 'RequirementChange'];
 
-let ETHERSCAN_API_KEY = ENV.ETHERSCAN_API_KEY; //add your free ETHERSCAN API key at https://etherscan.io/apis
+let ETHERSCAN_API_KEY = ENV.ETHERSCAN_API_KEY; //add your free ETHERSCAN API key at https://etherscan.io/apis or visit ethnotary.io
 const ETHERSCAN_API_URL = 'https://api.etherscan.io/api';
 
 
@@ -761,27 +761,27 @@ const contractABI = [
 const networks = {
 	mainnet: {
 		chainId: '0x1', // Ethereum Mainnet Chain ID
-		rpcUrl: 'https://mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY,
+		rpcUrl: 'https://mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY, // For running locally replace URL with your free RPC Provider API key at https://www.infura.io/pricing or visit ethnotary.io
 	},
 	sepolia: {
 		chainId: '0xaa36a7', // Sepolia Testnet Chain ID
-		rpcUrl: 'https://sepolia.infura.io/v3/'+ENV.RPC_NODE_KEY,
+		rpcUrl: 'https://sepolia.infura.io/v3/'+ENV.RPC_NODE_KEY, // For running locally replace URL with your free RPC Provider API key at https://www.infura.io/pricing or visit ethnotary.io
 	},
 	polygon: {
 		chainId: '0x89', // Polygon Mainnet Chain ID
-		rpcUrl: 'https://polygon-mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY,
+		rpcUrl: 'https://polygon-mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY, // For running locally replace URL with your free RPC Provider API key at https://www.infura.io/pricing or visit ethnotary.io
 	},
 	base: {
 		chainId: '0x2105', // Base Chain ID 
-		rpcUrl: 'https://base-mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY,
+		rpcUrl: 'https://base-mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY, // For running locally replace URL with your free RPC Provider API key at https://www.infura.io/pricing or visit ethnotary.io
 	},
 	bnbchain: {
 		chainId: '0x38', // opBNB Mainnet Chain ID 
-		rpcUrl: 'https://bsc-mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY,
+		rpcUrl: 'https://bsc-mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY, // For running locally replace URL with your free RPC Provider API key at https://www.infura.io/pricing or visit ethnotary.io
 	},
 	optimism: {
 		chainId: '0xa', // Optimism Mainnet Chain ID
-		rpcUrl: 'https://optimism-mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY,
+		rpcUrl: 'https://optimism-mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY, // For running locally replace URL with your free RPC Provider API key at https://www.infura.io/pricing or visit ethnotary.io
 	},
 };
 

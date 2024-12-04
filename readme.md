@@ -79,8 +79,10 @@ This guide will walk you through the steps required to run ethnotary on your loc
 
 Before getting started, ensure you have the following:
 
-- **Web3 Enabled Browser**: Web3-Enabled Browser: Use a browser with Web3 capabilities.
+- **Web3-Enabled Browser** Web3-Enabled Browser: Use a browser with Web3 capabilities.
 - **ethnotary Smart Contract Address** If you do not have a contract address, you can create one on the wizard page.
+- **Etherscan API Key** Get a free API key at Etherscan.
+- **RPC Provider URL** Get a free RPC provider API key at Infura or use another provider.
 - **Python 3.x** (Only if running locally): [Download and install Python](https://www.python.org/downloads/) if it's not already installed.
 
 
@@ -101,12 +103,17 @@ If you prefer to run ethnotary on your local machine, follow the steps below:
 
    First, clone the repository to your local machine using Git.
 
-2. **Navigate to the ethnotary directory & start a local HTTP server**
+2. **Set  Up RPC API Provider Keys**
+   
+   Create a file named keys.js in the root directory and add your keys:
+   ```const ENV = {ETHERSCAN_API_KEY: 'your-etherscan-api-key',RPC_NODE_KEY: 'your-infura-project-id'};```
+
+3. **Navigate to the ethnotary directory & start a local HTTP server**
 
    To run ethnotary on your local machine, you need to start a simple HTTP server. Run the following command in the terminal:
    ```python -m http.server 8000```
 
-3. **Open the dApp in a Web3 Enabled Browser**
+4. **Open the dApp in a Web3 Enabled Browser**
 
    Once the server is running, open your Web3-enabled browser and navigate to the following URL:
 
@@ -114,7 +121,7 @@ If you prefer to run ethnotary on your local machine, follow the steps below:
 
    Replace YOUR_ETH_ADDRESS in the URL with your account address.
 
-4. **Creating an account**
+5. **Creating an account**
 
    If you do not have a contract address, you can create one using the wizard page by opening your web3 browser and navigating to: http://localhost:8000/wizard.html﻿
 
