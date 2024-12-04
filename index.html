@@ -16,6 +16,7 @@
 	<link rel="shortcut icon" href="assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+	<script src="keys.js"></script>
 	<!--end::Fonts-->
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
 	<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
@@ -77,6 +78,278 @@
 	localStorage.setItem('contract', contractValue);
 	// Ensure ethers is available in the global scope
 
+	// Function to detect network change and re-run `checkConnectedNetwork`
+	// function detectNetworkChange(wallet) {
+	// 	wallet.on('chainChanged', async () => {
+	// 		console.log("Network changed");
+	// 		await checkConnectedNetwork();
+	// 	});
+
+	// }
+
+
+
+	// const ethers = window.ethers;
+	// const MMSDK = new MetaMaskSDK.MetaMaskSDK(
+	// 	dappMetadata = {
+	// 		name: "ethnotary",
+	// 		url: "ethnotary.io",
+	// 	}
+	// 	// Other options
+	// )
+	// const coinbaseWallet = new CoinbaseWalletSDK({
+	// 	appName: 'ethnotary',
+	// 	appLogoUrl: 'ethnotary.io',
+	// 	darkMode: false
+	// })
+	// let wallet;
+	// let selectAddress;
+
+	// async function connectMetaMask() {
+	// 	if (typeof window.ethereum !== 'undefined') {
+	// 		try {
+	// 			wallet = await MMSDK.getProvider();
+
+	// 			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+	// 				const accounts = response;
+	// 				console.log(`User's address is ${accounts[0]}`);
+	// 				console.log(response)
+	// 				selectAddress = this.selectAddress
+
+	// 				// Optionally, have the default account set for web3.js
+	// 				web3.eth.defaultAccount = accounts[0]
+	// 				localStorage.setItem('connectedWallet', accounts[0]);
+
+
+	// 			})
+	// 			rawChainId = await normalizeToHex(wallet.getChainId());
+	// 			localStorage.setItem('lastChain', rawChainId);
+	// 			localStorage.setItem('lastWallet', 'Metamask');
+	// 			detectNetworkChange(wallet);
+	// 			console.log("Detected Chain ID:", rawChainId);
+	// 			hideModal()
+
+
+
+
+	// 		}
+	// 		catch (error) {
+	// 			console.error('User denied account access or an error occurred:', error);
+
+	// 		}
+
+	// 	}
+	// 	else {
+	// 		alert('This browser is not web3 enabled, please use a different browser.')
+
+	// 	}
+	// }
+
+	// // Function to connect to the user's Ethereum wallet
+	// async function connectOKXWallet() {
+	// 	try {
+
+	// 		wallet = okxwallet;
+	// 		wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+	// 			selectAddress = okxwallet.selectedAddress;
+	// 			// Optionally, have the default account set for web3.js
+	// 			web3.eth.defaultAccount = okxwallet.selectedAddress;
+	// 			localStorage.setItem('connectedWallet', selectedAccount);
+	// 			localStorage.setItem('lastWallet', 'okx');
+	// 			hideModal()
+
+	// 		});
+	// 		rawChainId = await normalizeToHex(wallet.getChainId());
+	// 		localStorage.setItem('lastChain', rawChainId);
+	// 		detectNetworkChange(wallet);
+	// 		console.log("Detected Chain ID:", rawChainId);
+	// 		hideModal()
+
+
+
+	// 	}
+	// 	catch (error) {
+	// 		window.open('https://www.okx.com/download');
+
+	// 	}
+
+	// }
+	// // Function to connect to the user's Ethereum wallet
+	// async function connectCoinbase() {
+
+	// 	try {
+	// 		const cbwallet = await coinbaseWallet.makeWeb3Provider('https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376', '11155111');
+
+	// 		wallet = await cbwallet;
+	// 		wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+	// 			const accounts = response;
+	// 			console.log(`User's address is ${accounts[0]}`);
+	// 			selectAddress = accounts[0];
+
+	// 			// Optionally, have the default account set for web3.js
+	// 			web3.eth.defaultAccount = accounts[0];
+	// 			localStorage.setItem('connectedWallet', selectAddress);
+	// 			localStorage.setItem('lastWallet', 'Coinbase');
+
+
+	// 		})
+	// 		rawChainId = await normalizeToHex(wallet.getChainId());
+	// 		localStorage.setItem('lastChain', rawChainId);
+	// 		detectNetworkChange(wallet);
+	// 		console.log("Detected Chain ID:", rawChainId);
+
+
+	// 	} catch (error) {
+	// 		alert('User denied account access or an error occurred, please refresh browser and try again.');
+	// 	}
+
+	// }
+
+	// async function connectPhantomWallet() {
+	// 	if (typeof window.phantom !== 'undefined') {
+	// 		try {
+	// 			console.log('helllllo')
+	// 			wallet = await phantom.ethereum;
+	// 			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+	// 				selectAddress = wallet.selectedAddress;
+	// 				// Optionally, have the default account set for web3.js
+	// 				web3.eth.defaultAccount = wallet.selectedAddress;
+	// 				localStorage.setItem('connectedWallet', selectedAccount);
+	// 				localStorage.setItem('lastWallet', 'Phanton');
+	// 				hideModal();
+
+	// 			});
+	// 			rawChainId = await normalizeToHex(wallet.getChainId());
+	// 			localStorage.setItem('lastChain', rawChainId);
+	// 			detectNetworkChange(wallet);
+	// 			console.log("Detected Chain ID:", rawChainId);
+
+
+	// 		}
+	// 		catch (error) {
+	// 			alert('User denied account access or an error occurred, please refresh browser and try again.');
+
+	// 		}
+
+	// 	}
+	// 	else {
+	// 		window.open('https://phantom.app/', '_blank');
+
+	// 	}
+
+
+
+	// }
+
+	// async function connectBinance() {
+	// 	if (typeof window.BinanceChain !== 'undefined') {
+	// 		try {
+	// 			const accounts = await window.BinanceChain.request({ method: 'eth_requestAccounts' });
+	// 			console.log('Connected account:', accounts[0]);
+
+	// 			// Store the connected account in localStorage
+	// 			localStorage.setItem('connectedAccount', accounts[0]);
+
+	// 			rawChainId = await normalizeToHex(wallet.getChainId());
+	// 			localStorage.setItem('lastChain', rawChainId);
+	// 			localStorage.setItem('lastWallet', 'other');
+	// 			detectNetworkChange(wallet);
+	// 			console.log("Detected Chain ID:", rawChainId);
+	// 			checkNetwork();
+	// 			hideModal()
+	// 		} catch (error) {
+	// 			console.error('User denied account access or there was an issue:', error);
+	// 		}
+	// 	} else {
+	// 		console.log('No Ethereum provider detected. Please install web3.');
+	// 	}
+	// }
+
+	// async function connectWallet() {
+	// 	if (typeof window.ethereum !== 'undefined') {
+	// 		try {
+	// 			const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+	// 			console.log('Connected account:', accounts[0]);
+
+	// 			// Store the connected account in localStorage
+	// 			localStorage.setItem('connectedAccount', accounts[0]);
+
+	// 			checkNetwork();
+	// 			hideModal()
+	// 			rawChainId = await normalizeToHex(wallet.getChainId());
+	// 			localStorage.setItem('lastChain', rawChainId);
+	// 			localStorage.setItem('lastWallet', 'other');
+	// 			detectNetworkChange(wallet);
+	// 			console.log("Detected Chain ID:", rawChainId);
+	// 		} catch (error) {
+	// 			console.error('User denied account access or there was an issue:', error);
+	// 		}
+	// 	} else {
+	// 		console.log('No Ethereum provider detected. Please install web3.');
+	// 	}
+	// }
+
+
+	// function getTokens(array) {
+
+	// 	for (i = 0; i < array.length; i++) {
+
+
+
+	// 	}
+
+	// }
+
+
+	// async function checkWalletConnectionAndNetwork() {
+	// 	if (typeof wallet !== 'undefined') {
+	// 		// Check if wallet is connected
+	// 		const account = await wallet.request({ method: 'eth_accounts' });
+	// 		const chainId = await wallet.getChainId()
+	// 		console.log("Wallet is connected: ", account);
+	// 		console.log("Network is connected: ", chainId);
+
+	// 	} else {
+
+	// 		try {
+
+	// 			const lastWallet = localStorage.getItem('lastWallet')
+	// 			const lastChain = localStorage.getItem('lastChain')
+
+
+	// 			if (typeof lastWallet == 'undefined') {
+	// 				showModal();
+	// 			}
+	// 			if (typeof lastWallet == 'Metamask') {
+	// 				connectMetaMask();
+	// 			}
+	// 			if (typeof lastWallet == 'Coinbase') {
+	// 				connectCoinbase();
+
+	// 			}
+	// 			if (typeof lastWallet == 'Binance') {
+	// 				connectBinance();
+	// 			}
+	// 			if (typeof lastWallet == 'Phantom') {
+	// 				connectPhantomWallet();
+	// 			}
+	// 			if (typeof lastWallet == 'okx') {
+	// 				connectOKXWallet();
+	// 			}
+	// 			if (typeof lastWallet == 'other') {
+	// 				connectWallet();
+	// 			}
+
+	// 		}
+	// 		catch {
+	// 			showModal();
+
+	// 		}
+
+	// 	}
+	// }
+
+	// checkWalletConnectionAndNetwork();
 
 
 
