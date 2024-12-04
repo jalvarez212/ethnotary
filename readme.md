@@ -2,7 +2,7 @@
 
 Designed with decentralization in mind for the worldwide community. 🌐
 
-**ethnotary** helps users secure funds or treasuries for their onchain activities. We take accepted standards from ethereum to provide easy to use interfaces where users can customize smart contracts to fit their needs and manage their assets on the blockchain. We do not collect any user data. We provide our interface in a sufficiently distributed architecture that ensures robust and reliable operation globally on the world wide web.
+**ethnotary** helps users secure funds or treasuries for their on-chain activities. We take accepted standards from Ethereum to provide easy-to-use interfaces where users can customize smart contracts to fit their needs and manage their assets on the blockchain. We do not collect any user data. We provide our interface in a sufficiently distributed architecture that ensures robust and reliable operation globally on the World Wide Web.
 
 As such, we suggest a one-time donation for the use of the ethnotary tools. This donation helps support the maintenance, upkeep, and continuous improvements for our community of users.
 
@@ -15,8 +15,8 @@ As such, we suggest a one-time donation for the use of the ethnotary tools. This
 
 - Double authentication for extra security. Add multiple wallet approvals to send transactions. 
 - Support for various layer 2 networks like Polygon, BNB Chain, OP, and Base.
-- Available globally on the world wide web.
-- Decentralized architecture, our interface does not collect any user data. All user data is stored onchain!
+- Available globally on the World Wide Web.
+- Decentralized architecture: our interface does not collect any user data. All user data is stored on-chain!
 
 ## 📍 Roadmap
 
@@ -69,7 +69,7 @@ Click the button above or visit [our Discord support channel](https://discord.co
 
 ## 🔒 Security
 
-ethnotary has not been audited by a third party, a security audit is pending. ethnotary does not collect any user data or hold any user funds. ethnotary contracts are backed by the security of the EVM compatiable blockchains. Please use ethnotary at your own risk as the application is still in active development. 
+ethnotary has not been audited by a third party; a security audit is pending. ethnotary does not collect any user data or hold any user funds. ethnotary contracts are backed by the security of the EVM-compatible blockchains. Please use ethnotary at your own risk, as the application is still in active developmen 
 
 ## 🚀 Getting Started
 
@@ -79,14 +79,14 @@ This guide will walk you through the steps required to run ethnotary on your loc
 
 Before getting started, ensure you have the following:
 
-- **Web3 Enabled Browser**: Use a browser with Web3 capabilities, such as [MetaMask](https://metamask.io/) for Chrome or Firefox.
-- **ethnotary Smart Contract Address** If you do not have an contract address, you can create one at [wizard page](https://ethnotary.io/wizard.html).
+- **Web3 Enabled Browser**: Web3-Enabled Browser: Use a browser with Web3 capabilities.
+- **ethnotary Smart Contract Address** If you do not have a contract address, you can create one on the wizard page.
 - **Python 3.x** (Only if running locally): [Download and install Python](https://www.python.org/downloads/) if it's not already installed.
 
 
 ### Accessing via the web @  [ethnotary.io](http://ethnotary.io)
 
-You can access ethnotary in your web3 enabled browser by navigating to:
+You can access ethnotary in your web3-enabled browser by navigating to:
 
 ```http://ethnotary.io?YOUR_ACCOUNT_ADDRESS```
 
@@ -104,7 +104,6 @@ If you prefer to run ethnotary on your local machine, follow the steps below:
 2. **Navigate to the ethnotary directory & start a local HTTP server**
 
    To run ethnotary on your local machine, you need to start a simple HTTP server. Run the following command in the terminal:
-
    ```python -m http.server 8000```
 
 3. **Open the dApp in a Web3 Enabled Browser**
@@ -117,9 +116,9 @@ If you prefer to run ethnotary on your local machine, follow the steps below:
 
 4. **Creating an account**
 
-   If you do not have an contract address, you can create one using the wizard page opening your web3 browser and navigating to: http://localhost:8000/wizard.html
+   If you do not have a contract address, you can create one using the wizard page by opening your web3 browser and navigating to: http://localhost:8000/wizard.html﻿
 
-   Make sure your Web3 enabled browser is connected to the appropriate network.
+   Make sure your Web3-enabled browser is connected to the appropriate network.
 
 
 **Notes**
@@ -136,9 +135,9 @@ If you prefer to run ethnotary on your local machine, follow the steps below:
 ## 🤝 Contributing ###
 
 1. Fork the Project
-2. Create your Feature Branch (git checkout -b feature/AmazingFeature)
-3. Commit your Changes (git commit -m 'Add some AmazingFeature')
-4. Push to the Branch (git push origin feature/AmazingFeature)
+2. Create your feature branch (git checkout -b feature/AmazingFeature)
+3. Commit your changes (git commit -m 'Add some AmazingFeature')
+4. Push to the branch (git push origin feature/AmazingFeature)
 5. Open a Pull Request
 
 

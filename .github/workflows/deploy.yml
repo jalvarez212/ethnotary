@@ -1,0 +1,35 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # This triggers the workflow on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # Use the latest Ubuntu environment
+
+    steps:
+      # Step 1: Check out the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 4: Create env.js dynamically
+      - name: Create env.js with secrets
+        run: |
+          echo "const ENV = { ETHERSCAN_API_KEY: '${{ secrets.ETHERSCAN_API_KEY }}', RPC_NODE_KEY:  '${{ secrets.RPC_NODE_KEY}}'};" > keys.js
+
+      # Step 5: Build the project
+      - name: Build the project
+        run: npm run build
+
+      # Step 6: Copy env.js to the build directory
+      - name: Move env.js to the build directory
+        run: mv keys.js dist/env.js
+
+      # Step 7: Deploy the built files to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist

@@ -5,7 +5,7 @@ const Execute = ['Execution', 'ExecutionFailure'];
 const Deposits = ['Deposit', 'NftReceived'];
 const Account = ['OwnerAddition', 'OwnerRemoval', 'OwnerReplace', 'RequirementChange'];
 
-const ETHERSCAN_API_KEY = '85YM7F9JQIE823T4NQS2W3ZMFRUYU6DA23'; // Replace with your Etherscan API key
+let ETHERSCAN_API_KEY = ENV.ETHERSCAN_API_KEY; //add your free ETHERSCAN API key at https://etherscan.io/apis
 const ETHERSCAN_API_URL = 'https://api.etherscan.io/api';
 
 
@@ -761,27 +761,27 @@ const contractABI = [
 const networks = {
 	mainnet: {
 		chainId: '0x1', // Ethereum Mainnet Chain ID
-		rpcUrl: 'https://mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+		rpcUrl: 'https://mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY,
 	},
 	sepolia: {
 		chainId: '0xaa36a7', // Sepolia Testnet Chain ID
-		rpcUrl: 'https://sepolia.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+		rpcUrl: 'https://sepolia.infura.io/v3/'+ENV.RPC_NODE_KEY,
 	},
 	polygon: {
 		chainId: '0x89', // Polygon Mainnet Chain ID
-		rpcUrl: 'https://polygon-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+		rpcUrl: 'https://polygon-mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY,
 	},
 	base: {
-		chainId: '0x2105', // Base Chain ID (example)
-		rpcUrl: 'https://base-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+		chainId: '0x2105', // Base Chain ID 
+		rpcUrl: 'https://base-mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY,
 	},
 	bnbchain: {
-		chainId: '0x38', // opBNB Mainnet Chain ID (example)
-		rpcUrl: 'https://bsc-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+		chainId: '0x38', // opBNB Mainnet Chain ID 
+		rpcUrl: 'https://bsc-mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY,
 	},
 	optimism: {
 		chainId: '0xa', // Optimism Mainnet Chain ID
-		rpcUrl: 'https://optimism-mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376',
+		rpcUrl: 'https://optimism-mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY,
 	},
 };
 
