@@ -21,15 +21,12 @@ jobs:
 
       # Step 5: Move keys.js to dist directory
       - name: Move keys.js to dist directory
-        run: mv keys.js dist/keys.js
+        run: mv keys.js ./keys.js
 
-      # Step 6: Verify keys.js in dist
-      - name: Verify keys.js in dist
-        run: ls -l dist/keys.js
 
       # Step 7: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: .
