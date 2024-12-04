@@ -42,7 +42,7 @@ export function PendingTransactions() {
             value={value}
             className="w-full h-full data-[state=inactive]:hidden flex-grow bg-white text-black rounded-lg"
           >
-            <div className="w-full h-full flex items-center justify-center text-3xl  ">
+            <div className="w-full h-full flex items-center justify-center text-3xl">
               {content}
             </div>
           </TabsContent>

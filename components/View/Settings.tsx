@@ -10,34 +10,26 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Wizard from "./Wizard";
 
-export default function page() {
-  return (
-    <div className="min-h-screen ">
-      <header className="border-b">
-        <div className="container flex h-14 items-center gap-6">
-          <h1 className="text-lg font-semibold">Account Settings</h1>
-          <nav className="flex flex-1 items-center gap-6 text-sm">
-            <a href="#" className="text-foreground">
-              Home
-            </a>
-            <a href="#" className="text-muted-foreground">
-              Wizard
-            </a>
-            <a href="#" className="text-muted-foreground">
-              Settings
-            </a>
-            <a href="#" className="text-muted-foreground">
-              Docs
-            </a>
-          </nav>
-        </div>
-      </header>
-
-      <main className=" py-8">
-        <div className="space-y-6">
-          <section>
-            <h2 className="text-lg font-medium mb-4">Account Owners</h2>
+export default function AccountSetting() {
+  const mainTabContents = [
+    {
+      value: "home",
+      label: "Home",
+      content: <div>Home Content</div>,
+    },
+    {
+      value: "wizard",
+      label: "Wizard",
+      content: <Wizard />,
+    },
+    {
+      value: "settings",
+      label: "Settings",
+      content: (
+        <section>
+          <div className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Add/Remove Owner</CardTitle>
@@ -69,9 +61,7 @@ export default function page() {
                 </CardDescription>
               </CardContent>
             </Card>
-          </section>
 
-          <section>
             <Card>
               <CardHeader>
                 <CardTitle>Replace Owner</CardTitle>
@@ -96,9 +86,7 @@ export default function page() {
                 </CardDescription>
               </CardContent>
             </Card>
-          </section>
 
-          <section>
             <Card>
               <CardHeader>
                 <CardTitle>Change Approval Requirement</CardTitle>
@@ -126,9 +114,51 @@ export default function page() {
                 </CardDescription>
               </CardContent>
             </Card>
-          </section>
-        </div>
-      </main>
+          </div>
+        </section>
+      ),
+    },
+    {
+      value: "docs",
+      label: "Docs",
+      content: <div>Documentation Content</div>,
+    },
+  ];
+
+  return (
+    <div className="min-h-screen">
+      <div className="flex flex-col gap-4">
+        <main className="py-8">
+          <div className="h-full w-full">
+            <Tabs defaultValue="home" className="w-full h-full flex flex-col">
+              <div className="flex items-center justify-between mb-6 border-b">
+                <header>
+                  <div className="container flex items-center h-14 gap-6">
+                    <h1 className="text-lg font-semibold">Account Settings</h1>
+                  </div>
+                </header>
+                <TabsList>
+                  {mainTabContents.map(({ value, label }) => (
+                    <TabsTrigger key={value} value={value}>
+                      {label}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </div>
+
+              {mainTabContents.map(({ value, content }) => (
+                <TabsContent
+                  key={value}
+                  value={value}
+                  className="w-full data-[state=inactive]:hidden"
+                >
+                  <div className="space-y-6">{content}</div>
+                </TabsContent>
+              ))}
+            </Tabs>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
