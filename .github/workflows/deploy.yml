@@ -23,10 +23,6 @@ jobs:
         run: ls -R
 
 
-      # Step 5: Move keys.js to dist
-      - name: Move keys.js to dist
-        run: mv keys.js dist/keys.js
-
       # Step 6: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
