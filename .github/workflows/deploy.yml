@@ -23,14 +23,6 @@ jobs:
       - name: Debug keys.js content
         run: cat keys.js
 
-      # Step 3: Create dist directory
-      - name: Create dist directory
-        run: mkdir -p dist
-
-      # Step 4: Move keys.js to the build directory
-      - name: Move keys.js to the build directory
-        run: mv keys.js dist
-
       # Debug: Confirm files in dist
       - name: List files in dist
         run: ls -la dist
@@ -40,4 +32,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: .
