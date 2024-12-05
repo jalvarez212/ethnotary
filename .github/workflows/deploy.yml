@@ -28,9 +28,9 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git init
+          git remote remove origin || true # Remove the existing remote if it exists
+          git remote add origin https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com:jalvarez212/ethnotary_prod.git
           git add .
           git commit -m "Deploy to private repository"
           git branch -M main
-          git remote add origin https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}git@github.com:jalvarez212/ethnotary_prod.git
           git push -f origin main
