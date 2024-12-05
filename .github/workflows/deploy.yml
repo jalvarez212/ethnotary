@@ -19,9 +19,9 @@ jobs:
       - name: Debug key.js content
         run: cat key.js
 
-      # Step 2: Push to the private repository
+      # Step 2: Deploy to Private Repository
       - name: Deploy to Private Repository
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # Use the PAT instead
           external_repository: jalvarez212/ethnotary_prod
