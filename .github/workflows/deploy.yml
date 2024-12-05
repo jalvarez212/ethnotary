@@ -22,6 +22,10 @@ jobs:
           cat public/keys.js
 
 
+      - name: Debug Deployment Directory
+        run: |
+          ls -R public
+
       # Step 3: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
