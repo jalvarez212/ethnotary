@@ -157,7 +157,7 @@ async function connectOKXWallet() {
 async function connectCoinbase() {
 
     try {
-        const cbwallet = await coinbaseWallet.makeWeb3Provider('https://sepolia.infura.io/v3/'+'ENV.RPC_NODE_KEY', '11155111');
+        const cbwallet = await coinbaseWallet.makeWeb3Provider('https://sepolia.infura.io/v3/'+ENV.RPC_NODE_KEY, '11155111');
 
         wallet = await cbwallet;
         wallet.request({ method: 'eth_requestAccounts' }).then(response => {
