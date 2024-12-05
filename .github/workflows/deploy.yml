@@ -1,35 +1,27 @@
-name: Deploy to GitHub Pages
+name: Deploy to Private Repository
 
 on:
   push:
     branches:
-      - main # This triggers the workflow on pushes to the main branch
+      - main # Trigger on pushes to the main branch
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest # Use the latest Ubuntu environment
+    runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the code
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Step 2: Create keys.js dynamically
+      # Step 1: Create key.js file with environment secrets
       - name: Create key.js with secrets
         run: |
-          echo "const ENV = { ETHERSCAN_API_KEY: '${{ secrets.ETHERSCAN_API_KEY }}', RPC_NODE_KEY:  '${{ secrets.RPC_NODE_KEY }}'};" > $GITHUB_WORKSPACE/key.js
+          echo "const ENV = { ETHERSCAN_API_KEY: '${{ secrets.ETHERSCAN_API_KEY }}', RPC_NODE_KEY: '${{ secrets.RPC_NODE_KEY }}' };" > key.js
 
-      # Debug: Verify keys.js exists
+      # Debug: Verify key.js is created
       - name: Debug key.js content
         run: cat key.js
 
-      # Debug: Confirm files in dist
-      - name: List files in dist
-        run: ls -la
-
-      # Step 5: Deploy the built files to GitHub Pages
-      - name: Deploy to GitHub Pages
+      # Step 2: Push to the private repository
+      - name: Deploy to Private Repository
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          external_repository: jalvarez212/ethnotary_prod
