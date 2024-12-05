@@ -22,7 +22,7 @@ jobs:
 
       # Step 6: Copy env.js to the build directory
       - name: Move env.js to the build directory
-        run: mv key.js dist/keys.js
+        run: mv key.js dist
 
       # Step 7: Deploy the built files to GitHub Pages
       - name: Deploy to GitHub Pages
