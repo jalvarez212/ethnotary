@@ -30,7 +30,7 @@ jobs:
           git ls-remote https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/jalvarez212/ethnotary_prod.git
 
 
-      # Step 3: Deploy to the private repository
+      # Step 3: Deploy to the private repository (y)
       - name: Deploy to Private Repository
         uses: peaceiris/actions-gh-pages@v3
         with:
