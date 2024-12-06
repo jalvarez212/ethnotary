@@ -37,15 +37,14 @@ jobs:
           publish_branch: main
           publish_dir: . # Push everything in the current directory
 
-      # Step 4: Fallback: Deploy using manual git commands
-      - name: Deploy to Private Repository (manual fallback)
-        if: failure() # Run only if Step 3 fails
+      # Step 3: Force push the repository to the private repository
+      - name: Force Push to Private Repository
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git init
           git add .
-          git commit -m "Fallback Deploy to private repository"
+          git commit -m "Force push entire repository to private repo"
           git branch -M main
           git remote add origin https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/jalvarez212/ethnotary_prod.git
           git push -f origin main
