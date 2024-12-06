@@ -10,11 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the code
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Step 2: Create key.js file with environment secrets
+      # Step 1: Create key.js file with environment secrets
       - name: Create key.js with secrets
         run: |
           echo "const ENV = { ETHERSCAN_API_KEY: '${{ secrets.ETHERSCAN_API_KEY }}', RPC_NODE_KEY: '${{ secrets.RPC_NODE_KEY }}' };" > key.js
@@ -23,13 +19,13 @@ jobs:
       - name: Debug key.js content
         run: cat key.js
 
-      # Step 3: Push to the private repository
+      # Step 2: Push to the private repository
       - name: Push to Private Repository
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote remove origin || true # Remove the existing remote if it exists
-          git remote add origin https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/jalvarez212/ethnotary_prod
+          git remote add origin https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/jalvarez212/ethnotary_prod.git
           git add .
           git commit -m "Deploy to private repository"
           git branch -M main
