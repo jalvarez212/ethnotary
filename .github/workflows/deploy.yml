@@ -19,10 +19,6 @@ jobs:
         run: |
           echo "const ENV = { ETHERSCAN_API_KEY: '${{ secrets.ETHERSCAN_API_KEY }}', RPC_NODE_KEY: '${{ secrets.RPC_NODE_KEY }}' };" > key.js
 
-      # Debug: List files in the workspace
-      - name: Debug: List workspace files
-        run: ls -la
-
       # Step 3: Deploy to private repository
       - name: Deploy to Private Repository
         uses: peaceiris/actions-gh-pages@v3
