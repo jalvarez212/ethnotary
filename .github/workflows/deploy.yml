@@ -23,7 +23,7 @@ jobs:
       - name: Debug: List files
         run: ls -la
 
-      # Step 3: Deploy to the private repository (y)
+      # Step 3: Deploy to the private repository (yx)
       - name: Deploy to Private Repository
         uses: peaceiris/actions-gh-pages@v3
         with:
