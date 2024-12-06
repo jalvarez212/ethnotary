@@ -9,10 +9,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    
+
     steps:
       # Step 1: Check out the repository
       - name: Checkout Repository
         uses: actions/checkout@v3
+
+      - name: Print a message
+        run: echo "This workflow is triggered!"
 
       # Step 2: Create key.js with environment secrets
       - name: Create key.js with secrets
