@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the main repository
+      # Step 1: Check out the repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
@@ -19,22 +19,16 @@ jobs:
         run: |
           echo "const ENV = { ETHERSCAN_API_KEY: '${{ secrets.ETHERSCAN_API_KEY }}', RPC_NODE_KEY: '${{ secrets.RPC_NODE_KEY }}' };" > key.js
 
-      # Debug: List files before deployment
-      - name: Debug: List repository files
+      # Debug: List files in the workspace
+      - name: Debug: List workspace files
         run: ls -la
 
-      # Step 3.5: Debug private repository access
-      - name: Test private repository access
-        run: |
-          echo "Testing private repository access..."
-          git ls-remote https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/jalvarez212/ethnotary_prod.git
-
-
-      # Step 3: Deploy to the private repository (y)
+      # Step 3: Deploy to private repository
       - name: Deploy to Private Repository
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          external_repository: jalvarez212/ethnotary_prod # Private repository name
-          publish_branch: main # Branch to push to in the private repository
+          external_repository: jalvarez212/ethnotary_prod # Replace with your private repository name
+          publish_branch: main # Target branch in private repository
           publish_dir: . # Push everything in the current directory
+          force_orphan: true # Force an orphan commit (overwrite everything)
