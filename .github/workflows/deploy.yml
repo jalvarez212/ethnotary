@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the main repository
+      # Step 1: Check out the repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
@@ -19,22 +19,28 @@ jobs:
         run: |
           echo "const ENV = { ETHERSCAN_API_KEY: '${{ secrets.ETHERSCAN_API_KEY }}', RPC_NODE_KEY: '${{ secrets.RPC_NODE_KEY }}' };" > key.js
 
-      # Debug: List files before deployment
-      - name: Debug: List repository files
+      # Debug: List files in the workspace
+      - name: Debug: List workspace files
         run: ls -la
 
-      # Step 3.5: Debug private repository access
-      - name: Test private repository access
-        run: |
-          echo "Testing private repository access..."
-          git ls-remote https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/jalvarez212/ethnotary_prod.git
-
-
-      # Step 3: Deploy to the private repository (y)
-      - name: Deploy to Private Repository
+      # Step 3: Deploy using peaceiris/actions-gh-pages
+      - name: Deploy to Private Repository (via peaceiris)
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          external_repository: jalvarez212/ethnotary_prod # Private repository name
-          publish_branch: main # Branch to push to in the private repository
+          external_repository: jalvarez212/ethnotary_prod
+          publish_branch: main
           publish_dir: . # Push everything in the current directory
+
+      # Step 4: Fallback: Deploy using manual git commands
+      - name: Deploy to Private Repository (manual fallback)
+        if: failure() # Run only if Step 3 fails
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git init
+          git add .
+          git commit -m "Fallback Deploy to private repository"
+          git branch -M main
+          git remote add origin https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/jalvarez212/ethnotary_prod.git
+          git push -f origin main
