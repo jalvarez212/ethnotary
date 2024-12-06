@@ -19,14 +19,9 @@ jobs:
       - name: Debug key.js content
         run: cat key.js
 
-      # Step 2: Push to the private repository
-      - name: Push to Private Repository
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git remote remove origin || true # Remove the existing remote if it exists
-          git remote add origin https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/jalvarez212/ethnotary_prod.git
-          git add .
-          git commit -m "Deploy to private repository"
-          git branch -M main
-          git push -f origin main
+      # Step 2: Deploy to Private Repository (y)
+      - name: Deploy to Private Repository
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # Use the PAT instead
+          external_repository: jalvarez212/ethnotary_prod
