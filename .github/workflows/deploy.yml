@@ -19,7 +19,7 @@ jobs:
       - name: Debug key.js content
         run: cat key.js
 
-      # Step 2: Deploy to Private Repository (y)
+      # Step 2: Deploy to Private Repository
       - name: Deploy to Private Repository
         uses: peaceiris/actions-gh-pages@v3
         with:
