@@ -1,4 +1,4 @@
-name: Deploy to Private Repository
+name: Deploy to Repository
 
 on:
   push:
@@ -10,16 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Create key.js file with environment secrets
+      # Step 1: Check out the repository
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      # Step 2: Create key.js file with environment secrets
       - name: Create key.js with secrets
         run: |
           echo "const ENV = { ETHERSCAN_API_KEY: '${{ secrets.ETHERSCAN_API_KEY }}', RPC_NODE_KEY: '${{ secrets.RPC_NODE_KEY }}' };" > key.js
 
-      # Debug: Verify key.js is created
-      - name: Debug key.js content
-        run: cat key.js
+      # Debug: Verify repository files and key.js
+      - name: Debug: List files
+        run: ls -la
 
-      # Step 2: Deploy to the private repository
+      # Step 3: Deploy to the private repository
       - name: Deploy to Private Repository
         uses: peaceiris/actions-gh-pages@v3
         with:
