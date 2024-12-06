@@ -1,4 +1,4 @@
-name: Deploy to Repository
+name: Deploy to Private Repository
 
 on:
   push:
@@ -10,24 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repository
-      - name: Checkout the repository
+      # Step 1: Checkout the main repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Step 2: Create key.js file with environment secrets
+      # Step 2: Create key.js with environment secrets
       - name: Create key.js with secrets
         run: |
           echo "const ENV = { ETHERSCAN_API_KEY: '${{ secrets.ETHERSCAN_API_KEY }}', RPC_NODE_KEY: '${{ secrets.RPC_NODE_KEY }}' };" > key.js
 
-      # Debug: Verify repository files and key.js
-      - name: Debug: List files
+      # Debug: List files before deployment
+      - name: Debug: List repository files
         run: ls -la
 
-      # Step 3: Deploy to the private repository (yx)
-      - name: Deploy to Private Repository
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          personal_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          external_repository: jalvarez212/ethnotary_prod # Replace with your private repository name
-          publish_branch: main # Branch in the private repository to push to
-          publish_dir: . # Push everything in the current directory
+      # Step 3: Push the repository to the private repository
+      - name: Push to Private Repository
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git init
+          git add .
+          git commit -m "Deploy to private repository"
+          git branch -M main
+          git remote add origin https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/jalvarez212/ethnotary_prod.git
+          git push -f origin main
