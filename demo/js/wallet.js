@@ -4,10 +4,12 @@ let rawChainId;
 let wallet;
 let selectAddress;
 const contractAddress = '0x0053746a266c9ad6dab54e42aa77715aa83243b1';
+
+let web3 = new Web3('https://sepolia.infura.io/v3/'+ENV.RPC_NODE_KEY);;
 const contract = new web3.eth.Contract(contractABI, contractAddress);;
 
 // Initialize Web3 connection
-let web3 = new Web3('https://sepolia.infura.io/v3/'+ENV.RPC_NODE_KEY);;
+
 
 
 async function switchToSepolia() {

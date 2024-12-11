@@ -18,14 +18,7 @@ function updateWeb3Provider(rpcUrl) {
 
 
 
-// Function to detect network change and re-run `checkConnectedNetwork`
-function detectNetworkChange(wallet) {
-    wallet.on('chainChanged', async () => {
-        console.log("Network changed");
-        await checkConnectedNetwork();
-    });
 
-}
 
 function normalizeToHex(input) {
     if (typeof input === 'string' && input.startsWith('0x')) {
@@ -65,6 +58,15 @@ async function checkConnectedNetwork() {
         console.error("Error fetching chain ID:", error);
         showModal();
     }
+}
+
+// Function to detect network change and re-run `checkConnectedNetwork`
+function detectNetworkChange(wallet) {
+    wallet.on('chainChanged', async () => {
+        console.log("Network changed");
+        await checkConnectedNetwork();
+    });
+
 }
 
 

@@ -1,7 +1,7 @@
 
 
 
-checkConnectedNetwork().then(function () {
+switchToSepolia().then(function () {
 
 
 	let submitTxn = document.getElementById('submitTxn');
