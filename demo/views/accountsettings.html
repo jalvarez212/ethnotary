@@ -4,9 +4,9 @@
 <!--begin::Head-->
 
 <head>
-	<base href="../">
 	<title>Account Settings</title>
-	<meta charset="utf-8" />
+	<base href="../">
+
 
 	<meta http-equiv="cache-control" content="max-age=0" />
 	<meta http-equiv="cache-control" content="no-cache" />
@@ -14,559 +14,27 @@
 	<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="pragma" content="no-cache" />
 	<link rel="canonical" href="https://preview.keenthemes.com/start" />
-	<link rel="shortcut icon" href="assets/media/logos/en_logo.png" />
+	<script src="../keys.js?cachebuster=1"></script>
+
+	<link rel="shortcut icon" href="../assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 	<!--end::Fonts-->
-	<!--begin::Global Stylesheets Bundle(used by all pages)-->
-	<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-	<link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
-	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
-	<script src="assets/js/custom/wallet.js"></script>
-
-	<script src="assets/js/custom/env.js"></script>
-
 	<!--end::Global Stylesheets Bundle-->
+	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
+	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+	<script src="../assets/js/bundle.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
+	<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+		<!--begin::Global Stylesheets Bundle(used by all pages)-->
+		<link href="../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+		<link href="../assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+		<script src="./js/env.js"></script>
+		<script src="./js/wallet.js"></script>
+
 </head>
 
 <script>
-
-
-
-	// const contractAddress = localStorage.contract;
-
-
-
-	// const contractABI = [
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "address",
-	// 				"name": "accountOwner",
-	// 				"type": "address"
-	// 			},
-	// 			{
-	// 				"internalType": "uint16",
-	// 				"name": "_pin",
-	// 				"type": "uint16"
-	// 			}
-	// 		],
-	// 		"name": "addOwner",
-	// 		"outputs": [],
-	// 		"stateMutability": "nonpayable",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "_required",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "changeRequirement",
-	// 		"outputs": [],
-	// 		"stateMutability": "nonpayable",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "address[]",
-	// 				"name": "_owners",
-	// 				"type": "address[]"
-	// 			},
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "_required",
-	// 				"type": "uint256"
-	// 			},
-	// 			{
-	// 				"internalType": "uint16",
-	// 				"name": "_pin",
-	// 				"type": "uint16"
-	// 			}
-	// 		],
-	// 		"stateMutability": "payable",
-	// 		"type": "constructor"
-	// 	},
-	// 	{
-	// 		"anonymous": false,
-	// 		"inputs": [
-	// 			{
-	// 				"indexed": true,
-	// 				"internalType": "address",
-	// 				"name": "sender",
-	// 				"type": "address"
-	// 			},
-	// 			{
-	// 				"indexed": true,
-	// 				"internalType": "uint256",
-	// 				"name": "transactionId",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "Confirmation",
-	// 		"type": "event"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "transactionId",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "confirmTransaction",
-	// 		"outputs": [],
-	// 		"stateMutability": "nonpayable",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"anonymous": false,
-	// 		"inputs": [
-	// 			{
-	// 				"indexed": true,
-	// 				"internalType": "address",
-	// 				"name": "sender",
-	// 				"type": "address"
-	// 			},
-	// 			{
-	// 				"indexed": false,
-	// 				"internalType": "uint256",
-	// 				"name": "value",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "Deposit",
-	// 		"type": "event"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "transactionId",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "execute",
-	// 		"outputs": [],
-	// 		"stateMutability": "nonpayable",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"anonymous": false,
-	// 		"inputs": [
-	// 			{
-	// 				"indexed": true,
-	// 				"internalType": "uint256",
-	// 				"name": "transactionId",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "Execution",
-	// 		"type": "event"
-	// 	},
-	// 	{
-	// 		"anonymous": false,
-	// 		"inputs": [
-	// 			{
-	// 				"indexed": true,
-	// 				"internalType": "uint256",
-	// 				"name": "transactionId",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "ExecutionFailure",
-	// 		"type": "event"
-	// 	},
-	// 	{
-	// 		"anonymous": false,
-	// 		"inputs": [
-	// 			{
-	// 				"indexed": true,
-	// 				"internalType": "address",
-	// 				"name": "owner",
-	// 				"type": "address"
-	// 			}
-	// 		],
-	// 		"name": "OwnerAddition",
-	// 		"type": "event"
-	// 	},
-	// 	{
-	// 		"anonymous": false,
-	// 		"inputs": [
-	// 			{
-	// 				"indexed": true,
-	// 				"internalType": "address",
-	// 				"name": "owner",
-	// 				"type": "address"
-	// 			}
-	// 		],
-	// 		"name": "OwnerRemoval",
-	// 		"type": "event"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "address",
-	// 				"name": "accountOwner",
-	// 				"type": "address"
-	// 			},
-	// 			{
-	// 				"internalType": "uint16",
-	// 				"name": "_pin",
-	// 				"type": "uint16"
-	// 			}
-	// 		],
-	// 		"name": "removeOwner",
-	// 		"outputs": [],
-	// 		"stateMutability": "nonpayable",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "address",
-	// 				"name": "accountOwner",
-	// 				"type": "address"
-	// 			},
-	// 			{
-	// 				"internalType": "address",
-	// 				"name": "newOwner",
-	// 				"type": "address"
-	// 			},
-	// 			{
-	// 				"internalType": "uint16",
-	// 				"name": "_pin",
-	// 				"type": "uint16"
-	// 			}
-	// 		],
-	// 		"name": "replaceOwner",
-	// 		"outputs": [],
-	// 		"stateMutability": "nonpayable",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"anonymous": false,
-	// 		"inputs": [
-	// 			{
-	// 				"indexed": false,
-	// 				"internalType": "uint256",
-	// 				"name": "required",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "RequirementChange",
-	// 		"type": "event"
-	// 	},
-	// 	{
-	// 		"anonymous": false,
-	// 		"inputs": [
-	// 			{
-	// 				"indexed": true,
-	// 				"internalType": "address",
-	// 				"name": "sender",
-	// 				"type": "address"
-	// 			},
-	// 			{
-	// 				"indexed": true,
-	// 				"internalType": "uint256",
-	// 				"name": "transactionId",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "Revocation",
-	// 		"type": "event"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "transactionId",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "revokeConfirmation",
-	// 		"outputs": [],
-	// 		"stateMutability": "nonpayable",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"anonymous": false,
-	// 		"inputs": [
-	// 			{
-	// 				"indexed": true,
-	// 				"internalType": "uint256",
-	// 				"name": "transactionId",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "Submission",
-	// 		"type": "event"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "address",
-	// 				"name": "dest",
-	// 				"type": "address"
-	// 			},
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "value",
-	// 				"type": "uint256"
-	// 			},
-	// 			{
-	// 				"internalType": "bytes",
-	// 				"name": "func",
-	// 				"type": "bytes"
-	// 			}
-	// 		],
-	// 		"name": "submitTransaction",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "transactionId",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"stateMutability": "nonpayable",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"stateMutability": "payable",
-	// 		"type": "receive"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "",
-	// 				"type": "uint256"
-	// 			},
-	// 			{
-	// 				"internalType": "address",
-	// 				"name": "",
-	// 				"type": "address"
-	// 			}
-	// 		],
-	// 		"name": "confirmations",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "bool",
-	// 				"name": "",
-	// 				"type": "bool"
-	// 			}
-	// 		],
-	// 		"stateMutability": "view",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "transactionId",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "getConfirmationCount",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "count",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"stateMutability": "view",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "transactionId",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "getConfirmations",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "address[]",
-	// 				"name": "_confirmations",
-	// 				"type": "address[]"
-	// 			}
-	// 		],
-	// 		"stateMutability": "view",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [],
-	// 		"name": "getOwners",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "address[]",
-	// 				"name": "",
-	// 				"type": "address[]"
-	// 			}
-	// 		],
-	// 		"stateMutability": "view",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "transactionId",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "isConfirmed",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "bool",
-	// 				"name": "",
-	// 				"type": "bool"
-	// 			}
-	// 		],
-	// 		"stateMutability": "view",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "address",
-	// 				"name": "",
-	// 				"type": "address"
-	// 			}
-	// 		],
-	// 		"name": "isOwner",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "bool",
-	// 				"name": "",
-	// 				"type": "bool"
-	// 			}
-	// 		],
-	// 		"stateMutability": "view",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [],
-	// 		"name": "MAX_OWNER_COUNT",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"stateMutability": "view",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [],
-	// 		"name": "owner",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "address",
-	// 				"name": "",
-	// 				"type": "address"
-	// 			}
-	// 		],
-	// 		"stateMutability": "view",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "owners",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "address",
-	// 				"name": "",
-	// 				"type": "address"
-	// 			}
-	// 		],
-	// 		"stateMutability": "view",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [],
-	// 		"name": "required",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"stateMutability": "view",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [],
-	// 		"name": "transactionCount",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"stateMutability": "view",
-	// 		"type": "function"
-	// 	},
-	// 	{
-	// 		"inputs": [
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"name": "transactions",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "address",
-	// 				"name": "dest",
-	// 				"type": "address"
-	// 			},
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "value",
-	// 				"type": "uint256"
-	// 			},
-	// 			{
-	// 				"internalType": "bytes",
-	// 				"name": "func",
-	// 				"type": "bytes"
-	// 			},
-	// 			{
-	// 				"internalType": "bool",
-	// 				"name": "executed",
-	// 				"type": "bool"
-	// 			},
-	// 			{
-	// 				"internalType": "uint256",
-	// 				"name": "id",
-	// 				"type": "uint256"
-	// 			}
-	// 		],
-	// 		"stateMutability": "view",
-	// 		"type": "function"
-	// 	}
-	// ];
-
-	// // Initialize Web3. Replace 'YourProviderURL' with your Ethereum node provider URL
-	// const web3 = new Web3('https://mainnet.infura.io/v3/54458b95c9b541c09452a4a48c3d3376');
-
-	// const contract = new web3.eth.Contract(contractABI, contractAddress);
 
 
 	async function callGetOwners() {
@@ -616,7 +84,7 @@
 					<div class="aside-logo d-flex flex-column align-items-center flex-column-auto py-4 pt-lg-10 pb-lg-7"
 						id="kt_aside_logo">
 						<a id="logo" href="">
-							<img alt="Logo" src="assets/media/logos/en_logo.png" class="mh-50px" />
+							<img alt="Logo" src="../assets/media/logos/en_logo.png" class="mh-50px" />
 						</a>
 					</div>
 					<!--end::Logo-->
@@ -700,7 +168,7 @@
 								<!--begin::Item-->
 								<li class="nav-item mb-1" title="New Contract" data-bs-toggle="tooltip"
 									data-bs-dismiss="click" data-bs-placement="right">
-									<a href="./views/wizard.html"
+									<a href="../../views/wizard.html"
 										class="nav-link h-40px w-40px h-lg-50px w-lg-50px btn btn-custom btn-icon btn-color-white"
 										role="tab">
 										<!--begin::Svg Icon | path: icons/duotune/files/fil005.svg-->
@@ -762,7 +230,7 @@
 							<!--begin::Logo-->
 							<a id="logo" href="">
 
-								<img alt="Logo" src="assets/media/logos/logo_full.png" class="h-30px" />
+								<img alt="Logo" src="../assets/media/logos/logo_full.png" class="h-30px" />
 							</a>
 							<!--end::Logo-->
 						</div>
@@ -797,10 +265,10 @@
 								<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold w-300px"
 									data-kt-menu="true">
 									<div class="menu-content fw-bold d-flex align-items-center bgi-no-repeat bgi-position-y-top rounded-top"
-										style="background-image:url('./assets/media//misc/dropdown-header-bg.jpg')">
+										style="background-image:url('../assets/media//misc/dropdown-header-bg.jpg')">
 										<div class="symbol symbol-45px mx-5 py-5">
 											<span class="symbol-label align-items-end">
-												<img alt="Logo" src="./assets/media/icons/duotune/arrows/arr076.svg"
+												<img alt="Logo" src="../assets/media/icons/duotune/arrows/arr076.svg"
 													class="mh-35px" style="margin-bottom: auto;
 													margin-top: auto;" />
 											</span>
@@ -818,7 +286,7 @@
 
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img style="width: 30px; height: 30px;" alt="Logo"
-													src="./assets/media/svg/Phantom_SVG_Icon.svg" />
+													src="../assets/media/svg/Phantom_SVG_Icon.svg" />
 											</span>
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">Phantom Wallet</span>
@@ -828,7 +296,7 @@
 											<!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img style="width: 30px; height: 30px;" alt="Logo"
-													src="./assets/media/svg/coinbase.svg" />
+													src="../assets/media/svg/coinbase.svg" />
 											</span>
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">Coinbase Wallet</span>
@@ -838,7 +306,7 @@
 											<!--begin::Svg Icon | path: icons/duotune/finance/fin009.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="./assets/media/svg/OKX_Logo.svg" />
+													src="../assets/media/svg/OKX_Logo.svg" />
 											</span>
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">OKX Wallet</span>
@@ -848,7 +316,7 @@
 											<!--begin::Svg Icon | path: icons/duotune/arrows/arr077.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="./assets/media/svg/metamask.svg" />
+													src="../assets/media/svg/metamask.svg" />
 
 											</span>
 											<!--end::Svg Icon-->
@@ -888,7 +356,7 @@
 								<!--begin::Toggle-->
 								<div class="btn btn-icon btn-sm btn-active-bg-accent">
 									<!--begin::Svg Icon | path: icons/duotune/communication/com013.svg-->
-									<a href="./views/wizard.html">
+									<a href="../../views/wizard.html">
 										<span class="svg-icon svg-icon-1 svg-icon-dark">
 											<!--begin::Svg Icon | path: assets/media/icons/duotune/files/fil005.svg-->
 											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -977,7 +445,7 @@
 							<!--begin::Nav-->
 							<div class="d-flex align-items-center flex-nowrap text-nowrap overflow-auto py-1">
 								<a href="" id="homeLink" class="btn btn-active-accent fw-bolder">Home</a>
-								<a href="./views/wizard.html" class="btn btn-active-accent fw-bolder ms-3">Wizard</a>
+								<a href="../../views/wizard.html" class="btn btn-active-accent fw-bolder ms-3">Wizard</a>
 								<a href="./views/accountsettings.html"
 									class="btn btn-active-accent active fw-bolder ms-3">Settings</a>
 								<a href="#" class="btn btn-active-accent fw-bolder ms-3">Docs</a>
@@ -1213,7 +681,7 @@
 		var homeLink = document.getElementById('homeLink'); // Get the link element
 
 		// Update the link's href with the new query string
-		homeLink.href = "./index.html?" + user;
+		homeLink.href = "../demo"
 
 
 		// const ethers = window.ethers;
@@ -1604,7 +1072,7 @@
 
 		window.onload = processNotifications(getAllTxns(), document.getElementById('notificationsTab'))
 		let logo = document.querySelectorAll('[id="logo"]').forEach(
-			element => { element.href = "./index.html?" + localStorage.contract; }
+			element => { element.href = "../demo"; }
 		);
 
 	</script>

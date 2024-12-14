@@ -14,7 +14,7 @@
 	<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="pragma" content="no-cache" />
 	<link rel="canonical" href="https://preview.keenthemes.com/start" />
-	<script src="../key.js?cachebuster=1"></script>
+	<script src="../keys.js?cachebuster=1"></script>
 
 	<link rel="shortcut icon" href="../assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
@@ -1190,10 +1190,10 @@
 
 
 		// Update the link's href with the new query string
-		homeLink.href = "./index.html?" + contractAddress;
+		homeLink.href = "../demo"
 
 		let logo = document.querySelectorAll('[id="logo"]').forEach(
-		element => {element.href = "./index1.html?" + localStorage.contract;});
+		element => {element.href = "../demo"});
 
 		async function getAllTxns() {
 			let count = await contract.methods.transactionCount().call().then(function (result) {
