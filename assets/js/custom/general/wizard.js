@@ -6,12 +6,21 @@ let gasLimit;
 let gasPrice;
 let maxFeePerGas;
 let maxPriorityFeePerGas;
+let factoryAddress;
 
 
 //minato factory
 //const factoryAddress = '0xae7DBD688062E6c5161402860175fB2ba4B0Bd6F'
+// Example usage
+setFactoryAddress().then(address => {
+    if (address) {
+        factoryAddress = address
+        console.log('Factory address successfully set at:', factoryAddress);
+    }
+});
 
-const factoryAddress = '0xbda6bfa2db55d12f0852c676eba85e2d74cbfd3e';
+
+
 
 const factoryABI = [
     {
@@ -210,14 +219,14 @@ var KTWizardPage = (function () {
                     let data = factoryContract.methods.newMSA(owners, '1', '1').encodeABI();
                     console.log(data);
 
-   
+
 
                     // Get gas-related values
                     // await getGas(data, selectAddress, web3.utils.toWei('0.02', 'ether'));
 
                     let latestBlock = await web3.eth.getBlock('latest');
 
-                    
+
 
                     let maxPriorityFeePerGas = web3.utils.toWei('2', 'gwei'); // Example: 2 Gwei tip
 
@@ -225,31 +234,31 @@ var KTWizardPage = (function () {
 
 
                     let maxFeePerGas = web3.utils.toNumber(baseFeePerGas) + web3.utils.toNumber(maxPriorityFeePerGas);
-                    let buffer = web3.utils.toNumber(1.2) 
+                    let buffer = web3.utils.toNumber(1.2)
 
-                    
+
 
 
                     gasLimit = await web3.eth.estimateGas({
                         from: selectAddress,    // Address sending the transaction
                         to: factoryAddress,    // Contract or recipient address
                         data: data,             // The encoded ABI data for contract interaction (if any)
-                        value: '0x2AA1EFB94E0000' 
+                        value: '0x2AA1EFB94E0000'
                     });
 
-                    console.log('gl: '+ gasLimit)
-                
-                    
+                    console.log('gl: ' + gasLimit)
+
+
 
                     // Construct the transaction parameters
                     const txParams = {
                         to: factoryAddress,
                         from: selectAddress,
                         data: data,
-                        value: '0x2AA1EFB94E0000', // Sends 0.02 Ether
-                       // gasLimit: web3.utils.toHex(web3.utils.toNumber(gasLimit) * buffer),
-                       // maxFeePerGas: web3.utils.toHex(maxFeePerGas),
-                        //maxPriorityFeePerGas: web3.utils.toHex(maxPriorityFeePerGas)
+                        value: '0x2AA1EFB94E0000', // Sends 0.012 Ether
+                        //gasLimit: web3.utils.toHex(web3.utils.toNumber(gasLimit) * buffer),
+                        //maxFeePerGas: web3.utils.toHex(maxFeePerGas),
+                        maxPriorityFeePerGas: web3.utils.toHex(maxPriorityFeePerGas)
 
 
 
@@ -257,7 +266,7 @@ var KTWizardPage = (function () {
                         // maxPriorityFeePerGas: web3.utils.toHex(maxPriorityFeePerGas),
                     };
                     console.log(txParams)
-                    
+
 
 
                     //Send the transaction
@@ -265,52 +274,52 @@ var KTWizardPage = (function () {
                         method: 'eth_sendTransaction',
                         params: [txParams],
                     })
-                    .then(async (txHash) => {
-                        console.log('Transaction Hash:', txHash);
-                        startProcessingAnimation();
-                        
-                        // Wait for the transaction to be mined and get the receipt
-                        let receipt = await waitForReceipt(txHash)
-                        
-                        // Get the new contract address from the receipt
-                        let newContractAddress = '0x'+ receipt.logs[0].data.slice(receipt.logs[0].data.length - 40);
-                        console.log('New Contract Address:', newContractAddress);
-                        
-                        // Update the confirm button with the new contract address in the href
-                       
-                        setTimeout(showSuccessAnimation, 6000);
-                        setTimeout(hideAnimations, 8600);
+                        .then(async (txHash) => {
+                            console.log('Transaction Hash:', txHash);
+                            startProcessingAnimation();
 
-                        setTimeout(function () {
-                            Swal.fire({
-                                text: `Your contract has been published to the blockchain! This is your account address: ${newContractAddress}`,
-                                icon: "success",
-                                showCancelButton: !0,
-                                buttonsStyling: !1,
-                                confirmButtonText: `<a href="${window.location.origin}?${newContractAddress}" target="_blank">Go to Contract Dashboard</a>`,
-                                cancelButtonText: `<a style="color:grey;" href="https://discord.gg/2AvvmPCa" target="_blank"> Get Support</a>`,
-                                customClass: { 
-                                    confirmButton: "btn fw-bold btn-primary sendtxn", 
-                                    cancelButton: "btn fw-bold btn-active-light-primary" 
-                                },
-                            }).then(function (t) {
-                                t.value
-                                    ? e.submit()
-                                    : Swal.fire({
-                                        text: "Warning! Make sure to write down your contract address before you navigate away. Reach out to our team for support,",
-                                        icon: "error",
-                                        buttonsStyling: !1,
-                                        confirmButtonText: "Ok, got it!",
-                                        customClass: { confirmButton: "btn fw-bold btn-primary" }
-                                    });
-                            });
-                        }, 8700);
-                    
-                    })
-                    .catch((error) => {
-                        console.error('Transaction failed:', error);
-                        hideAnimations(); // Hide animations immediately if there's an error
-                    });
+                            // Wait for the transaction to be mined and get the receipt
+                            let receipt = await waitForReceipt(txHash)
+
+                            // Get the new contract address from the receipt
+                            let newContractAddress = '0x' + receipt.logs[0].data.slice(receipt.logs[0].data.length - 40);
+                            console.log('New Contract Address:', newContractAddress);
+
+                            // Update the confirm button with the new contract address in the href
+
+                            setTimeout(showSuccessAnimation, 6000);
+                            setTimeout(hideAnimations, 8600);
+
+                            setTimeout(function () {
+                                Swal.fire({
+                                    text: `Your contract has been published to the blockchain! This is your account address: ${newContractAddress}`,
+                                    icon: "success",
+                                    showCancelButton: !0,
+                                    buttonsStyling: !1,
+                                    confirmButtonText: `<a href="${window.location.origin}?${newContractAddress}" target="_blank">Go to Contract Dashboard</a>`,
+                                    cancelButtonText: `<a style="color:grey;" href="https://discord.gg/2AvvmPCa" target="_blank"> Get Support</a>`,
+                                    customClass: {
+                                        confirmButton: "btn fw-bold btn-primary sendtxn",
+                                        cancelButton: "btn fw-bold btn-active-light-primary"
+                                    },
+                                }).then(function (t) {
+                                    t.value
+                                        ? e.submit()
+                                        : Swal.fire({
+                                            text: "Warning! Make sure to write down your contract address before you navigate away. Reach out to our team for support,",
+                                            icon: "error",
+                                            buttonsStyling: !1,
+                                            confirmButtonText: "Ok, got it!",
+                                            customClass: { confirmButton: "btn fw-bold btn-primary" }
+                                        });
+                                });
+                            }, 8700);
+
+                        })
+                        .catch((error) => {
+                            console.error('Transaction failed:', error);
+                            hideAnimations(); // Hide animations immediately if there's an error
+                        });
                 }),
                 i.push(
                     FormValidation.formValidation(e, {

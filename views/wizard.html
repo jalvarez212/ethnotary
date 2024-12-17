@@ -51,7 +51,122 @@
 
 	var user = localStorage.contract // Get the user input
 
+
+	function showModal() {
+		var modalElement = document.getElementById('kt_modal_wallet');
+		var modal = new bootstrap.Modal(modalElement);
+		modal.show(); // Show the modal
+	}
+
+	function hideModal() {
+		var modalElement = document.getElementById('kt_modal_wallet');
+		var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
+		if (modal) {
+			modal.hide(); // Hide the modal
+		}
+	}
+
 </script>
+
+<div class="modal fade" tabindex="-1" id="kt_modal_wallet">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Connect a Wallet</h5>
+
+				<!--begin::Close-->
+				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+					aria-label="Close">
+					<span class="svg-icon svg-icon-2x"></span>
+				</div>
+				<!--end::Close-->
+			</div>
+
+			<div class="modal-body">
+				<!-- Information about supported networks -->
+				<div class="alert alert-info" role="alert">
+					Please make sure you're connected to one of the supported networks:
+					<ul>
+						<li>Mainnet (Ethereum)</li>
+						<li>Polygon</li>
+						<li>BNB Chain</li>
+						<li>Base</li>
+					</ul>
+				</div>
+
+				<!-- Wallet connection menu -->
+
+				<div class="">
+					<span class="text-white fw-bolder fs-4">Connect a wallet</span>
+				</div>
+			</div>
+			<!--begin::Row-->
+			<div class="row row-cols-2 g-0">
+				<a onclick="connectPhantomWallet()"
+					class="border-bottom border-end text-center py-10 btn btn-active-color-primary rounded-0">
+					<span class="svg-icon svg-icon-3x me-n1">
+						<img style="width: 30px; height: 30px;" alt="Phantom Wallet Logo"
+							src="../assets/media/svg/Phantom_SVG_Icon.svg" />
+					</span>
+					<span class="fw-bolder fs-6 d-block pt-3">Phantom</span>
+				</a>
+				<a id="coinbase" onclick="connectCoinbase()"
+					class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
+					<span class="svg-icon svg-icon-3x me-n1">
+						<img style="width: 30px; height: 30px;" alt="Coinbase Wallet Logo"
+							src="../assets/media/svg/coinbase.svg" />
+					</span>
+					<span class="fw-bolder fs-6 d-block pt-3">Coinbase</span>
+				</a>
+				<a onclick="connectOKXWallet()"
+					class="col border-bottom text-center border-end py-10 btn btn-active-color-primary rounded-0">
+					<span class="svg-icon svg-icon-3x me-n1">
+						<img alt="OKX Wallet Logo" style="width: 50px; height: 50px;"
+							src="../assets/media/svg/OKX_Logo.svg" />
+					</span>
+					<span class="fw-bolder fs-6 d-block pt-3">OKX</span>
+				</a>
+				<a id="metamask" onclick="connectMetaMask()"
+					class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
+					<span class="svg-icon svg-icon-3x me-n1">
+						<img alt="MetaMask Logo" style="width: 50px; height: 50px;"
+							src="../assets/media/svg/metamask.svg" />
+					</span>
+					<span class="fw-bolder fs-6 d-block pt-3">MetaMask</span>
+				</a>
+				<a id="binance" onclick="connectBinance()"
+					class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
+					<span class="svg-icon svg-icon-3x me-n1">
+						<img alt="Binance Logo" style="width: 40px; height: 40px;"
+							src="../assets/media/svg/Binance_Logo.svg" />
+					</span>
+					<span class="fw-bolder fs-6 d-block pt-3">Binance</span>
+				</a>
+				<a id="other" onclick="connectWallet()"
+					class="col text-center py-10 btn btn-active-color-primary rounded-0">
+					<span class="svg-icon svg-icon-1 svg-icon-dark">
+						<svg xmlns="http://www.w3.org/2000/svg" width="65px" height="65px" viewBox="0 0 24 24"
+							fill="none" style="width: 65px; height: 65px;">
+							<path opacity="0.3"
+								d="M3.20001 5.91897L16.9 3.01895C17.4 2.91895 18 3.219 18.1 3.819L19.2 9.01895L3.20001 5.91897Z"
+								fill="grey"></path>
+							<path opacity="0.3"
+								d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21C21.6 10.9189 22 11.3189 22 11.9189V15.9189C22 16.5189 21.6 16.9189 21 16.9189H16C14.3 16.9189 13 15.6189 13 13.9189ZM16 12.4189C15.2 12.4189 14.5 13.1189 14.5 13.9189C14.5 14.7189 15.2 15.4189 16 15.4189C16.8 15.4189 17.5 14.7189 17.5 13.9189C17.5 13.1189 16.8 12.4189 16 12.4189Z"
+								fill="grey"></path>
+							<path
+								d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21V7.91895C21 6.81895 20.1 5.91895 19 5.91895H3C2.4 5.91895 2 6.31895 2 6.91895V20.9189C2 21.5189 2.4 21.9189 3 21.9189H19C20.1 21.9189 21 21.0189 21 19.9189V16.9189H16C14.3 16.9189 13 15.6189 13 13.9189Z"
+								fill="grey"></path>
+						</svg>
+					</span>
+					<span class="fw-bolder fs-6 d-block pt-3">Other Wallet</span>
+				</a>
+			</div>
+			<!--end::Row-->
+		</div>
+	</div>
+
+
+</div>
 
 <body id="kt_body" data-sidebar="on"
 	class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled sidebar-enabled">
@@ -244,6 +359,7 @@
 						<!--begin::Right-->
 						<div class="d-flex align-items-center">
 
+														<!--begin::Wallet-->
 							<!--begin::Wallet-->
 							<div class="ms-1 ms-lg-6">
 								<div class="btn btn-icon btn-sm btn-active-bg-accent" data-kt-menu-trigger="click"
@@ -270,7 +386,7 @@
 								<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold w-300px"
 									data-kt-menu="true">
 									<div class="menu-content fw-bold d-flex align-items-center bgi-no-repeat bgi-position-y-top rounded-top"
-										style="background-image:url('assets/media//misc/dropdown-header-bg.jpg')">
+										style="background-image:url('../assets/media//misc/dropdown-header-bg.jpg')">
 										<div class="symbol symbol-45px mx-5 py-5">
 											<span class="symbol-label align-items-end">
 												<img alt="Logo" src="../assets/media/icons/duotune/arrows/arr076.svg"
@@ -294,7 +410,7 @@
 													src="../assets/media/svg/Phantom_SVG_Icon.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Phantom Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Phantom</span>
 										</a>
 										<a id="coinbase" onclick="connectCoinbase()"
 											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
@@ -304,20 +420,20 @@
 													src="../assets/media/svg/coinbase.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Coinbase Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Coinbase</span>
 										</a>
 										<a onclick="connectOKXWallet()"
-											class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
+											class="col border-bottom text-center border-end py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/finance/fin009.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
 													src="../assets/media/svg/OKX_Logo.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">OKX Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">OKX</span>
 										</a>
 										<a id="metamask" onclick="connectMetaMask()"
-											class="col text-center py-10 btn btn-active-color-primary rounded-0">
+											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/arrows/arr077.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
@@ -326,6 +442,33 @@
 											</span>
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">MetaMask</span>
+										</a>
+
+										<a id="binance" onclick="connectBinance()"
+											class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
+											<span class="svg-icon svg-icon-3x me-n1">
+												<img alt="Binance Logo" style="width: 40px; height: 40px;"
+													src="../assets/media/svg/Binance_Logo.svg" />
+											</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Binance</span>
+										</a>
+										<a id="other" onclick="connectWallet()"
+											class="col text-center py-10 btn btn-active-color-primary rounded-0">
+											<span class="svg-icon svg-icon-1 svg-icon-dark">
+												<svg xmlns="http://www.w3.org/2000/svg" width="65px" height="65px"
+													viewBox="0 0 24 24" fill="none" style="width: 65px; height: 65px;">
+													<path opacity="0.3"
+														d="M3.20001 5.91897L16.9 3.01895C17.4 2.91895 18 3.219 18.1 3.819L19.2 9.01895L3.20001 5.91897Z"
+														fill="grey"></path>
+													<path opacity="0.3"
+														d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21C21.6 10.9189 22 11.3189 22 11.9189V15.9189C22 16.5189 21.6 16.9189 21 16.9189H16C14.3 16.9189 13 15.6189 13 13.9189ZM16 12.4189C15.2 12.4189 14.5 13.1189 14.5 13.9189C14.5 14.7189 15.2 15.4189 16 15.4189C16.8 15.4189 17.5 14.7189 17.5 13.9189C17.5 13.1189 16.8 12.4189 16 12.4189Z"
+														fill="grey"></path>
+													<path
+														d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21V7.91895C21 6.81895 20.1 5.91895 19 5.91895H3C2.4 5.91895 2 6.31895 2 6.91895V20.9189C2 21.5189 2.4 21.9189 3 21.9189H19C20.1 21.9189 21 21.0189 21 19.9189V16.9189H16C14.3 16.9189 13 15.6189 13 13.9189Z"
+														fill="grey"></path>
+												</svg>
+											</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Other Wallet</span>
 										</a>
 									</div>
 									<!--end::Row-->

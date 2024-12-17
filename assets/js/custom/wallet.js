@@ -12,7 +12,7 @@ const contractAddress = localStorage.contract;
 // Function to update the Web3 provider with a new RPC URL
 function updateWeb3Provider(rpcUrl) {
     web3 = new Web3(rpcUrl);
-    console.log(`Web3 provider updated to: ${rpcUrl}`);
+    
     // Further actions can be performed with the updated web3 instance
 }
 
@@ -39,9 +39,6 @@ async function checkConnectedNetwork() {
     }
 
     try {
-
-
-
         // Use the chainIdLookup map for a direct lookup
         const matchedNetwork = chainIdLookup[localStorage.getItem('lastChain', rawChainId)];
 
@@ -159,7 +156,7 @@ async function connectOKXWallet() {
 async function connectCoinbase() {
 
     try {
-        const cbwallet = await coinbaseWallet.makeWeb3Provider('https://sepolia.infura.io/v3/'+ENV.RPC_NODE_KEY, '11155111');
+        const cbwallet = await coinbaseWallet.makeWeb3Provider('https://mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY, '1');
 
         wallet = await cbwallet;
         wallet.request({ method: 'eth_requestAccounts' }).then(response => {
@@ -181,7 +178,7 @@ async function connectCoinbase() {
 
 
     } catch (error) {
-        alert('User denied account access or an error occurred, please refresh browser and try again.');
+        alert(error);
     }
 
 }
@@ -236,7 +233,6 @@ async function connectBinance() {
             localStorage.setItem('lastWallet', 'other');
             detectNetworkChange(wallet);
             console.log("Detected Chain ID:", rawChainId);
-            checkNetwork();
             hideModal()
         } catch (error) {
             console.error('User denied account access or there was an issue:', error);
@@ -255,9 +251,10 @@ async function connectWallet() {
             // Store the connected account in localStorage
             localStorage.setItem('connectedAccount', accounts[0]);
 
-            checkNetwork();
             hideModal()
-            rawChainId = await normalizeToHex(wallet.getChainId());
+            rawChainId = await window.ethereum.request({
+                "method": "eth_chainId",
+               });
             localStorage.setItem('lastChain', rawChainId);
             localStorage.setItem('lastWallet', 'other');
             detectNetworkChange(wallet);

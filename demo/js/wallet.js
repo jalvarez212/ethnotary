@@ -249,7 +249,6 @@ async function connectBinance() {
             localStorage.setItem('lastWallet', 'other');
             detectNetworkChange(wallet);
             console.log("Detected Chain ID:", rawChainId);
-            checkNetwork();
             hideModal()
         } catch (error) {
             console.error('User denied account access or there was an issue:', error);
@@ -267,10 +266,10 @@ async function connectWallet() {
 
             // Store the connected account in localStorage
             localStorage.setItem('connectedAccount', accounts[0]);
-
-            checkNetwork();
             hideModal()
-            rawChainId = await normalizeToHex(wallet.getChainId());
+            rawChainId = await normalizeToHex(await window.ethereum.request({
+                "method": "eth_chainId",
+               }));
             localStorage.setItem('lastChain', rawChainId);
             localStorage.setItem('lastWallet', 'other');
             detectNetworkChange(wallet);

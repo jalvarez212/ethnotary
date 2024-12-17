@@ -36,6 +36,21 @@
 	const user = "./index.html?" + contractAddress;
 
 
+	function showModal() {
+		var modalElement = document.getElementById('kt_modal_wallet');
+		var modal = new bootstrap.Modal(modalElement);
+		modal.show(); // Show the modal
+	}
+
+	function hideModal() {
+		var modalElement = document.getElementById('kt_modal_wallet');
+		var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
+		if (modal) {
+			modal.hide(); // Hide the modal
+		}
+	}
+
+
 
 	let val;
 
