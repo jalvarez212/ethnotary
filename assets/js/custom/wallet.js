@@ -126,31 +126,53 @@ async function connectMetaMask() {
 // Function to connect to the user's Ethereum wallet
 async function connectOKXWallet() {
     try {
+        // Ensure the wallet object exists
+        if (!okxwallet) {
+            throw new Error('OKX Wallet not found. Please ensure it is installed and enabled.');
+        }
 
-        wallet = okxwallet;
-        wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-            selectAddress = okxwallet.selectedAddress;
-            // Optionally, have the default account set for web3.js
-            web3.eth.defaultAccount = okxwallet.selectedAddress;
-            localStorage.setItem('connectedWallet', selectedAccount);
+        // Debug the wallet object
+        console.log('Wallet object:', okxwallet);
+
+        // Check if the wallet is ready
+        if (typeof okxwallet.request !== 'function') {
+            throw new Error('Wallet object is not ready or improperly initialized.');
+        }
+
+        // Prompt user to connect their wallet
+        const accounts = await okxwallet.request({ method: 'eth_requestAccounts' });
+
+        if (accounts && accounts.length > 0) {
+            const selectedAddress = accounts[0]; // Take the first account
+
+            // Set the selected address globally and store it
+            window.okxwallet.selectedAddress = selectedAddress;
+            web3.eth.defaultAccount = selectedAddress;
+            localStorage.setItem('connectedWallet', selectedAddress);
             localStorage.setItem('lastWallet', 'okx');
-            hideModal()
 
-        });
-        rawChainId = await normalizeToHex(wallet.getChainId());
-        localStorage.setItem('lastChain', rawChainId);
-        detectNetworkChange(wallet);
-        console.log("Detected Chain ID:", rawChainId);
-        hideModal()
+            // Normalize chain ID and store it
+            const rawChainId = normalizeToHex(await okxwallet.request({ method: 'eth_chainId' }));
+            localStorage.setItem('lastChain', rawChainId);
 
+            // Detect network changes
+            detectNetworkChange(okxwallet);
 
-
+            console.log("Detected Chain ID:", rawChainId);
+            hideModal();
+        } else {
+            throw new Error('No accounts found. Connection may have been rejected.');
+        }
+    } catch (error) {
+        if (error.code === 4001) {
+            console.error('User denied connection request.');
+            alert('Please approve the connection request to proceed.');
+        } else {
+            console.error('Error connecting wallet:', error);
+            alert('An error occurred while connecting to the wallet. Please try again.');
+            window.open('https://www.okx.com/download');
+        }
     }
-    catch (error) {
-        window.open('https://www.okx.com/download');
-
-    }
-
 }
 // Function to connect to the user's Ethereum wallet
 async function connectCoinbase() {
@@ -159,7 +181,7 @@ async function connectCoinbase() {
         const cbwallet = await coinbaseWallet.makeWeb3Provider('https://mainnet.infura.io/v3/'+ENV.RPC_NODE_KEY, '1');
 
         wallet = await cbwallet;
-        wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+        cbwallet.request({ method: 'eth_requestAccounts' }).then(response => {
             const accounts = response;
             console.log(`User's address is ${accounts[0]}`);
             selectAddress = accounts[0];
@@ -188,7 +210,7 @@ async function connectPhantomWallet() {
         try {
             console.log('helllllo')
             wallet = await phantom.ethereum;
-            wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+            phantom.ethereum.request({ method: 'eth_requestAccounts' }).then(response => {
                 selectAddress = wallet.selectedAddress;
                 // Optionally, have the default account set for web3.js
                 web3.eth.defaultAccount = wallet.selectedAddress;
