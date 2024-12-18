@@ -206,40 +206,56 @@ async function connectCoinbase() {
 }
 
 async function connectPhantomWallet() {
-    if (typeof window.phantom !== 'undefined') {
-        try {
-            console.log('helllllo')
-            wallet = await phantom.ethereum;
-            phantom.ethereum.request({ method: 'eth_requestAccounts' }).then(response => {
-                selectAddress = wallet.selectedAddress;
-                // Optionally, have the default account set for web3.js
-                web3.eth.defaultAccount = wallet.selectedAddress;
-                localStorage.setItem('connectedWallet', selectedAccount);
-                localStorage.setItem('lastWallet', 'Phanton');
-                hideModal();
+    try {
+        // Ensure the wallet object exists
+        if (!phantom) {
+            throw new Error('OKX Wallet not found. Please ensure it is installed and enabled.');
+        }
 
-            });
-            rawChainId = await normalizeToHex(wallet.getChainId());
+        // Debug the wallet object
+        console.log('Wallet object:', okxwallet);
+
+        // Check if the wallet is ready
+        if (typeof phantom.ethereum.request !== 'function') {
+            throw new Error('Wallet object is not ready or improperly initialized.');
+        }
+
+        // Prompt user to connect their wallet
+        const accounts = await window.phantom.ethereum.request({ method: 'eth_requestAccounts' });
+
+        if (accounts && accounts.length > 0) {
+            const selectedAddress = accounts[0]; // Take the first account
+
+            // Set the selected address globally and store it
+            window.phantom.ethereum.selectedAddress = selectedAddress;
+            web3.eth.defaultAccount = selectedAddress;
+            localStorage.setItem('connectedWallet', selectedAddress);
+            localStorage.setItem('lastWallet', 'okx');
+
+            // Normalize chain ID and store it
+            const rawChainId = normalizeToHex(await okxwallet.request({ method: 'eth_chainId' }));
             localStorage.setItem('lastChain', rawChainId);
-            detectNetworkChange(wallet);
+
+            // Detect network changes
+            detectNetworkChange(okxwallet);
+
             console.log("Detected Chain ID:", rawChainId);
-
-
+            hideModal();
+        } else {
+            throw new Error('No accounts found. Connection may have been rejected.');
         }
-        catch (error) {
-            alert('User denied account access or an error occurred, please refresh browser and try again.');
-
+    } catch (error) {
+        if (error.code === 4001) {
+            console.error('User denied connection request.');
+            alert('Please approve the connection request to proceed.');
+        } else {
+            console.error('Error connecting wallet:', error);
+            alert('An error occurred while connecting to the wallet. Please try again.');
+            window.open('https://phantom.app/');
         }
-
     }
-    else {
-        window.open('https://phantom.app/', '_blank');
-
-    }
-
-
-
 }
+
 
 async function connectBinance() {
     if (typeof window.BinanceChain !== 'undefined') {
