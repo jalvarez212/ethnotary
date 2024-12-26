@@ -269,7 +269,7 @@ function hideModal() {
 
 								<!--begin::Item-->
 								<li class="nav-item mb-1" title="Account Settings">
-									<a href="./views/accountsettings.html"
+									<a href="./accountsettings.html"
 										class="nav-link h-40px w-40px h-lg-50px w-lg-50px btn btn-custom btn-icon btn-color-white"
 										role="tab">
 										<!--begin::Svg Icon | path: icons/duotune/abstract/abs027.svg-->
@@ -291,7 +291,7 @@ function hideModal() {
 								<!--begin::Item-->
 								<li class="nav-item mb-1" title="New Contract" data-bs-toggle="tooltip"
 									data-bs-dismiss="click" data-bs-placement="right">
-									<a href="./views/wizard.html"
+									<a href="./wizard.html"
 										class="nav-link h-40px w-40px h-lg-50px w-lg-50px btn btn-custom btn-icon btn-color-white"
 										data-bs-toggle="tab" data-bs-target="#kt_aside_tab_6" role="tab">
 										<!--begin::Svg Icon | path: icons/duotune/files/fil005.svg-->
@@ -483,7 +483,7 @@ function hideModal() {
 								<!--begin::Toggle-->
 								<div class="btn btn-icon btn-sm btn-active-bg-accent">
 									<!--begin::Svg Icon | path: icons/duotune/communication/com013.svg-->
-									<a href="./views/accountsettings.html">
+									<a href="./accountsettings.html">
 										<span class="svg-icon svg-icon-1 svg-icon-dark">
 											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
 												viewBox="0 0 24 24" fill="none">
@@ -506,7 +506,7 @@ function hideModal() {
 								<!--begin::Toggle-->
 								<div class="btn btn-icon btn-sm btn-active-bg-accent">
 									<!--begin::Svg Icon | path: icons/duotune/communication/com013.svg-->
-									<a href="./views/wizard.html">
+									<a href="./wizard.html">
 										<span class="svg-icon svg-icon-1 svg-icon-dark">
 											<!--begin::Svg Icon | path: assets/media/icons/duotune/files/fil005.svg-->
 											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -594,9 +594,9 @@ function hideModal() {
 							<!--begin::Nav-->
 							<div class="d-flex align-items-center flex-nowrap text-nowrap overflow-auto py-1">
 								<a href="" id="homeLink" class="btn btn-active-accent fw-bolder">Home</a>
-								<a href="./views/wizard.html"
+								<a href="./wizard.html"
 									class="btn btn-active-accent active fw-bolder ms-3">Wizard</a>
-								<a href="./views/accountsettings.html"
+								<a href="./accountsettings.html"
 									class="btn btn-active-accent fw-bolder ms-3">Settings</a>
 								<a href="#" class="btn btn-active-accent fw-bolder ms-3">Docs</a>
 							</div>
@@ -1218,9 +1218,9 @@ function hideModal() {
 		let homeLink = document.getElementById('homeLink'); 
 		// Get the link element
 		// Update the link's href with the new query string
-		homeLink.href = "./index.html?" + contractAddress;
+		homeLink.href = "../index.html?" + contractAddress;
 		let logo = document.querySelectorAll('[id="logo"]').forEach(
-			element => { element.href = "./index.html?" + localStorage.contract; });
+			element => { element.href = "../index.html?" + localStorage.contract; });
 
 
 		let compile = document.getElementById('compile');
