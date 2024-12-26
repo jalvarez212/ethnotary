@@ -319,4 +319,4 @@
     console.log("yoyo, this the contract :"+contract)
 });
 
-checkWalletConnectionAndNetwork();ƒƒ
+checkWalletConnectionAndNetwork();
