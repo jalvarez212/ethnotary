@@ -303,7 +303,7 @@
 													src="./assets/media/svg/Phantom_SVG_Icon.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Phantom Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Phantom</span>
 										</a>
 										<a id="coinbase" onclick="connectCoinbase()"
 											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
@@ -313,20 +313,20 @@
 													src="./assets/media/svg/coinbase.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Coinbase Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Coinbase</span>
 										</a>
 										<a onclick="connectOKXWallet()"
-											class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
+											class="col border-bottom text-center border-end py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/finance/fin009.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
 													src="./assets/media/svg/OKX_Logo.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">OKX Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">OKX</span>
 										</a>
 										<a id="metamask" onclick="connectMetaMask()"
-											class="col text-center py-10 btn btn-active-color-primary rounded-0">
+											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/arrows/arr077.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
@@ -335,6 +335,33 @@
 											</span>
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">MetaMask</span>
+										</a>
+
+										<a id="binance" onclick="connectBinance()"
+											class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
+											<span class="svg-icon svg-icon-3x me-n1">
+												<img alt="Binance Logo" style="width: 40px; height: 40px;"
+													src="./assets/media/svg/Binance_Logo.svg" />
+											</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Binance</span>
+										</a>
+										<a id="other" onclick="connectWallet()"
+											class="col text-center py-10 btn btn-active-color-primary rounded-0">
+											<span class="svg-icon svg-icon-1 svg-icon-dark">
+												<svg xmlns="http://www.w3.org/2000/svg" width="65px" height="65px"
+													viewBox="0 0 24 24" fill="none" style="width: 65px; height: 65px;">
+													<path opacity="0.3"
+														d="M3.20001 5.91897L16.9 3.01895C17.4 2.91895 18 3.219 18.1 3.819L19.2 9.01895L3.20001 5.91897Z"
+														fill="grey"></path>
+													<path opacity="0.3"
+														d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21C21.6 10.9189 22 11.3189 22 11.9189V15.9189C22 16.5189 21.6 16.9189 21 16.9189H16C14.3 16.9189 13 15.6189 13 13.9189ZM16 12.4189C15.2 12.4189 14.5 13.1189 14.5 13.9189C14.5 14.7189 15.2 15.4189 16 15.4189C16.8 15.4189 17.5 14.7189 17.5 13.9189C17.5 13.1189 16.8 12.4189 16 12.4189Z"
+														fill="grey"></path>
+													<path
+														d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21V7.91895C21 6.81895 20.1 5.91895 19 5.91895H3C2.4 5.91895 2 6.31895 2 6.91895V20.9189C2 21.5189 2.4 21.9189 3 21.9189H19C20.1 21.9189 21 21.0189 21 19.9189V16.9189H16C14.3 16.9189 13 15.6189 13 13.9189Z"
+														fill="grey"></path>
+												</svg>
+											</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Other Wallet</span>
 										</a>
 									</div>
 									<!--end::Row-->
@@ -695,122 +722,7 @@
 		var homeLink = document.getElementById('homeLink'); // Get the link element
 
 		// Update the link's href with the new query string
-		homeLink.href = "./index.html?" + user;
-
-
-		// const ethers = window.ethers;
-		// const MMSDK = new MetaMaskSDK.MetaMaskSDK(
-		// 	dappMetadata = {
-		// 		name: "ethnotary",
-		// 		url: "ethnotary.io",
-		// 	}
-		// 	// Other options
-		// )
-		// const coinbaseWallet = new CoinbaseWalletSDK({
-		// 	appName: 'ethnotary',
-		// 	appLogoUrl: 'ethnotary.io',
-		// 	darkMode: false
-		// })
-		// let wallet;
-
-		// // Function to connect to the user's Ethereum wallet
-		// async function connectMetaMask() {
-		// 	if (typeof window.ethereum !== 'undefined') {
-		// 		try {
-		// 			wallet = await MMSDK.getProvider();
-
-		// 			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-		// 				const accounts = response;
-		// 				console.log(`User's address is ${accounts[0]}`);
-		// 				selectAddress = this.selectAddress
-
-		// 				// Optionally, have the default account set for web3.js
-		// 				web3.eth.defaultAccount = this.selectAddress
-		// 			})
-
-
-
-
-		// 		}
-		// 		catch (error) {
-		// 			console.error('User denied account access or an error occurred:', error);
-
-		// 		}
-
-		// 	}
-		// 	else {
-		// 		alert('This browser is not web3 enabled, please use a different browser.')
-
-		// 	}
-		// }
-
-		// // Function to connect to the user's Ethereum wallet
-		// async function connectOKXWallet() {
-		// 	try {
-
-		// 		wallet = okxwallet;
-		// 		wallet.request({ method: 'eth_requestAccounts' });
-
-
-
-		// 	}
-		// 	catch (error) {
-		// 		window.open('https://www.okx.com/download');
-
-		// 	}
-
-		// }
-		// // Function to connect to the user's Ethereum wallet
-		// async function connectCoinbase() {
-
-		// 	try {
-		// 		wallet = await coinbaseWallet.walletExtension;
-
-		// 		wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-		// 			console.log(response)
-		// 			const accounts = response;
-		// 			console.log(`User's address is ${accounts[0]}`);
-
-		// 			// Optionally, have the default account set for web3.js
-		// 			web3.eth.defaultAccount = accounts[0];
-		// 		})
-
-
-		// 	} catch (error) {
-		// 		alert('User denied account access or an error occurred, please refresh browser and try again.');
-		// 	}
-
-		// }
-
-		// async function connectPhantomWallet() {
-		// 	if (typeof window.phantom !== 'undefined') {
-		// 		try {
-		// 			console.log('helllllo')
-		// 			wallet = await phantom.ethereum;
-		// 			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-		// 				selectAddress = wallet.selectedAddress;
-		// 				// Optionally, have the default account set for web3.js
-		// 				web3.eth.defaultAccount = wallet.selectedAddress;
-		// 			});
-
-
-		// 		}
-		// 		catch (error) {
-		// 			alert('User denied account access or an error occurred, please refresh browser and try again.');
-
-		// 		}
-
-		// 	}
-		// 	else {
-		// 		window.open('https://phantom.app/', '_blank');
-
-		// 	}
-
-
-
-		// }
-
-
+		homeLink.href = "../index.html?" + user;
 
 
 	</script>

@@ -1,3 +1,6 @@
+console.log('dv contract:');
+
+
 async function findContractMethod(tx) {
     // Extract method ID from the transaction input
     const methodId = tx.input.slice(0, 10);

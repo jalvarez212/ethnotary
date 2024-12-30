@@ -6,7 +6,6 @@
 <head>
 	<title>Account Settings</title>
 
-
 	<meta http-equiv="cache-control" content="max-age=0" />
 	<meta http-equiv="cache-control" content="no-cache" />
 	<meta http-equiv="expires" content="0" />
@@ -31,35 +30,7 @@
 
 </head>
 
-<script>
 
-
-	async function callGetOwners() {
-		try {
-			const owners = await contract.methods.getOwners().call();
-
-			owners.forEach(function (x) {
-				let d = document.createElement('div');
-				d.classList.add('form-text');
-				d.innerText = x;
-				document.getElementById('accountOwners').append(d);
-			})
-
-		} catch (error) {
-			console.error('Error calling getOwners:', error);
-		}
-	}
-
-	callGetOwners();
-
-
-
-
-
-
-
-
-</script>
 <!--end::Head-->
 <!--begin::Body-->
 
