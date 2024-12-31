@@ -808,11 +808,11 @@ const factoryLookup = Object.keys(networks).reduce((lookup, factoryAddress) => {
 
 
 // Function to update the Web3 provider with a new RPC URL
-function updateWeb3ProvidermatchedNetwork(rpcUrl) {
-	web3 = new Web3(rpcUrl);
-	console.log(`Web3 provider updated to: ${rpcUrl}`);
+// function updateWeb3ProvidermatchedNetwork(rpcUrl) {
+// 	web3 = new Web3(rpcUrl);
+// 	console.log(`Web3 provider updated to: ${rpcUrl}`);
 
-}
+// }
 
 // Function to get the current chain ID and set the factory address
 async function setFactoryAddress() {

@@ -7,7 +7,7 @@ let selectAddress;
 let contract;
 
 // Initialize Web3 connection
-let web3 = null;
+let web3;
 const contractAddress = localStorage.contract;
 
 // Function to update the Web3 provider with a new RPC URL
@@ -16,8 +16,6 @@ function updateWeb3Provider(rpcUrl) {
     
     // Further actions can be performed with the updated web3 instance
 }
-
-
 
 
 
@@ -126,35 +124,38 @@ async function connectMetaMask() {
 
     }
 }
+// 2) OKX
 
-// Function to connect to the user's Ethereum wallet
 async function connectOKXWallet() {
+    if (typeof window.ethereum === 'undefined') {
+        showModal();
+        return;
+    }
+
     try {
+        // 1) Connect to wallet
+        wallet = window.okxwallet;
+        const accounts = await wallet.request({ method: 'eth_requestAccounts' });
+        // 2) Get chain ID and update Web3
+        const chainId = await wallet.request({ method: 'eth_chainId' });
+        const matchedNetwork = chainIdLookup[chainId];
+        if (matchedNetwork?.rpcUrl) {
+            updateWeb3Provider(matchedNetwork.rpcUrl); // or new Web3(provider)
+            console.log(`Reconnecting to network: ${matchedNetwork.name}`);
+        } else {
+            console.warn("Unsupported or unknown network:", chainId);
+            // Optionally fall back to a default, or show a modal
+        }
 
-        wallet = okxwallet;
-        wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-            selectAddress = okxwallet.selectedAddress;
-            // Optionally, have the default account set for web3.js
-            web3.eth.defaultAccount = okxwallet.selectedAddress;
-            localStorage.setItem('connectedWallet', selectedAccount);
-            localStorage.setItem('lastWallet', 'okx');
-            hideModal()
+        // 3) Save everything to localStorage
+        localStorage.setItem('lastWallet', 'okx');
+        localStorage.setItem('lastChain', chainId);
 
-        });
-        rawChainId = await normalizeToHex(wallet.getChainId());
-        localStorage.setItem('lastChain', rawChainId);
-        detectNetworkChange(wallet);
-        console.log("Detected Chain ID:", rawChainId);
-        hideModal()
-
-
-
+        hideModal();
+    } catch (error) {
+        console.error('User denied account access or error occurred:', error);
+        showModal();
     }
-    catch (error) {
-        window.open('https://www.okx.com/download');
-
-    }
-
 }
 // Function to connect to the user's Ethereum wallet
 async function connectCoinbase() {
@@ -187,41 +188,39 @@ async function connectCoinbase() {
 
 }
 
+// 4) Phantom
 async function connectPhantomWallet() {
-    if (typeof window.phantom !== 'undefined') {
-        try {
-            console.log('helllllo')
-            wallet = await phantom.ethereum;
-            wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-                selectAddress = wallet.selectedAddress;
-                // Optionally, have the default account set for web3.js
-                web3.eth.defaultAccount = wallet.selectedAddress;
-                localStorage.setItem('connectedWallet', selectedAccount);
-                localStorage.setItem('lastWallet', 'Phanton');
-                hideModal();
-
-            });
-            rawChainId = await normalizeToHex(wallet.getChainId());
-            localStorage.setItem('lastChain', rawChainId);
-            detectNetworkChange(wallet);
-            console.log("Detected Chain ID:", rawChainId);
-
-
-        }
-        catch (error) {
-            alert('User denied account access or an error occurred, please refresh browser and try again.');
-
-        }
-
-    }
-    else {
-        window.open('https://phantom.app/', '_blank');
-
+    if (typeof window.ethereum === 'undefined') {
+        showModal();
+        return;
     }
 
+    try {
+        // 1) Connect to wallet
+        const wallet = window.phantom.ethereum;
+        const accounts = await wallet.request({ method: 'eth_requestAccounts' });
+        // 2) Get chain ID and update Web3
+        const chainId = await wallet.request({ method: 'eth_chainId' });
+        const matchedNetwork = chainIdLookup[chainId];
+        if (matchedNetwork?.rpcUrl) {
+            updateWeb3Provider(matchedNetwork.rpcUrl); // or new Web3(provider)
+            console.log(`Reconnecting to network: ${matchedNetwork.name}`);
+        } else {
+            console.warn("Unsupported or unknown network:", chainId);
+            // Optionally fall back to a default, or show a modal
+        }
 
+        // 3) Save everything to localStorage
+        localStorage.setItem('lastWallet', 'Phantom');
+        localStorage.setItem('lastChain', chainId);
 
+        hideModal();
+    } catch (error) {
+        console.error('User denied account access or error occurred:', error);
+        showModal();
+    }
 }
+
 
 async function connectBinance() {
     if (typeof window.BinanceChain !== 'undefined') {
@@ -331,9 +330,10 @@ async function checkWalletConnectionAndNetwork() {
     }
 }
 
-checkConnectedNetwork().then(function () {
+checkWalletConnectionAndNetwork().then(function () {
+    checkConnectedNetwork();
     contract = new web3.eth.Contract(contractABI, contractAddress);
     console.log("yoyo, this the contract :"+contract)
 });
 
-checkWalletConnectionAndNetwork();
+
