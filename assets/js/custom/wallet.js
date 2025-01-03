@@ -230,7 +230,7 @@ async function connectPhantomWallet() {
 
     try {
         // 1) Connect to wallet
-        const wallet = window.phantom.ethereum;
+        wallet = window.phantom.ethereum;
         wallet.request({ method: 'eth_requestAccounts' }).then(response => {
             const accounts = response;
             console.log(`User's address is ${accounts[0]}`);
@@ -265,23 +265,32 @@ async function connectPhantomWallet() {
 }
 
 
+
+// 5) Binance
+
 async function connectBinance() {
-    if (typeof window.BinanceChain !== 'undefined') {
+
+    if (typeof window.trustwallet !== 'undefined'){
+
         try {
-            wallet = await window.BinanceChain;
+            // 1) Connect to wallet
+            wallet = await window.trustwallet;
             wallet.request({ method: 'eth_requestAccounts' }).then(response => {
                 const accounts = response;
                 console.log(`User's address is ${accounts[0]}`);
-                console.log(response)
-                selectAddress = this.selectAddress
-
+                selectAddress = accounts[0];
+    
                 // Optionally, have the default account set for web3.js
-                web3.eth.defaultAccount = accounts[0]
-                localStorage.setItem('connectedWallet', accounts[0]);
-
-
+                web3.eth.defaultAccount = accounts[0];
+                localStorage.setItem('connectedWallet', selectAddress);
+                localStorage.setItem('lastWallet', 'Binance');
+    
+    
             })
+            // 2) Get chain ID and update Web3
             const chainId = await wallet.request({ method: 'eth_chainId' });
+
+            console.log(chainId)
             const matchedNetwork = chainIdLookup[chainId];
             if (matchedNetwork?.rpcUrl) {
                 updateWeb3Provider(matchedNetwork.rpcUrl); // or new Web3(provider)
@@ -290,24 +299,21 @@ async function connectBinance() {
                 console.warn("Unsupported or unknown network:", chainId);
                 // Optionally fall back to a default, or show a modal
             }
-            console.log('Connected account:', accounts[0]);
-
-            // Store the connected account in localStorage
-            localStorage.setItem('connectedAccount', accounts[0]);
-
-            rawChainId = await normalizeToHex(wallet.getChainId());
-            localStorage.setItem('lastChain', rawChainId);
-            localStorage.setItem('lastWallet', 'other');
-            detectNetworkChange(wallet);
-            console.log("Detected Chain ID:", rawChainId);
-            hideModal()
+    
+            // 3) Save everything to localStorage
+            localStorage.setItem('lastChain', chainId);
+    
+            hideModal();
         } catch (error) {
-            console.error('User denied account access or there was an issue:', error);
+            console.error('User denied account access or error occurred:', error);
         }
-    } else {
-        console.error('User denied account access or error occurred:', error);
+
 
     }
+
+
+
+ 
 }
 
 async function connectWallet() {
