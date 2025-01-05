@@ -86,6 +86,43 @@ const coinbaseWallet = new CoinbaseWalletSDK({
     darkMode: false
 });
 
+/**
+ * Listens for key wallet/provider events and handles them.
+ * Replace the console logs with your own logic—like reloading the page,
+ * re-calling checkConnectedNetwork(), or updating UI elements.
+ */
+function watchWalletChanges(wallet) {
+    if (!wallet || !wallet.on) {
+      console.error("No wallet instance found or wallet does not support event listeners.");
+      return;
+    }
+  
+    // Fired when the chain/network ID changes in the wallet
+    wallet.on('chainChanged', async (newChainId) => {
+      console.log("chainChanged event detected:", newChainId);
+      // Option 1: Reload the page
+      window.location.reload();
+  
+      // Option 2: Or re-run your existing network checks:
+      //await checkConnectedNetwork();
+    });
+  
+    // Fired when the user changes the active account(s) in the wallet
+    wallet.on('accountsChanged', async (accounts) => {
+      console.log("accountsChanged event detected:", accounts);
+      // If the user has at least one address:
+      if (accounts && accounts.length > 0) {
+        localStorage.setItem('connectedWallet', accounts[0]);
+        web3.eth.defaultAccount = accounts[0];
+        // You might also call checkConnectedNetwork() here if needed
+      } else {
+        // User might have disconnected or removed permissions
+        console.warn("No accounts provided. Handle accordingly.");
+        // e.g., show a disconnect message or revert to a default state
+      }
+    });
+  }
+
 //1) MetaMask
 async function connectMetaMask() {
     if (typeof window.ethereum === 'undefined') {
@@ -120,6 +157,9 @@ async function connectMetaMask() {
             console.warn("Unsupported or unknown network:", chainId);
             // Optionally fall back to a default, or show a modal
         }
+
+        watchWalletChanges(wallet);
+
 
         // 3) Save everything to localStorage
         localStorage.setItem('lastWallet', 'Metamask');
@@ -168,6 +208,9 @@ async function connectOKXWallet() {
             // Optionally fall back to a default, or show a modal
         }
 
+        watchWalletChanges(wallet);
+
+
         // 3) Save everything to localStorage
         localStorage.setItem('lastWallet', 'okx');
         localStorage.setItem('lastChain', chainId);
@@ -206,8 +249,8 @@ async function connectCoinbase() {
             console.warn("Unsupported or unknown network:", chainId);
             // Optionally fall back to a default, or show a modal
         }
+        watchWalletChanges(wallet);
         localStorage.setItem('lastChain', rawChainId);
-        detectNetworkChange(wallet);
         console.log("Detected Chain ID:", rawChainId);
 
         hideModal();
@@ -254,6 +297,9 @@ async function connectPhantomWallet() {
             // Optionally fall back to a default, or show a modal
         }
 
+        watchWalletChanges(wallet);
+
+
         // 3) Save everything to localStorage
         localStorage.setItem('lastWallet', 'Phantom');
         localStorage.setItem('lastChain', chainId);
@@ -299,6 +345,8 @@ async function connectBinance() {
                 console.warn("Unsupported or unknown network:", chainId);
                 // Optionally fall back to a default, or show a modal
             }
+            watchWalletChanges(wallet);
+
     
             // 3) Save everything to localStorage
             localStorage.setItem('lastChain', chainId);
@@ -336,7 +384,6 @@ async function connectWallet() {
             // Store the connected account in localStorage
             localStorage.setItem('connectedAccount', accounts[0]);
 
-            hideModal()
             const chainId = await wallet.request({ method: 'eth_chainId' });
             const matchedNetwork = chainIdLookup[chainId];
             if (matchedNetwork?.rpcUrl) {
@@ -346,9 +393,15 @@ async function connectWallet() {
                 console.warn("Unsupported or unknown network:", chainId);
                 // Optionally fall back to a default, or show a modal
             }
+
+            watchWalletChanges(wallet);
+
             localStorage.setItem('lastChain', rawChainId);
             localStorage.setItem('lastWallet', 'other');
             detectNetworkChange(wallet);
+
+            hideModal()
+
             console.log("Detected Chain ID:", rawChainId);
         } catch (error) {
             console.error('User denied account access or there was an issue:', error);
