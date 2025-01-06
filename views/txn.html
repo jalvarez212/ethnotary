@@ -199,7 +199,8 @@
 <body id="kt_body" data-sidebar="on"
 	class="print-content-only header-fixed header-tablet-and-mobile-fixed toolbar-enabled sidebar-enabled">
 
-	<div id="animation-container" style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; display: none; z-index: 99;">
+	<div id="animation-container"
+		style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; display: none; z-index: 99;">
 		<dotlottie-player id="processing-animation"
 			src="https://lottie.host/c0c762b6-fd69-4271-b53c-1c7408d4ac7b/UQ58y0jOJk.json" background="transparent"
 			speed="1"
@@ -210,12 +211,12 @@
 			speed="1"
 			style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
 			loop autoplay></dotlottie-player>
-			<dotlottie-player id="revoke-animation"
+		<dotlottie-player id="revoke-animation"
 			src="https://lottie.host/717bd718-5d50-42e0-bdca-1afbb11a7591/QX0hRMpiLk.json" background="transparent"
 			speed="1"
 			style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
 			loop autoplay></dotlottie-player>
-			
+
 	</div>
 	<!--begin::Main-->
 	<!--begin::Root-->
@@ -616,7 +617,7 @@
 											<!-- begin: Invoice header-->
 											<div
 												class="d-flex justify-content-between pb-10 pb-md-20 flex-column flex-md-row">
-												<h1 id ="txnid" class="display-6 text-dark fw-bolder mb-10"></h1>
+												<h1 id="txnid" class="display-6 text-dark fw-bolder mb-10"></h1>
 
 											</div>
 											<!--end: Invoice header-->
@@ -804,7 +805,7 @@
 </body>
 <script>
 
-		// Function to start processing animation
+	// Function to start processing animation
 	function startProcessingAnimation() {
 		document.getElementById('animation-container').style.display = 'block';
 		document.getElementById('processing-animation').style.display = 'block';
@@ -932,21 +933,18 @@
 
 
 	let gas;
-	let maxFeePerGas;
-	let maxPriorityFeePerGas;
+	const priorityFeeDecimal = 100000000;         // 0.1 Gwei in Wei
+	const priorityFeeHex = '0x' + priorityFeeDecimal.toString(16);
+	// => '0x5F5E100'
 
 
 	async function getGas(method) {
 
-		gas = await method.estimateGas({ from: selectAddress });
+		let gasLimit = await method.estimateGas({ from: selectAddress, to: contractAddress });
+		gas = gasLimit * 1.2
 
-		let feeHistory = await web3.eth.getFeeHistory(1, 'latest', [10, 90]);
-		// Get the gas price
-		let baseFeePerGas = await parseInt(feeHistory.baseFeePerGas[0]);
-		maxPriorityFeePerGas = await web3.utils.toWei('2', 'gwei'); // Default to 2 gwei, you can adjust this
 
-		// Calculate the maxFeePerGas (base fee + max priority fee)
-		maxFeePerGas = await baseFeePerGas + parseInt(maxPriorityFeePerGas);
+
 	}
 
 
@@ -972,13 +970,11 @@
 								from: selectAddress,
 								data: confirmCallData, // Ensure this is well defined in your original script
 								gasLimit: gas,
-								maxFeePerGas: maxFeePerGas,
-								maxPriorityFeePerGas: maxPriorityFeePerGas,
-								gas: gas,
+								maxPriorityFeePerGas: priorityFeeHex,
 							},
 						],
 					})
-					.then((txHash) => {
+						.then((txHash) => {
 							console.log('Transaction Hash:', txHash);
 							startProcessingAnimation();
 							setTimeout(showSuccessAnimation, 6000);
@@ -1026,7 +1022,7 @@
 							},
 						],
 					})
-					.then((txHash) => {
+						.then((txHash) => {
 							console.log('Transaction Hash:', txHash);
 							startProcessingAnimation();
 							setTimeout(showRevokeAnimation, 6000);
@@ -1074,7 +1070,7 @@
 							},
 						],
 					})
-					.then((txHash) => {
+						.then((txHash) => {
 							console.log('Transaction Hash:', txHash);
 							startProcessingAnimation();
 							setTimeout(showSuccessAnimation, 6000);
@@ -1098,54 +1094,54 @@
 	var homeLink = document.getElementById('homeLink'); // Get the link element
 
 	let logo = document.querySelectorAll('[id="logo"]').forEach(
-		element => {element.href = "./index.html?" + localStorage.contract;} 
+		element => { element.href = "./index.html?" + localStorage.contract; }
 	);
 	// Update the link's href with the new query string
 	homeLink.href = "./index.html?" + encodeURIComponent(user);
 
 	async function getAllTxns() {
-			let count = await contract.methods.transactionCount().call().then(function (result) {
-				let x = Number(result);
-				return x;
-			})
-			let promises = [];
+		let count = await contract.methods.transactionCount().call().then(function (result) {
+			let x = Number(result);
+			return x;
+		})
+		let promises = [];
 
 
-			for (let i = 0; i < count; i++) {
-				trans = await contract.methods.transactions(i).call();
-				if (trans.executed == false) {
-					promises.push(trans);
+		for (let i = 0; i < count; i++) {
+			trans = await contract.methods.transactions(i).call();
+			if (trans.executed == false) {
+				promises.push(trans);
 
-				}
 			}
-			document.getElementById('notifications').innerText = promises.length;
-			document.getElementById('nn').innerText = promises.length + " New Notifications";
-
-			return promises;
 		}
+		document.getElementById('notifications').innerText = promises.length;
+		document.getElementById('nn').innerText = promises.length + " New Notifications";
 
-		async function processNotifications(promise, container) {
+		return promises;
+	}
 
-			try {
+	async function processNotifications(promise, container) {
 
-
-				let pending = await promise;
-
-
-
-
+		try {
 
 
-				for (const tx of pending) {
-					console.log(tx)
-					document.getElementById('txnid').innerText = 'Txn '+tx.id;
-
-					const notElement = document.createElement('div');
-					notElement.classList.add('menu-item');
-					notElement.classList.add('mx-3');
+			let pending = await promise;
 
 
-					notElement.innerHTML = `
+
+
+
+
+			for (const tx of pending) {
+				console.log(tx)
+				document.getElementById('txnid').innerText = 'Txn ' + tx.id;
+
+				const notElement = document.createElement('div');
+				notElement.classList.add('menu-item');
+				notElement.classList.add('mx-3');
+
+
+				notElement.innerHTML = `
 	<a href="./views/txn.html?${tx.id}" class="menu-link px-4 py-3">
 		<div class="symbol symbol-35px">
 			<span class="symbol-label bg-light-warning">
@@ -1171,22 +1167,22 @@
 	</a>
 
 `
-					container.appendChild(notElement);
+				container.appendChild(notElement);
 
 
-				}
 			}
-			catch (error) {
-				console.error('Error in processing events:', error)
-			}
-
-
-
+		}
+		catch (error) {
+			console.error('Error in processing events:', error)
 		}
 
-		window.onload = processNotifications(getAllTxns(), document.getElementById('notificationsTab'))
 
-		
+
+	}
+
+	window.onload = processNotifications(getAllTxns(), document.getElementById('notificationsTab'))
+
+
 
 
 </script>
