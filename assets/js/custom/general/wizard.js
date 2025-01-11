@@ -9,16 +9,22 @@ let maxPriorityFeePerGas;
 let factoryAddress;
 
 
-//minato factory
-//const factoryAddress = '0xae7DBD688062E6c5161402860175fB2ba4B0Bd6F'
-// Example usage
-setFactoryAddress().then(address => {
-    if (address) {
-        factoryAddress = address
-        console.log('Factory address successfully set at:', factoryAddress);
-    }
-});
 
+
+// Function to detect network change and re-run `checkConnectedNetwork`
+// function detectNetworkChange(wallet) {
+//     wallet.on('chainChanged', async () => {
+//         console.log("Network changed");
+//         setFactoryAddress().then(address => {
+//             if (address) {
+//                 factoryAddress = address
+//                 console.log('Factory address successfully set at:', factoryAddress);
+//             }
+//         });
+
+//     });
+
+// }
 
 
 
@@ -115,7 +121,7 @@ async function getGas(dat, senderAddress, val) {
     gasPrice = await web3.eth.getGasPrice();
 
     // Calculate maxFeePerGas and maxPriorityFeePerGas (for EIP-1559 transactions)
-    maxPriorityFeePerGas = web3.utils.toWei('2', 'gwei'); // Adjust as needed
+    maxPriorityFeePerGas = web3.utils.toWei('1', 'gwei'); // Adjust as needed
     maxFeePerGas = BigInt(gasPrice) + BigInt(maxPriorityFeePerGas);
 
     console.log('gas limit: ' + gasLimit)
@@ -491,6 +497,3 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 });
-
-
-

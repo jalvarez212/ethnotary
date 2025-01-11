@@ -4,11 +4,12 @@
 <!--begin::Head-->
 
 <head>
+
 	<head>
 		<title>wizard</title>
 		<meta charset="utf-8" />
-	
-	
+
+
 		<meta http-equiv="cache-control" content="max-age=0" />
 		<meta http-equiv="cache-control" content="no-cache" />
 		<meta http-equiv="expires" content="0" />
@@ -18,7 +19,7 @@
 		<link rel="shortcut icon" href="../assets/media/logos/en_logo.png" />
 		<!--begin::Fonts-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-		<script src="../keys.js?cachebuster=1"></script>
+		<script src="../key.js?cachebuster=1"></script>
 		<!--end::Fonts-->
 		<!--begin::Global Stylesheets Bundle(used by all pages)-->
 		<link href="../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
@@ -26,154 +27,158 @@
 		<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
 		<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
 		<script src="../assets/js/bundle.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
-		<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script> -->
+		<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs"
+			type="module"></script>
 		<script src="../assets/js/custom/env.js"></script>
 		<script src="../assets/js/custom/wallet.js"></script>
-	
-	
+
+
+
+
 		<!--end::Global Stylesheets Bundle-->
 	</head>
-<!--end::Head-->
-<!--begin::Body-->
+	<!--end::Head-->
+	<!--begin::Body-->
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-47E2RM34GH"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-47E2RM34GH"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
 
-  gtag('config', 'G-47E2RM34GH');
+		gtag('config', 'G-47E2RM34GH');
 
 
 
-function showModal() {
-    var modalElement = document.getElementById('kt_modal_wallet');
-    var modal = new bootstrap.Modal(modalElement);
-    modal.show(); // Show the modal
-}
+		function showModal() {
+			var modalElement = document.getElementById('kt_modal_wallet');
+			var modal = new bootstrap.Modal(modalElement);
+			modal.show(); // Show the modal
+		}
 
-function hideModal() {
-    var modalElement = document.getElementById('kt_modal_wallet');
-    var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
-    if (modal) {
-        modal.hide(); // Hide the modal
-    }
-}
+		function hideModal() {
+			var modalElement = document.getElementById('kt_modal_wallet');
+			var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
+			if (modal) {
+				modal.hide(); // Hide the modal
+			}
+		}
 
-</script>
+	</script>
 
-<script type="text/javascript">
+	<script type="text/javascript">
 
-	var user = localStorage.contract // Get the user input
+		var user = localStorage.contract // Get the user input
 
-</script>
+	</script>
 
-<div class="modal fade" tabindex="-1" id="kt_modal_wallet">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">Connect a Wallet</h5>
+	<div class="modal fade" tabindex="-1" id="kt_modal_wallet">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Connect a Wallet</h5>
 
-				<!--begin::Close-->
-				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
-					aria-label="Close">
-					<span class="svg-icon svg-icon-2x"></span>
-				</div>
-				<!--end::Close-->
-			</div>
-
-			<div class="modal-body">
-				<!-- Information about supported networks -->
-				<div class="alert alert-info" role="alert">
-					Please make sure you're connected to one of the supported networks:
-					<ul>
-						<li>Mainnet (Ethereum)</li>
-						<li>Polygon</li>
-						<li>BNB Chain</li>
-						<li>Base</li>
-					</ul>
+					<!--begin::Close-->
+					<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+						aria-label="Close">
+						<span class="svg-icon svg-icon-2x"></span>
+					</div>
+					<!--end::Close-->
 				</div>
 
-				<!-- Wallet connection menu -->
+				<div class="modal-body">
+					<!-- Information about supported networks -->
+					<div class="alert alert-info" role="alert">
+						Please make sure you're connected to one of the supported networks:
+						<ul>
+							<li>Mainnet (Ethereum)</li>
+							<li>Polygon</li>
+							<li>BNB Chain</li>
+							<li>Base</li>
+						</ul>
+					</div>
 
-				<div class="">
-					<span class="text-white fw-bolder fs-4">Connect a wallet</span>
+					<!-- Wallet connection menu -->
+
+					<div class="">
+						<span class="text-white fw-bolder fs-4">Connect a wallet</span>
+					</div>
 				</div>
+				<!--begin::Row-->
+				<div class="row row-cols-2 g-0">
+					<a onclick="connectPhantomWallet()"
+						class="border-bottom border-end text-center py-10 btn btn-active-color-primary rounded-0">
+						<span class="svg-icon svg-icon-3x me-n1">
+							<img style="width: 30px; height: 30px;" alt="Phantom Wallet Logo"
+								src="../assets/media/svg/Phantom_SVG_Icon.svg" />
+						</span>
+						<span class="fw-bolder fs-6 d-block pt-3">Phantom</span>
+					</a>
+					<a id="coinbase" onclick="connectCoinbase()"
+						class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
+						<span class="svg-icon svg-icon-3x me-n1">
+							<img style="width: 30px; height: 30px;" alt="Coinbase Wallet Logo"
+								src="../assets/media/svg/coinbase.svg" />
+						</span>
+						<span class="fw-bolder fs-6 d-block pt-3">Coinbase</span>
+					</a>
+					<a onclick="connectOKXWallet()"
+						class="col border-bottom text-center border-end py-10 btn btn-active-color-primary rounded-0">
+						<span class="svg-icon svg-icon-3x me-n1">
+							<img alt="OKX Wallet Logo" style="width: 50px; height: 50px;"
+								src="../assets/media/svg/OKX_Logo.svg" />
+						</span>
+						<span class="fw-bolder fs-6 d-block pt-3">OKX</span>
+					</a>
+					<a id="metamask" onclick="connectMetaMask()"
+						class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
+						<span class="svg-icon svg-icon-3x me-n1">
+							<img alt="MetaMask Logo" style="width: 50px; height: 50px;"
+								src="../assets/media/svg/metamask.svg" />
+						</span>
+						<span class="fw-bolder fs-6 d-block pt-3">MetaMask</span>
+					</a>
+					<a id="binance" onclick="connectBinance()"
+						class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
+						<span class="svg-icon svg-icon-3x me-n1">
+							<img alt="Binance Logo" style="width: 40px; height: 40px;"
+								src="../assets/media/svg/Binance_Logo.svg" />
+						</span>
+						<span class="fw-bolder fs-6 d-block pt-3">Binance</span>
+					</a>
+					<a id="other" onclick="connectWallet()"
+						class="col text-center py-10 btn btn-active-color-primary rounded-0">
+						<span class="svg-icon svg-icon-1 svg-icon-dark">
+							<svg xmlns="http://www.w3.org/2000/svg" width="65px" height="65px" viewBox="0 0 24 24"
+								fill="none" style="width: 65px; height: 65px;">
+								<path opacity="0.3"
+									d="M3.20001 5.91897L16.9 3.01895C17.4 2.91895 18 3.219 18.1 3.819L19.2 9.01895L3.20001 5.91897Z"
+									fill="grey"></path>
+								<path opacity="0.3"
+									d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21C21.6 10.9189 22 11.3189 22 11.9189V15.9189C22 16.5189 21.6 16.9189 21 16.9189H16C14.3 16.9189 13 15.6189 13 13.9189ZM16 12.4189C15.2 12.4189 14.5 13.1189 14.5 13.9189C14.5 14.7189 15.2 15.4189 16 15.4189C16.8 15.4189 17.5 14.7189 17.5 13.9189C17.5 13.1189 16.8 12.4189 16 12.4189Z"
+									fill="grey"></path>
+								<path
+									d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21V7.91895C21 6.81895 20.1 5.91895 19 5.91895H3C2.4 5.91895 2 6.31895 2 6.91895V20.9189C2 21.5189 2.4 21.9189 3 21.9189H19C20.1 21.9189 21 21.0189 21 19.9189V16.9189H16C14.3 16.9189 13 15.6189 13 13.9189Z"
+									fill="grey"></path>
+							</svg>
+						</span>
+						<span class="fw-bolder fs-6 d-block pt-3">Other Wallet</span>
+					</a>
+				</div>
+				<!--end::Row-->
 			</div>
-			<!--begin::Row-->
-			<div class="row row-cols-2 g-0">
-				<a onclick="connectPhantomWallet()"
-					class="border-bottom border-end text-center py-10 btn btn-active-color-primary rounded-0">
-					<span class="svg-icon svg-icon-3x me-n1">
-						<img style="width: 30px; height: 30px;" alt="Phantom Wallet Logo"
-							src="../assets/media/svg/Phantom_SVG_Icon.svg" />
-					</span>
-					<span class="fw-bolder fs-6 d-block pt-3">Phantom</span>
-				</a>
-				<a id="coinbase" onclick="connectCoinbase()"
-					class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
-					<span class="svg-icon svg-icon-3x me-n1">
-						<img style="width: 30px; height: 30px;" alt="Coinbase Wallet Logo"
-							src="../assets/media/svg/coinbase.svg" />
-					</span>
-					<span class="fw-bolder fs-6 d-block pt-3">Coinbase</span>
-				</a>
-				<a onclick="connectOKXWallet()"
-					class="col border-bottom text-center border-end py-10 btn btn-active-color-primary rounded-0">
-					<span class="svg-icon svg-icon-3x me-n1">
-						<img alt="OKX Wallet Logo" style="width: 50px; height: 50px;"
-							src="../assets/media/svg/OKX_Logo.svg" />
-					</span>
-					<span class="fw-bolder fs-6 d-block pt-3">OKX</span>
-				</a>
-				<a id="metamask" onclick="connectMetaMask()"
-					class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
-					<span class="svg-icon svg-icon-3x me-n1">
-						<img alt="MetaMask Logo" style="width: 50px; height: 50px;"
-							src="../assets/media/svg/metamask.svg" />
-					</span>
-					<span class="fw-bolder fs-6 d-block pt-3">MetaMask</span>
-				</a>
-				<a id="binance" onclick="connectBinance()"
-					class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
-					<span class="svg-icon svg-icon-3x me-n1">
-						<img alt="Binance Logo" style="width: 40px; height: 40px;"
-							src="../assets/media/svg/Binance_Logo.svg" />
-					</span>
-					<span class="fw-bolder fs-6 d-block pt-3">Binance</span>
-				</a>
-				<a id="other" onclick="connectWallet()"
-					class="col text-center py-10 btn btn-active-color-primary rounded-0">
-					<span class="svg-icon svg-icon-1 svg-icon-dark">
-						<svg xmlns="http://www.w3.org/2000/svg" width="65px" height="65px" viewBox="0 0 24 24"
-							fill="none" style="width: 65px; height: 65px;">
-							<path opacity="0.3"
-								d="M3.20001 5.91897L16.9 3.01895C17.4 2.91895 18 3.219 18.1 3.819L19.2 9.01895L3.20001 5.91897Z"
-								fill="grey"></path>
-							<path opacity="0.3"
-								d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21C21.6 10.9189 22 11.3189 22 11.9189V15.9189C22 16.5189 21.6 16.9189 21 16.9189H16C14.3 16.9189 13 15.6189 13 13.9189ZM16 12.4189C15.2 12.4189 14.5 13.1189 14.5 13.9189C14.5 14.7189 15.2 15.4189 16 15.4189C16.8 15.4189 17.5 14.7189 17.5 13.9189C17.5 13.1189 16.8 12.4189 16 12.4189Z"
-								fill="grey"></path>
-							<path
-								d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21V7.91895C21 6.81895 20.1 5.91895 19 5.91895H3C2.4 5.91895 2 6.31895 2 6.91895V20.9189C2 21.5189 2.4 21.9189 3 21.9189H19C20.1 21.9189 21 21.0189 21 19.9189V16.9189H16C14.3 16.9189 13 15.6189 13 13.9189Z"
-								fill="grey"></path>
-						</svg>
-					</span>
-					<span class="fw-bolder fs-6 d-block pt-3">Other Wallet</span>
-				</a>
-			</div>
-			<!--end::Row-->
 		</div>
+
+
 	</div>
-
-
-</div>
 
 <body id="kt_body" data-sidebar="on"
 	class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled sidebar-enabled">
 
-	<div id="animation-container" style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; display: none; z-index: 99;">
+	<div id="animation-container"
+		style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; display: none; z-index: 99;">
 		<dotlottie-player id="processing-animation"
 			src="https://lottie.host/c0c762b6-fd69-4271-b53c-1c7408d4ac7b/UQ58y0jOJk.json" background="transparent"
 			speed="1"
@@ -184,12 +189,12 @@ function hideModal() {
 			speed="1"
 			style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
 			loop autoplay></dotlottie-player>
-			<dotlottie-player id="revoke-animation"
+		<dotlottie-player id="revoke-animation"
 			src="https://lottie.host/717bd718-5d50-42e0-bdca-1afbb11a7591/QX0hRMpiLk.json" background="transparent"
 			speed="1"
 			style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
 			loop autoplay></dotlottie-player>
-			
+
 	</div>
 	<!--begin::Main-->
 	<!--begin::Root-->
@@ -361,7 +366,7 @@ function hideModal() {
 						<!--begin::Right-->
 						<div class="d-flex align-items-center">
 
-														<!--begin::Wallet-->
+							<!--begin::Wallet-->
 							<!--begin::Wallet-->
 							<div class="ms-1 ms-lg-6">
 								<div class="btn btn-icon btn-sm btn-active-bg-accent" data-kt-menu-trigger="click"
@@ -594,8 +599,7 @@ function hideModal() {
 							<!--begin::Nav-->
 							<div class="d-flex align-items-center flex-nowrap text-nowrap overflow-auto py-1">
 								<a href="" id="homeLink" class="btn btn-active-accent fw-bolder">Home</a>
-								<a href="./wizard.html"
-									class="btn btn-active-accent active fw-bolder ms-3">Wizard</a>
+								<a href="./wizard.html" class="btn btn-active-accent active fw-bolder ms-3">Wizard</a>
 								<a href="./accountsettings.html"
 									class="btn btn-active-accent fw-bolder ms-3">Settings</a>
 								<a href="#" class="btn btn-active-accent fw-bolder ms-3">Docs</a>
@@ -1208,14 +1212,14 @@ function hideModal() {
 	<!--begin::Global Javascript Bundle(used by all pages)-->
 	<script src="../assets/plugins/global/plugins.bundle.js"></script>
 	<script src="../assets/js/scripts.bundle.js"></script>
-	<script src="../assets/js/custom/txn.js"></script>
+	<!-- <script src="../assets/js/custom/txn.js"></script> -->
 
 	<!--end::Global Javascript Bundle-->
 	<!--begin::Page Custom Javascript(used by this page)-->
 
 
 	<script>
-		let homeLink = document.getElementById('homeLink'); 
+		let homeLink = document.getElementById('homeLink');
 		// Get the link element
 		// Update the link's href with the new query string
 		homeLink.href = "../index.html?" + contractAddress;
@@ -1301,7 +1305,7 @@ function hideModal() {
 
 
 
-	
+
 
 
 
@@ -1318,70 +1322,6 @@ function hideModal() {
 			return owners;
 		}
 
-		// // Event listener for the compile button
-		// document.getElementById('compile').addEventListener('click', async () => {
-		// 	try {
-		// 		// Request the user's Ethereum accounts
-		// 		const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-
-		// 		if (accounts.length === 0) {
-		// 			console.error('No accounts found. Please connect your Ethereum wallet.');
-		// 			return;
-		// 		}
-
-		// 		const selectAddress = accounts[0]; // Use the first account in the list
-		// 		const owners = getAccountOwners(); // Extract owners from #reviewContainer
-		// 		const required = parseInt(selectCount);
-		// 		const pin = parseInt(selectPin);
-
-		// 		// Initialize the contract
-		// 		const contract = new web3.eth.Contract(contractABI, contractAddress);
-
-		// 		// Prepare the transaction data
-		// 		const data = contract.methods.newMSA(owners, required, pin).encodeABI();
-
-		// 		// Send the transaction
-		// 		const txParams = {
-		// 			to: contractAddress,
-		// 			from: selectAddress,
-		// 			data: data,
-		// 			gasLimit: '3000000', // Adjust the gas limit as necessary
-		// 			value: web3.utils.toWei('1', 'ether'), // Replace '1' with the actual ether value to send
-		// 			maxFeePerGas: web3.utils.toHex(web3.utils.toWei('3000', 'gwei')),
-		// 			maxPriorityFeePerGas: web3.utils.toHex(web3.utils.toWei('100', 'gwei'))
-		// 		};
-
-		// 		const txHash = await window.ethereum.request({
-		// 			method: 'eth_sendTransaction',
-		// 			params: [txParams],
-		// 		});
-
-		// 		console.log('Transaction sent, waiting for confirmation...', txHash);
-
-		// 		// Wait for the transaction to be mined
-		// 		const receipt = await web3.eth.getTransactionReceipt(txHash);
-
-		// 		if (receipt && receipt.status) {
-		// 			console.log('Transaction confirmed, checking logs for the new contract address...');
-
-		// 			// Decode the logs to find the NewMSACreated event
-		// 			const newMSAEvent = receipt.logs.find(log => {
-		// 				return log.topics[0] === web3.utils.sha3('NewMSACreated(address)');
-		// 			});
-
-		// 			if (newMSAEvent) {
-		// 				const newContractAddress = web3.eth.abi.decodeParameters(['address'], newMSAEvent.data)[0];
-		// 				console.log('New contract created at address:', newContractAddress);
-		// 			} else {
-		// 				console.error('No NewMSACreated event found in the logs.');
-		// 			}
-		// 		} else {
-		// 			console.error('Transaction failed.');
-		// 		}
-		// 	} catch (error) {
-		// 		console.error('Transaction failed:', error);
-		// 	}
-		// });
 
 		// Function to start processing animation
 		function startProcessingAnimation() {
@@ -1406,6 +1346,42 @@ function hideModal() {
 		function hideAnimations() {
 			document.getElementById('animation-container').style.display = 'none';
 		}
+		let factoryAddress;
+
+		async function setFactoryAddress() {
+
+
+			try {
+				// Request the chainId from the wallet
+				const chainId = await wallet.request({ method: 'eth_chainId' });
+
+				// Find the corresponding network and factory address
+				const network = Object.values(networks).find(net => net.chainId === chainId);
+
+				if (!network) {
+					console.error(`Unsupported chainId: ${chainId}`);
+					return;
+				}
+
+				factoryAddress = network.factory;
+
+				if (!factoryAddress) {
+					console.warn(`Factory address not defined for chainId: ${chainId}`);
+				} else {
+					console.log(`Factory Address for chainId ${chainId}: ${factoryAddress}`);
+				}
+
+				return factoryAddress; // Return the factory address for further use
+			} catch (error) {
+				console.error('Error fetching chainId or setting factory address:', error);
+			}
+		}
+
+
+		window.addEventListener('load', () => {
+
+			setFactoryAddress();
+		});
 
 
 
@@ -1419,9 +1395,12 @@ function hideModal() {
 
 
 
-	</script>	
+
+
+	</script>
 	<script src="../assets/js/custom/general/wizard.js"></script>
-	<script src="../assets/js/custom/apps/chat/chat.js"></script>
+
+
 	<!--end::Page Custom Javascript-->
 	<!--end::Javascript-->
 </body>

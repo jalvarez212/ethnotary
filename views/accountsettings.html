@@ -17,7 +17,7 @@
 	<link rel="shortcut icon" href="assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-	<script src="./keys.js?cachebuster=1"></script>
+	<script src="../key.js?cachebuster=1"></script>
 	<!--end::Fonts-->
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
 	<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
@@ -728,9 +728,25 @@
 	</script>
 	<script>
 
+		let gas;
+		const priorityFeeDecimal = 1;         // 0.1 Gwei in Wei
+		const priorityFeeHex = '0x' + priorityFeeDecimal.toString(16);
+		// => '0x5F5E100'
+
+
+
 
 		// Create contract instance
 		let settings = new web3.eth.Contract(contractABI, contractAddress);
+		async function getGas(method) {
+
+			let gasLimit = await method.estimateGas({ from: selectAddress, to: contractAddress });
+			gas = gasLimit
+			console.log("gas: " + gas)
+
+
+
+		}
 
 		// let removeOwner = settings.methods.removeOwner(methodArguments).encodeABI()
 
@@ -749,6 +765,8 @@
 			console.log(s)
 			let addOwner = settings.methods.addOwner(address, pin).encodeABI();
 			console.log(addOwner)
+			getGas(settings.methods.addOwner(address, pin))
+
 
 			wallet.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
@@ -765,10 +783,8 @@
 									to: contractAddress, // This now dynamically points to the user's account
 									from: selectAddress,
 									data: addOwner, // Ensure this is well defined in your original script
-									gasLimit: '21000000',
-									maxFeePerGas: '3000',
-									maxPriorityFeePerGas: '100',
-									gas: '90000',
+									gasLimit: gas,
+									maxPriorityFeePerGas: priorityFeeHex,
 								},
 							],
 						})
@@ -795,6 +811,9 @@
 			console.log(s)
 			let removeOwner = settings.methods.removeOwner(address, pin).encodeABI();
 			console.log(removeOwner)
+			getGas(settings.methods.removeOwner(address, pin))
+
+			
 
 			wallet.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
@@ -811,10 +830,9 @@
 									to: contractAddress, // This now dynamically points to the user's account
 									from: selectAddress,
 									data: removeOwner, // Ensure this is well defined in your original script
-									gasLimit: '21000000',
-									maxFeePerGas: '3000',
-									maxPriorityFeePerGas: '100',
-									gas: '90000',
+									gasLimit: gas,
+									maxPriorityFeePerGas: priorityFeeHex,
+								
 								},
 							],
 						})
@@ -842,6 +860,10 @@
 
 			let replaceOwner = settings.methods.replaceOwner(address1, address2, pin).encodeABI();
 			console.log(removeOwner)
+			getGas(settings.methods.replaceOwner(address1, address2, pin))
+
+
+			
 
 			wallet.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
@@ -851,17 +873,15 @@
 						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
 						// Contract interaction steps come here after getting the active wallet
-						ethereum.request({
+						wallet.request({
 							method: 'eth_sendTransaction',
 							params: [
 								{
 									to: contractAddress, // This now dynamically points to the user's account
 									from: selectAddress,
 									data: replaceOwner, // Ensure this is well defined in your original script
-									gasLimit: '21000000',
-									maxFeePerGas: '3000',
-									maxPriorityFeePerGas: '100',
-									gas: '90000',
+									gasLimit: gas,
+									maxPriorityFeePerGas: priorityFeeHex,
 								},
 							],
 						})
@@ -889,6 +909,8 @@
 						console.error('No accounts found. Please connect your Ethereum wallet.');
 					} else {
 						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
+						getGas(settings.methods.changeRequirement(requirement, pin))
+
 
 						// Contract interaction steps come here after getting the active wallet
 						wallet.request({
@@ -898,10 +920,8 @@
 									to: contractAddress, // This now dynamically points to the user's account
 									from: selectAddress,
 									data: changeRequirement, // Ensure this is well defined in your original script
-									gasLimit: '21000000',
-									maxFeePerGas: '3000',
-									maxPriorityFeePerGas: '100',
-									gas: '90000',
+									gasLimit: gas,
+									maxPriorityFeePerGas: priorityFeeHex,
 								},
 							],
 						})

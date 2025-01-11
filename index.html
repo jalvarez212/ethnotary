@@ -16,7 +16,7 @@
 	<link rel="shortcut icon" href="assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-	<script src="./keys.js?cachebuster=1"></script>
+	<script src="./key.js?cachebuster=1"></script>
 	<script src="assets/js/custom/env.js"></script>
 	<!--end::Fonts-->
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
@@ -1641,14 +1641,16 @@
 
 <script type="text/javascript">
 
-	let gas;
+	let gasLimit;
 	let maxFeePerGas;
 	let maxPriorityFeePerGas;
 
 
 	async function getGas(method) {
 
-		gas = await method.estimateGas({ from: selectAddress });
+		let gas = await method.estimateGas({ from: selectAddress });
+		gasLimit = gas*1.2
+
 
 		let feeHistory = await web3.eth.getFeeHistory(1, 'latest', [10, 90]);
 		// Get the gas price

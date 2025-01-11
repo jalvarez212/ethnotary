@@ -13,8 +13,6 @@ const ETHERSCAN_API_URL = 'https://api.etherscan.io/api';
 
 // Contract details
 
-
-
 const erc721Abi = [
     {
         "inputs": [
@@ -815,37 +813,37 @@ const factoryLookup = Object.keys(networks).reduce((lookup, factoryAddress) => {
 // }
 
 // Function to get the current chain ID and set the factory address
-async function setFactoryAddress() {
-    if (typeof window.ethereum === 'undefined') {
-        console.error('MetaMask is not installed!');
-        return;
-    }
+// async function setFactoryAddress() {
+//     if (typeof window.ethereum === 'undefined') {
+//         console.error('MetaMask is not installed!');
+//         return;
+//     }
 
-    try {
-        // Request the chainId from the wallet
-        const chainId = await ethereum.request({ method: 'eth_chainId' });
+//     try {
+//         // Request the chainId from the wallet
+//         const chainId = await ethereum.request({ method: 'eth_chainId' });
         
-        // Find the corresponding network and factory address
-        const network = Object.values(networks).find(net => net.chainId === chainId);
+//         // Find the corresponding network and factory address
+//         const network = Object.values(networks).find(net => net.chainId === chainId);
 
-        if (!network) {
-            console.error(`Unsupported chainId: ${chainId}`);
-            return;
-        }
+//         if (!network) {
+//             console.error(`Unsupported chainId: ${chainId}`);
+//             return;
+//         }
 
-        const factoryAddress = network.factory;
+//         const factoryAddress = network.factory;
 
-        if (!factoryAddress) {
-            console.warn(`Factory address not defined for chainId: ${chainId}`);
-        } else {
-            console.log(`Factory Address for chainId ${chainId}: ${factoryAddress}`);
-        }
+//         if (!factoryAddress) {
+//             console.warn(`Factory address not defined for chainId: ${chainId}`);
+//         } else {
+//             console.log(`Factory Address for chainId ${chainId}: ${factoryAddress}`);
+//         }
 
-        return factoryAddress; // Return the factory address for further use
-    } catch (error) {
-        console.error('Error fetching chainId or setting factory address:', error);
-    }
-}
+//         return factoryAddress; // Return the factory address for further use
+//     } catch (error) {
+//         console.error('Error fetching chainId or setting factory address:', error);
+//     }
+// }
 
 
 // Function to prompt the user to change networks
