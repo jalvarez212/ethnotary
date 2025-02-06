@@ -6,12 +6,12 @@
 
   // Initialize Web3 connection
   let web3 = null;
-  const contractAddress = localStorage.contract;
+  const contractAddress = '0x0053746a266c9ad6dab54e42aa77715aa83243b1';
 
 
   // Function to update the Web3 provider with a new RPC URL
-  function updateWeb3Provider(rpcUrl) {
-      web3 = new Web3(rpcUrl);
+  function updateWeb3Provider() {
+      web3 = new Web3('https://sepolia.infura.io/v3/'+ENV.RPC_NODE_KEY );
       // Further actions can be performed with the updated web3 instance
   }
 
@@ -71,6 +71,9 @@
       }
   }
 
+  checkConnectedNetwork();
+
+
   // Function to detect network change and re-run `checkConnectedNetwork`
   function detectNetworkChange(walletInstance) {
       if (walletInstance && typeof walletInstance.on === 'function') {
@@ -119,6 +122,8 @@
               localStorage.setItem('lastWallet', 'Metamask');
               
               detectNetworkChange(wallet);
+              switchToSepolia()
+
               console.log("Detected Chain ID:", rawChainId);
               hideModal(); // Hide your modal if everything is good
           }
@@ -155,6 +160,8 @@
               localStorage.setItem('lastChain', rawChainId);
 
               detectNetworkChange(wallet);
+              switchToSepolia()
+
               console.log("Detected Chain ID:", rawChainId);
               hideModal();
           } else {
@@ -194,6 +201,8 @@
           localStorage.setItem('lastChain', rawChainId);
 
           detectNetworkChange(wallet);
+          switchToSepolia()
+
           console.log("Detected Chain ID:", rawChainId);
           hideModal();
       } catch (error) {
@@ -226,6 +235,8 @@
               localStorage.setItem('lastChain', chainIdHex);
 
               detectNetworkChange(wallet);
+              switchToSepolia()
+
               console.log("Detected Chain ID:", chainIdHex);
               hideModal();
           } else {
@@ -267,6 +278,8 @@
               localStorage.setItem('lastChain', normalizeToHex(rawChainId));
 
               detectNetworkChange(wallet);
+              switchToSepolia()
+
               console.log("Detected Chain ID:", rawChainId);
               hideModal();
           } else {
@@ -303,6 +316,8 @@
               wallet = window.ethereum;
 
               detectNetworkChange(wallet);
+              switchToSepolia()
+
               console.log("Detected Chain ID:", rawChainId);
           } catch (error) {
               console.error('User denied account access or there was an issue:', error);
@@ -313,8 +328,110 @@
   }
 
 
+async function checkWalletConnectionAndNetwork() {
+    if (typeof wallet == 'undefined') {
+        // Check if wallet is connected
+        try {
 
-  checkConnectedNetwork().then(function () {
+            let lastWallet = localStorage.getItem('lastWallet')
+            console.log('last wallet provider: ' + lastWallet)
+
+            if (lastWallet == 'Metamask') {
+                connectMetaMask();
+            }
+            if (lastWallet == 'Coinbase') {
+                connectCoinbase();
+
+            }
+            if (lastWallet == 'Binance') {
+                connectBinance();
+            }
+            if (lastWallet == 'Phantom') {
+                connectPhantomWallet();
+            }
+            if (lastWallet == 'okx') {
+                connectOKXWallet();
+            }
+            if (lastWallet == 'other') {
+                connectWallet();
+            }
+
+        }
+        catch {
+            showModal();
+
+        }
+
+
+    } else {
+        showModal();
+
+
+    }
+}
+
+
+
+//   checkConnectedNetwork().then(function () {
+//     contract = new web3.eth.Contract(contractABI, contractAddress);
+//     console.log("yoyo, this the contract :"+contract)
+// });
+
+async function switchToSepolia() {
+    const sepoliaChainId = '0xaa36a7'; // Chain ID for Sepolia (in hexadecimal)
+    
+    if (typeof window.ethereum === 'undefined') {
+        console.error('MetaMask is not installed.');
+        return;
+    }
+    
+    try {
+        // Check the current network
+        const currentChainId = await wallet.request({ method: 'eth_chainId' });
+        if (currentChainId === sepoliaChainId) {
+            console.log('Already connected to Sepolia.');
+            return;
+        }
+        
+        // Request to switch to Sepolia
+        await wallet.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: sepoliaChainId }],
+        });
+        console.log('Switched to Sepolia network.');
+    } catch (error) {
+        // If the network is not added to MetaMask, you need to add it
+        if (error.code === 4902) {
+            try {
+                await wallet.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: sepoliaChainId,
+                        chainName: 'Sepolia Testnet',
+                        nativeCurrency: {
+                            name: 'Ethereum',
+                            symbol: 'ETH',
+                            decimals: 18,
+                        },
+                        rpcUrls: [`https://sepolia.infura.io/v3/`+ ENV.RPC_NODE_KEY], 
+                        blockExplorerUrls: ['https://sepolia.etherscan.io'],
+                    }],
+                });
+                console.log('Sepolia network added and switched.');
+            } catch (addError) {
+                console.error('Failed to add Sepolia network:', addError);
+            }
+        } else {
+            console.error('Error switching to Sepolia:', error);
+        }
+    }
+}
+
+
+updateWeb3Provider();
+
+checkWalletConnectionAndNetwork().then(function () {
+    checkConnectedNetwork();
     contract = new web3.eth.Contract(contractABI, contractAddress);
     console.log("yoyo, this the contract :"+contract)
 });

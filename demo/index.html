@@ -16,7 +16,7 @@
 	<link rel="shortcut icon" href="../assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-	<script src="../key.js?cachebuster=1"></script>
+	<script src="../keys.js?cachebuster=1"></script>
 	<!--end::Fonts-->
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
 	<link href="../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
@@ -26,8 +26,9 @@
 	<script src="../assets/js/bundle.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
 	<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
-	<script src="js/env.js"></script>
-	<script src="js/wallet.js"></script>
+
+
+
 
 
 	<!--end::Global Stylesheets Bundle-->
@@ -49,14 +50,14 @@
 
 
 
-	function showModal() {
-		var modalElement = document.getElementById('kt_modal_wallet');
-		var modal = new bootstrap.Modal(modalElement);
-		modal.show(); // Show the modal
-	}
+	// function showModal() {
+	// 	var modalElement = document.getElementById('kt_modal_wallet');
+	// 	var modal = new bootstrap.Modal(modalElement);
+	// 	modal.show(); // Show the modal
+	// }
 
 	function hideModal() {
-		var modalElement = document.getElementById('kt_modal_wallet');
+		var modalElement = document.getElementById('kt_modal_signup');
 		var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
 		if (modal) {
 			modal.hide(); // Hide the modal
@@ -64,15 +65,117 @@
 	}
 
 	//load contract
-
-	let queryString = window.location.search;
-	const contractValue = queryString.substring(1);
+	const contractValue = '0x0053746a266c9ad6dab54e42aa77715aa83243b1';
 
 	localStorage.setItem('contract', contractValue);
+
+	document.addEventListener('DOMContentLoaded', function () {
+		let modalShown = false;
+		let pendingNavigation = null; // Store pending navigation URL
+		let showSecondaryModal = false; // Flag for opening #kt_modal_1 after #kt_modal_signup
+		let showThirdModal = false; // Flag for opening #kt_modal_1 after #kt_modal_signup
+		let showFourthModal = false; // Flag for opening #kt_modal_1 after #kt_modal_signup
+		let showFifthModal = false; // Flag for opening #kt_modal_1 after #kt_modal_signup
+
+
+
+
+		// Disable Bootstrap's auto-modal behavior for #sendETH
+		document.getElementById('sendETH').setAttribute('data-bs-toggle', '');
+		document.getElementById('sendETH').setAttribute('data-bs-target', '');
+		document.getElementById('transferToken').setAttribute('data-bs-toggle', '');
+		document.getElementById('transferToken').setAttribute('data-bs-target', '');
+		document.getElementById('importToken').setAttribute('data-bs-toggle', '');
+		document.getElementById('importToken').setAttribute('data-bs-target', '');
+		document.getElementById('dApp').setAttribute('data-bs-toggle', '');
+		document.getElementById('dApp').setAttribute('data-bs-target', '');
+
+		function showModal() {
+			var modalElement = document.getElementById('kt_modal_signup');
+			var modal = new bootstrap.Modal(modalElement);
+
+			modalElement.addEventListener('hidden.bs.modal', function () {
+				// If #sendETH was clicked, open #kt_modal_1 after #kt_modal_signup closes
+				if (showSecondaryModal) {
+					showSecondaryModal = false; // Reset flag
+					var secondModalElement = document.getElementById('kt_modal_1');
+					var secondModal = new bootstrap.Modal(secondModalElement);
+					secondModal.show();
+				}
+
+				if (showThirdModal) {
+					showThirdModal = false; // Reset flag
+					var thirdModalElement = document.getElementById('kt_modal_2');
+					var thirdModal = new bootstrap.Modal(thirdModalElement);
+					thirdModal.show();
+				}
+
+				if (showFourthModal) {
+					showFourthModal = false; // Reset flag
+					var fourthModalElement = document.getElementById('kt_modal_3');
+					var fourthModal = new bootstrap.Modal(fourthModalElement);
+					fourthModal.show();
+				}
+
+				if (showFifthModal) {
+					showFifthModal = false; // Reset flag
+					var fifthModalElement = document.getElementById('kt_modal_2');
+					var fifthhModal = new bootstrap.Modal(fifthModalElement);
+					fifthhModal.show();
+				}
+				// If there is a pending navigation, proceed after modal closes
+				else if (pendingNavigation) {
+					window.location.href = pendingNavigation;
+					pendingNavigation = null; // Reset pending navigation
+				}
+			}, { once: true }); // Ensure this event fires only once per modal close
+
+			modal.show();
+		}
+
+		function handleFirstClick(event) {
+			let target = event.target.closest('a'); // Check if clicked element or parent is a link
+
+			// If first click is on #sendETH, set flag to open #kt_modal_1 later
+			if (event.target.closest('#sendETH')) {
+				showSecondaryModal = true;
+			}
+
+			// If first click is on #sendETH, set flag to open #kt_modal_1 later
+			if (event.target.closest('#transferToken')) {
+				showThirdModal = true;
+			}
+
+			if (event.target.closest('#importToken')) {
+				showFourthModal = true;
+			}
+
+			if (event.target.closest('#dApp')) {
+				showFifthModal = true;
+			}
+
+			if (target) {
+				event.preventDefault(); // Prevent immediate navigation
+				pendingNavigation = target.href; // Store link for later navigation
+			}
+
+			showModal();
+
+			modalShown = true;
+			document.removeEventListener('click', handleFirstClick); // Remove listener after first click
+		}
+
+		document.addEventListener('click', handleFirstClick);
+	});
+
+
+
 
 
 
 </script>
+<script src="js/env.js"></script>
+<script src="js/wallet.js"></script>
 
 <div class="modal fade" tabindex="-1" id="kt_modal_wallet">
 	<div class="modal-dialog modal-dialog-centered">
@@ -112,7 +215,7 @@
 					class="border-bottom border-end text-center py-10 btn btn-active-color-primary rounded-0">
 					<span class="svg-icon svg-icon-3x me-n1">
 						<img style="width: 30px; height: 30px;" alt="Phantom Wallet Logo"
-							src="../assets/media/svg/Phantom_SVG_Icon.svg" />
+							src="./assets/media/svg/Phantom_SVG_Icon.svg" />
 					</span>
 					<span class="fw-bolder fs-6 d-block pt-3">Phantom</span>
 				</a>
@@ -120,7 +223,7 @@
 					class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
 					<span class="svg-icon svg-icon-3x me-n1">
 						<img style="width: 30px; height: 30px;" alt="Coinbase Wallet Logo"
-							src="../assets/media/svg/coinbase.svg" />
+							src="./assets/media/svg/coinbase.svg" />
 					</span>
 					<span class="fw-bolder fs-6 d-block pt-3">Coinbase</span>
 				</a>
@@ -128,7 +231,7 @@
 					class="col border-bottom text-center border-end py-10 btn btn-active-color-primary rounded-0">
 					<span class="svg-icon svg-icon-3x me-n1">
 						<img alt="OKX Wallet Logo" style="width: 50px; height: 50px;"
-							src="../assets/media/svg/OKX_Logo.svg" />
+							src="./assets/media/svg/OKX_Logo.svg" />
 					</span>
 					<span class="fw-bolder fs-6 d-block pt-3">OKX</span>
 				</a>
@@ -136,7 +239,7 @@
 					class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
 					<span class="svg-icon svg-icon-3x me-n1">
 						<img alt="MetaMask Logo" style="width: 50px; height: 50px;"
-							src="../assets/media/svg/metamask.svg" />
+							src="./assets/media/svg/metamask.svg" />
 					</span>
 					<span class="fw-bolder fs-6 d-block pt-3">MetaMask</span>
 				</a>
@@ -144,7 +247,7 @@
 					class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
 					<span class="svg-icon svg-icon-3x me-n1">
 						<img alt="Binance Logo" style="width: 40px; height: 40px;"
-							src="../assets/media/svg/Binance_Logo.svg" />
+							src="./assets/media/svg/Binance_Logo.svg" />
 					</span>
 					<span class="fw-bolder fs-6 d-block pt-3">Binance</span>
 				</a>
@@ -172,6 +275,34 @@
 	</div>
 
 
+</div>
+
+<div class="modal fade" tabindex="-2" id="kt_modal_signup">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h5 class="modal-title">Get Demo Account Access</h5>
+				<button type="button" class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+					aria-label="Close">
+					<span class="svg-icon svg-icon-2x"></span>
+				</button>
+			</div>
+
+			<!-- Modal Body -->
+			<div class="modal-body">
+				<div class="alert alert-info" role="alert">
+					Please enter your email and Ethereum wallet address to request access to the Ethnotary demo account.
+				</div>
+
+				<!-- Embedded Google Form -->
+				<iframe
+					src="https://docs.google.com/forms/d/e/1FAIpQLSfC1zXrsDKUaJ5gjulozUD8zHv6CzDPbojElWTkgUA7PTasfw/viewform?embedded=true"
+					style="width: 100%; height: 500px; border: none;" allowfullscreen>
+				</iframe>
+			</div>
+		</div>
+	</div>
 </div>
 </div>
 </div>
@@ -638,7 +769,7 @@
 														</button>
 													</div>
 													<div class="col mb-5">
-														<button type="button"
+														<button type="button" id="transferToken"
 															class="btn btn-outline btn-bg-light btn-color-gray-600 btn-active-light-primary border-dashed border-active px-6 py-7 text-start w-100 min-w-150px"
 															data-bs-toggle="modal" data-bs-target="#kt_modal_2">
 															<!--begin::Svg Icon | path: icons/duotune/general/gen005.svg-->
@@ -879,8 +1010,7 @@
 																	data-bs-dismiss="modal">Cancel</button>
 																<!--end::Button-->
 																<!--begin::Button-->
-																<button type="button" id="transferToken"
-																	class="btn btn-primary">
+																<button type="button" class="btn btn-primary">
 																	<span class="indicator-label">Submit
 																		Transaction</span>
 																	<span class="indicator-progress">Please wait...
@@ -1036,7 +1166,7 @@
 												<!--begin::Row-->
 												<div class="row">
 													<div class="col me-n2 mb-5">
-														<button type="button"
+														<button type="button" id="importToken"
 															class="btn btn-outline btn-bg-light btn-color-gray-600 btn-active-light-primary border-dashed border-active px-6 py-7 text-start w-100 min-w-150px"
 															data-bs-toggle="modal" data-bs-target="#kt_modal_3">
 															<!--begin::Svg Icon | path: icons/duotune/files/fil005.svg-->
@@ -1058,7 +1188,7 @@
 													</div>
 
 													<div class="col mb-5">
-														<button type="button"
+														<button type="button" id="dApp"
 															class="btn btn-outline btn-bg-light btn-color-gray-600 btn-active-light-primary border-dashed border-active px-6 py-7 text-start w-100 min-w-150px"
 															data-bs-toggle="modal" data-bs-target="#kt_modal_1">
 															<!--begin::Svg Icon | path: icons/duotune/general/gen005.svg-->
@@ -1633,13 +1763,15 @@
 	<script src="js/txn.js"></script>
 	<script src="js/dv.js"></script>
 
-	
+
 
 	<!--end::Page Custom Javascript-->
 	<!--end::Javascript-->
 </body>
 
 <script type="text/javascript">
+
+
 
 	let gas;
 	let maxFeePerGas;
@@ -1825,10 +1957,6 @@
 		// Use Bootstrap's modal method to hide the modal
 		$(modal).modal('hide');
 	}
-
-
-
-
 </script>
 
 

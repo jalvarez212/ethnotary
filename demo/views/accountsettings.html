@@ -6,31 +6,79 @@
 <head>
 	<title>Account Settings</title>
 
+	<meta charset="utf-8" />
+
+
 	<meta http-equiv="cache-control" content="max-age=0" />
 	<meta http-equiv="cache-control" content="no-cache" />
 	<meta http-equiv="expires" content="0" />
 	<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="pragma" content="no-cache" />
 	<link rel="canonical" href="https://preview.keenthemes.com/start" />
-	<link rel="shortcut icon" href="assets/media/logos/en_logo.png" />
+	<script src="../../keys.js?cachebuster=1"></script>
+
+	<link rel="shortcut icon" href="../../assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-	<script src="./key.js?cachebuster=1"></script>
 	<!--end::Fonts-->
-	<!--begin::Global Stylesheets Bundle(used by all pages)-->
-	<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-	<link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+	<!--end::Global Stylesheets Bundle-->
 	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
 	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
-	<script src="assets/js/bundle.js"></script>
+	<script src="../../assets/js/bundle.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
 	<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
-	<script src="assets/js/custom/env.js"></script>
-	<script src="assets/js/custom/wallet.js"></script>
+		<!--begin::Global Stylesheets Bundle(used by all pages)-->
+		<link href="../../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+		<link href="../../assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+		<script src="../js/env.js"></script>
+		<script src="../js/wallet.js"></script>
 
 </head>
 
+<script>
 
+
+
+	function showModal() {
+		var modalElement = document.getElementById('kt_modal_wallet');
+		var modal = new bootstrap.Modal(modalElement);
+		modal.show(); // Show the modal
+	}
+
+	function hideModal() {
+		var modalElement = document.getElementById('kt_modal_wallet');
+		var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
+		if (modal) {
+			modal.hide(); // Hide the modal
+		}
+	}
+
+	async function callGetOwners() {
+		try {
+			const owners = await contract.methods.getOwners().call();
+
+			owners.forEach(function (x) {
+				let d = document.createElement('div');
+				d.classList.add('form-text');
+				d.innerText = x;
+				document.getElementById('accountOwners').append(d);
+			})
+
+		} catch (error) {
+			console.error('Error calling getOwners:', error);
+		}
+	}
+
+	callGetOwners();
+
+
+
+
+
+
+
+
+</script>
 <!--end::Head-->
 <!--begin::Body-->
 
@@ -52,7 +100,7 @@
 					<div class="aside-logo d-flex flex-column align-items-center flex-column-auto py-4 pt-lg-10 pb-lg-7"
 						id="kt_aside_logo">
 						<a id="logo" href="">
-							<img alt="Logo" src="../assets/media/logos/en_logo.png" class="mh-50px" />
+							<img alt="Logo" src="../../assets/media/logos/en_logo.png" class="mh-50px" />
 						</a>
 					</div>
 					<!--end::Logo-->
@@ -136,7 +184,7 @@
 								<!--begin::Item-->
 								<li class="nav-item mb-1" title="New Contract" data-bs-toggle="tooltip"
 									data-bs-dismiss="click" data-bs-placement="right">
-									<a href="../../views/wizard.html"
+									<a href="./views/wizard.html"
 										class="nav-link h-40px w-40px h-lg-50px w-lg-50px btn btn-custom btn-icon btn-color-white"
 										role="tab">
 										<!--begin::Svg Icon | path: icons/duotune/files/fil005.svg-->
@@ -198,7 +246,7 @@
 							<!--begin::Logo-->
 							<a id="logo" href="">
 
-								<img alt="Logo" src="../assets/media/logos/logo_full.png" class="h-30px" />
+								<img alt="Logo" src="../../assets/media/logos/logo_full.png" class="h-30px" />
 							</a>
 							<!--end::Logo-->
 						</div>
@@ -233,10 +281,10 @@
 								<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold w-300px"
 									data-kt-menu="true">
 									<div class="menu-content fw-bold d-flex align-items-center bgi-no-repeat bgi-position-y-top rounded-top"
-										style="background-image:url('../assets/media//misc/dropdown-header-bg.jpg')">
+										style="background-image:url('./assets/media//misc/dropdown-header-bg.jpg')">
 										<div class="symbol symbol-45px mx-5 py-5">
 											<span class="symbol-label align-items-end">
-												<img alt="Logo" src="../assets/media/icons/duotune/arrows/arr076.svg"
+												<img alt="Logo" src="../../assets/media/icons/duotune/arrows/arr076.svg"
 													class="mh-35px" style="margin-bottom: auto;
 													margin-top: auto;" />
 											</span>
@@ -254,41 +302,68 @@
 
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img style="width: 30px; height: 30px;" alt="Logo"
-													src="../assets/media/svg/Phantom_SVG_Icon.svg" />
+													src="../../assets/media/svg/Phantom_SVG_Icon.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Phantom Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Phantom</span>
 										</a>
 										<a id="coinbase" onclick="connectCoinbase()"
 											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img style="width: 30px; height: 30px;" alt="Logo"
-													src="../assets/media/svg/coinbase.svg" />
+													src="../../assets/media/svg/coinbase.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Coinbase Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Coinbase</span>
 										</a>
 										<a onclick="connectOKXWallet()"
-											class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
+											class="col border-bottom text-center border-end py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/finance/fin009.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="../assets/media/svg/OKX_Logo.svg" />
+													src="../../assets/media/svg/OKX_Logo.svg" />
 											</span>
 											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">OKX Wallet</span>
+											<span class="fw-bolder fs-6 d-block pt-3">OKX</span>
 										</a>
 										<a id="metamask" onclick="connectMetaMask()"
-											class="col text-center py-10 btn btn-active-color-primary rounded-0">
+											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
 											<!--begin::Svg Icon | path: icons/duotune/arrows/arr077.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="../assets/media/svg/metamask.svg" />
+													src="../../assets/media/svg/metamask.svg" />
 
 											</span>
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">MetaMask</span>
+										</a>
+
+										<a id="binance" onclick="connectBinance()"
+											class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
+											<span class="svg-icon svg-icon-3x me-n1">
+												<img alt="Binance Logo" style="width: 40px; height: 40px;"
+													src="../../assets/media/svg/Binance_Logo.svg" />
+											</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Binance</span>
+										</a>
+										<a id="other" onclick="connectWallet()"
+											class="col text-center py-10 btn btn-active-color-primary rounded-0">
+											<span class="svg-icon svg-icon-1 svg-icon-dark">
+												<svg xmlns="http://www.w3.org/2000/svg" width="65px" height="65px"
+													viewBox="0 0 24 24" fill="none" style="width: 65px; height: 65px;">
+													<path opacity="0.3"
+														d="M3.20001 5.91897L16.9 3.01895C17.4 2.91895 18 3.219 18.1 3.819L19.2 9.01895L3.20001 5.91897Z"
+														fill="grey"></path>
+													<path opacity="0.3"
+														d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21C21.6 10.9189 22 11.3189 22 11.9189V15.9189C22 16.5189 21.6 16.9189 21 16.9189H16C14.3 16.9189 13 15.6189 13 13.9189ZM16 12.4189C15.2 12.4189 14.5 13.1189 14.5 13.9189C14.5 14.7189 15.2 15.4189 16 15.4189C16.8 15.4189 17.5 14.7189 17.5 13.9189C17.5 13.1189 16.8 12.4189 16 12.4189Z"
+														fill="grey"></path>
+													<path
+														d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21V7.91895C21 6.81895 20.1 5.91895 19 5.91895H3C2.4 5.91895 2 6.31895 2 6.91895V20.9189C2 21.5189 2.4 21.9189 3 21.9189H19C20.1 21.9189 21 21.0189 21 19.9189V16.9189H16C14.3 16.9189 13 15.6189 13 13.9189Z"
+														fill="grey"></path>
+												</svg>
+											</span>
+											<span class="fw-bolder fs-6 d-block pt-3">Other Wallet</span>
 										</a>
 									</div>
 									<!--end::Row-->
@@ -324,7 +399,7 @@
 								<!--begin::Toggle-->
 								<div class="btn btn-icon btn-sm btn-active-bg-accent">
 									<!--begin::Svg Icon | path: icons/duotune/communication/com013.svg-->
-									<a href="../../views/wizard.html">
+									<a href="./views/wizard.html">
 										<span class="svg-icon svg-icon-1 svg-icon-dark">
 											<!--begin::Svg Icon | path: assets/media/icons/duotune/files/fil005.svg-->
 											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -413,7 +488,7 @@
 							<!--begin::Nav-->
 							<div class="d-flex align-items-center flex-nowrap text-nowrap overflow-auto py-1">
 								<a href="" id="homeLink" class="btn btn-active-accent fw-bolder">Home</a>
-								<a href="../../views/wizard.html" class="btn btn-active-accent fw-bolder ms-3">Wizard</a>
+								<a href="./views/wizard.html" class="btn btn-active-accent fw-bolder ms-3">Wizard</a>
 								<a href="./views/accountsettings.html"
 									class="btn btn-active-accent active fw-bolder ms-3">Settings</a>
 								<a href="#" class="btn btn-active-accent fw-bolder ms-3">Docs</a>
@@ -634,12 +709,12 @@
 	<!--end::Main-->
 	<!--begin::Javascript-->
 	<!--begin::Global Javascript Bundle(used by all pages)-->
-	<script src="assets/plugins/global/plugins.bundle.js"></script>
-	<script src="assets/js/scripts.bundle.js"></script>
+	<script src="../../assets/plugins/global/plugins.bundle.js"></script>
+	<script src="../../assets/js/scripts.bundle.js"></script>
 	<!-- <script src="assets/js/custom/txn.js"></script> -->
 	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
 	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
-	<script src="assets/js/bundle.js"></script>
+	<script src="../../assets/js/bundle.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
 
 	<script type="text/javascript">
@@ -649,130 +724,31 @@
 		var homeLink = document.getElementById('homeLink'); // Get the link element
 
 		// Update the link's href with the new query string
-		homeLink.href = "../demo"
-
-
-		// const ethers = window.ethers;
-		// const MMSDK = new MetaMaskSDK.MetaMaskSDK(
-		// 	dappMetadata = {
-		// 		name: "ethnotary",
-		// 		url: "ethnotary.io",
-		// 	}
-		// 	// Other options
-		// )
-		// const coinbaseWallet = new CoinbaseWalletSDK({
-		// 	appName: 'ethnotary',
-		// 	appLogoUrl: 'ethnotary.io',
-		// 	darkMode: false
-		// })
-		// let wallet;
-
-		// // Function to connect to the user's Ethereum wallet
-		// async function connectMetaMask() {
-		// 	if (typeof window.ethereum !== 'undefined') {
-		// 		try {
-		// 			wallet = await MMSDK.getProvider();
-
-		// 			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-		// 				const accounts = response;
-		// 				console.log(`User's address is ${accounts[0]}`);
-		// 				selectAddress = this.selectAddress
-
-		// 				// Optionally, have the default account set for web3.js
-		// 				web3.eth.defaultAccount = this.selectAddress
-		// 			})
-
-
-
-
-		// 		}
-		// 		catch (error) {
-		// 			console.error('User denied account access or an error occurred:', error);
-
-		// 		}
-
-		// 	}
-		// 	else {
-		// 		alert('This browser is not web3 enabled, please use a different browser.')
-
-		// 	}
-		// }
-
-		// // Function to connect to the user's Ethereum wallet
-		// async function connectOKXWallet() {
-		// 	try {
-
-		// 		wallet = okxwallet;
-		// 		wallet.request({ method: 'eth_requestAccounts' });
-
-
-
-		// 	}
-		// 	catch (error) {
-		// 		window.open('https://www.okx.com/download');
-
-		// 	}
-
-		// }
-		// // Function to connect to the user's Ethereum wallet
-		// async function connectCoinbase() {
-
-		// 	try {
-		// 		wallet = await coinbaseWallet.walletExtension;
-
-		// 		wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-		// 			console.log(response)
-		// 			const accounts = response;
-		// 			console.log(`User's address is ${accounts[0]}`);
-
-		// 			// Optionally, have the default account set for web3.js
-		// 			web3.eth.defaultAccount = accounts[0];
-		// 		})
-
-
-		// 	} catch (error) {
-		// 		alert('User denied account access or an error occurred, please refresh browser and try again.');
-		// 	}
-
-		// }
-
-		// async function connectPhantomWallet() {
-		// 	if (typeof window.phantom !== 'undefined') {
-		// 		try {
-		// 			console.log('helllllo')
-		// 			wallet = await phantom.ethereum;
-		// 			wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-		// 				selectAddress = wallet.selectedAddress;
-		// 				// Optionally, have the default account set for web3.js
-		// 				web3.eth.defaultAccount = wallet.selectedAddress;
-		// 			});
-
-
-		// 		}
-		// 		catch (error) {
-		// 			alert('User denied account access or an error occurred, please refresh browser and try again.');
-
-		// 		}
-
-		// 	}
-		// 	else {
-		// 		window.open('https://phantom.app/', '_blank');
-
-		// 	}
-
-
-
-		// }
-
-
+		homeLink.href = "../index.html?" + user;
 
 
 	</script>
 	<script>
 
+		let gas;
+		const priorityFeeDecimal = 1;         // 0.1 Gwei in Wei
+		const priorityFeeHex = '0x' + priorityFeeDecimal.toString(16);
+		// => '0x5F5E100'
+
+
+
 
 		// Create contract instance
 		let settings = new web3.eth.Contract(contractABI, contractAddress);
+		async function getGas(method) {
+
+			let gasLimit = await method.estimateGas({ from: selectAddress, to: contractAddress });
+			gas = gasLimit
+			console.log("gas: " + gas)
+
+
+
+		}
 
 		// let removeOwner = settings.methods.removeOwner(methodArguments).encodeABI()
 
@@ -791,6 +767,8 @@
 			console.log(s)
 			let addOwner = settings.methods.addOwner(address, pin).encodeABI();
 			console.log(addOwner)
+			getGas(settings.methods.addOwner(address, pin))
+
 
 			wallet.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
@@ -807,10 +785,8 @@
 									to: contractAddress, // This now dynamically points to the user's account
 									from: selectAddress,
 									data: addOwner, // Ensure this is well defined in your original script
-									gasLimit: '21000000',
-									maxFeePerGas: '3000',
-									maxPriorityFeePerGas: '100',
-									gas: '90000',
+									gasLimit: gas,
+									maxPriorityFeePerGas: priorityFeeHex,
 								},
 							],
 						})
@@ -837,6 +813,9 @@
 			console.log(s)
 			let removeOwner = settings.methods.removeOwner(address, pin).encodeABI();
 			console.log(removeOwner)
+			getGas(settings.methods.removeOwner(address, pin))
+
+			
 
 			wallet.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
@@ -853,10 +832,9 @@
 									to: contractAddress, // This now dynamically points to the user's account
 									from: selectAddress,
 									data: removeOwner, // Ensure this is well defined in your original script
-									gasLimit: '21000000',
-									maxFeePerGas: '3000',
-									maxPriorityFeePerGas: '100',
-									gas: '90000',
+									gasLimit: gas,
+									maxPriorityFeePerGas: priorityFeeHex,
+								
 								},
 							],
 						})
@@ -884,6 +862,10 @@
 
 			let replaceOwner = settings.methods.replaceOwner(address1, address2, pin).encodeABI();
 			console.log(removeOwner)
+			getGas(settings.methods.replaceOwner(address1, address2, pin))
+
+
+			
 
 			wallet.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
@@ -893,17 +875,15 @@
 						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
 						// Contract interaction steps come here after getting the active wallet
-						ethereum.request({
+						wallet.request({
 							method: 'eth_sendTransaction',
 							params: [
 								{
 									to: contractAddress, // This now dynamically points to the user's account
 									from: selectAddress,
 									data: replaceOwner, // Ensure this is well defined in your original script
-									gasLimit: '21000000',
-									maxFeePerGas: '3000',
-									maxPriorityFeePerGas: '100',
-									gas: '90000',
+									gasLimit: gas,
+									maxPriorityFeePerGas: priorityFeeHex,
 								},
 							],
 						})
@@ -931,6 +911,8 @@
 						console.error('No accounts found. Please connect your Ethereum wallet.');
 					} else {
 						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
+						getGas(settings.methods.changeRequirement(requirement, pin))
+
 
 						// Contract interaction steps come here after getting the active wallet
 						wallet.request({
@@ -940,10 +922,8 @@
 									to: contractAddress, // This now dynamically points to the user's account
 									from: selectAddress,
 									data: changeRequirement, // Ensure this is well defined in your original script
-									gasLimit: '21000000',
-									maxFeePerGas: '3000',
-									maxPriorityFeePerGas: '100',
-									gas: '90000',
+									gasLimit: gas,
+									maxPriorityFeePerGas: priorityFeeHex,
 								},
 							],
 						})
@@ -1040,7 +1020,7 @@
 
 		window.onload = processNotifications(getAllTxns(), document.getElementById('notificationsTab'))
 		let logo = document.querySelectorAll('[id="logo"]').forEach(
-			element => { element.href = "../demo"; }
+			element => { element.href = "./index.html?" + localStorage.contract; }
 		);
 
 	</script>

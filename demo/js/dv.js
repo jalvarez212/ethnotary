@@ -331,7 +331,7 @@ async function processPending(promise, container) {
         <td class="px-0 py-3">
             <div class="symbol symbol-55px mt-1 me-5">
                 <span class="symbol-label bg-light-primary align-items-end">
-                    <img alt="Logo" src="assets/media/svg/avatars/001-boy.svg" class="mh-40px" />
+                    <img alt="Logo" src="../../assets/media/svg/avatars/001-boy.svg" class="mh-40px" />
                 </span>
             </div>
         </td>
@@ -397,7 +397,7 @@ async function processNotifications(promise, container) {
 
 
             notElement.innerHTML = `
-    <a href="./views/txn.html?${tx.id}" class="menu-link px-4 py-3">
+    <a href="../views/txn.html?${tx.id}" class="menu-link px-4 py-3">
         <div class="symbol symbol-35px">
             <span class="symbol-label bg-light-warning">
                 <!--begin::Svg Icon | path: icons/duotune/communication/com004.svg-->
