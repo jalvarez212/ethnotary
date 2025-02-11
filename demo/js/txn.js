@@ -9,7 +9,7 @@ switchToSepolia().then(function () {
 
 		let to = document.getElementById('toAddress').value;
 		let amt = document.getElementById('ethAmount').value;
-		const amount = BigInt(parseFloat(amt) * 10**18).toString();
+		const amount = BigInt(parseFloat(amt) * 10 ** 18).toString();
 
 
 
@@ -18,49 +18,58 @@ switchToSepolia().then(function () {
 
 		getGas(contract.methods.submitTransaction(to, amount, '0x'))
 
+		if (wallet == null) {
+			showConnect()
+		}
+		else {
+			wallet.request({ method: 'eth_requestAccounts' })
+				.then(accounts => {
+					if (accounts.length === 0) {
+						console.error('No accounts found. Please connect your Ethereum wallet.');
+					}
 
+					else {
+						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
-		wallet.request({ method: 'eth_requestAccounts' })
-			.then(accounts => {
-				if (accounts.length === 0) {
-					console.error('No accounts found. Please connect your Ethereum wallet.');
-				} else {
-					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
-
-					wallet.request({
-						method: 'eth_sendTransaction',
-						params: [
-							{
-								to: localStorage.contract, // This now dynamically points to the user's account
-								from: selectAddress,
-								data: callData, // Ensure this is well defined in your original script
-								// gasLimit: gas,
-								// maxFeePerGas: maxFeePerGas,
-								// maxPriorityFeePerGas: maxPriorityFeePerGas,
-								// gas: gas,
-							},
-						],
-					})
-						.then((txHash) => {
-							closeModal('#kt_modal_1')
-							console.log('Transaction Hash:', txHash);
-							startProcessingAnimation();
-							setTimeout(showSuccessAnimation, 6000);
-
-							// Hide animations after a short delay (optional)
-							setTimeout(hideAnimations, 8500);
-
+						wallet.request({
+							method: 'eth_sendTransaction',
+							params: [
+								{
+									to: localStorage.contract, // This now dynamically points to the user's account
+									from: selectAddress,
+									data: callData, // Ensure this is well defined in your original script
+									// gasLimit: gas,
+									// maxFeePerGas: maxFeePerGas,
+									// maxPriorityFeePerGas: maxPriorityFeePerGas,
+									// gas: gas,
+								},
+							],
 						})
-						.catch((error) => {
-							console.error('Transaction failed:', error);
-							// Optionally handle error animation or message here
-							hideAnimations(); // Hide animations immediately if there's an error
-						});
-				}
-			})
-			.catch(error => {
-				console.error('An error occurred while fetching the connected accounts.', error);
-			});
+							.then((txHash) => {
+								closeModal('#kt_modal_1')
+								console.log('Transaction Hash:', txHash);
+								startProcessingAnimation();
+								setTimeout(showSuccessAnimation, 6000);
+
+								// Hide animations after a short delay (optional)
+								setTimeout(hideAnimations, 8500);
+
+							})
+							.catch((error) => {
+								console.error('Transaction failed:', error);
+								// Optionally handle error animation or message here
+								hideAnimations(); // Hide animations immediately if there's an error
+							});
+					}
+				})
+				.catch(error => {
+					console.error('An error occurred while fetching the connected accounts.', error);
+				});
+
+
+
+
+		}
 	});
 
 	let transferToken = document.getElementById('transferToken');

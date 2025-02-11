@@ -125,7 +125,7 @@
               switchToSepolia()
 
               console.log("Detected Chain ID:", rawChainId);
-              hideModal(); // Hide your modal if everything is good
+              hideWallets(); // Hide your modal if everything is good
           }
           catch (error) {
               console.error('User denied account access or an error occurred:', error);
@@ -163,7 +163,7 @@
               switchToSepolia()
 
               console.log("Detected Chain ID:", rawChainId);
-              hideModal();
+              hideWallets();
           } else {
               throw new Error('No accounts found. Connection may have been rejected.');
           }
@@ -204,7 +204,7 @@
           switchToSepolia()
 
           console.log("Detected Chain ID:", rawChainId);
-          hideModal();
+          hideWallets();
       } catch (error) {
           alert(error);
       }
@@ -238,7 +238,7 @@
               switchToSepolia()
 
               console.log("Detected Chain ID:", chainIdHex);
-              hideModal();
+              hideWallets();
           } else {
               throw new Error('No accounts found. Connection may have been rejected.');
           }
@@ -281,7 +281,7 @@
               switchToSepolia()
 
               console.log("Detected Chain ID:", rawChainId);
-              hideModal();
+              hideWallets();
           } else {
               throw new Error('No accounts found. Connection may have been rejected.');
           }
@@ -307,7 +307,7 @@
               // Store the connected account in localStorage
               localStorage.setItem('connectedAccount', accounts[0]);
 
-              hideModal();
+              hideWallets();
               rawChainId = await window.ethereum.request({ method: "eth_chainId" });
               localStorage.setItem('lastChain', rawChainId);
               localStorage.setItem('lastWallet', 'other');

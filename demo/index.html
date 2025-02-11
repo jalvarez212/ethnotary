@@ -47,17 +47,25 @@
 </script>
 
 <script type="text/javascript">
+function showConnect() {
+		var modalElement = document.getElementById('kt_modal_wallet');
+		var modal = new bootstrap.Modal(modalElement);
+		modalElement.style.zIndex = '99999';
+		modal.show(); // Show the modal
+	}
 
 
-
-	// function showModal() {
-	// 	var modalElement = document.getElementById('kt_modal_wallet');
-	// 	var modal = new bootstrap.Modal(modalElement);
-	// 	modal.show(); // Show the modal
-	// }
 
 	function hideModal() {
 		var modalElement = document.getElementById('kt_modal_signup');
+		var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
+		if (modal) {
+			modal.hide(); // Hide the modal
+		}
+	}
+
+	function hideWallets() {
+		var modalElement = document.getElementById('kt_modal_wallet');
 		var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
 		if (modal) {
 			modal.hide(); // Hide the modal
@@ -69,106 +77,52 @@
 
 	localStorage.setItem('contract', contractValue);
 
-	document.addEventListener('DOMContentLoaded', function () {
-		let modalShown = false;
-		let pendingNavigation = null; // Store pending navigation URL
-		let showSecondaryModal = false; // Flag for opening #kt_modal_1 after #kt_modal_signup
-		let showThirdModal = false; // Flag for opening #kt_modal_1 after #kt_modal_signup
-		let showFourthModal = false; // Flag for opening #kt_modal_1 after #kt_modal_signup
-		let showFifthModal = false; // Flag for opening #kt_modal_1 after #kt_modal_signup
+	document.addEventListener('DOMContentLoaded', function() {
+    let modalShown = false;
+    let pendingNavigation = null; // Store pending navigation URL
 
+    function showModal() {
+        var modalElement = document.getElementById('kt_modal_signup');
+        var modal = new bootstrap.Modal(modalElement);
 
+        modalElement.addEventListener('hidden.bs.modal', function () {
+            // If there is a pending navigation, proceed after modal closes
+            if (pendingNavigation) {
+                window.location.href = pendingNavigation;
+                pendingNavigation = null; // Reset pending navigation
+            }
+        });
 
+        modal.show();
+		modalElement.style.zIndex = '99999';
 
-		// Disable Bootstrap's auto-modal behavior for #sendETH
-		document.getElementById('sendETH').setAttribute('data-bs-toggle', '');
-		document.getElementById('sendETH').setAttribute('data-bs-target', '');
-		document.getElementById('transferToken').setAttribute('data-bs-toggle', '');
-		document.getElementById('transferToken').setAttribute('data-bs-target', '');
-		document.getElementById('importToken').setAttribute('data-bs-toggle', '');
-		document.getElementById('importToken').setAttribute('data-bs-target', '');
-		document.getElementById('dApp').setAttribute('data-bs-toggle', '');
-		document.getElementById('dApp').setAttribute('data-bs-target', '');
+    }
 
-		function showModal() {
-			var modalElement = document.getElementById('kt_modal_signup');
-			var modal = new bootstrap.Modal(modalElement);
+    function handleFirstClick(event) {
+        let sendEthButton = document.getElementById('sendETH');
+        
+        // Check if the first click was on the sendETH button
+        if (event.target.closest('#sendETH')) {
+            showModal();
+            return; // Exit early
+        }
 
-			modalElement.addEventListener('hidden.bs.modal', function () {
-				// If #sendETH was clicked, open #kt_modal_1 after #kt_modal_signup closes
-				if (showSecondaryModal) {
-					showSecondaryModal = false; // Reset flag
-					var secondModalElement = document.getElementById('kt_modal_1');
-					var secondModal = new bootstrap.Modal(secondModalElement);
-					secondModal.show();
-				}
+        let target = event.target.closest('a'); // Check if clicked element or parent is a link
 
-				if (showThirdModal) {
-					showThirdModal = false; // Reset flag
-					var thirdModalElement = document.getElementById('kt_modal_2');
-					var thirdModal = new bootstrap.Modal(thirdModalElement);
-					thirdModal.show();
-				}
+        if (target) {
+            event.preventDefault(); // Prevent immediate navigation
+            pendingNavigation = target.href; // Store link for later navigation
+            showModal();
+        } else {
+            showModal();
+        }
 
-				if (showFourthModal) {
-					showFourthModal = false; // Reset flag
-					var fourthModalElement = document.getElementById('kt_modal_3');
-					var fourthModal = new bootstrap.Modal(fourthModalElement);
-					fourthModal.show();
-				}
+        modalShown = true;
+        document.removeEventListener('click', handleFirstClick); // Remove listener after first click
+    }
 
-				if (showFifthModal) {
-					showFifthModal = false; // Reset flag
-					var fifthModalElement = document.getElementById('kt_modal_2');
-					var fifthhModal = new bootstrap.Modal(fifthModalElement);
-					fifthhModal.show();
-				}
-				// If there is a pending navigation, proceed after modal closes
-				else if (pendingNavigation) {
-					window.location.href = pendingNavigation;
-					pendingNavigation = null; // Reset pending navigation
-				}
-			}, { once: true }); // Ensure this event fires only once per modal close
-
-			modal.show();
-		}
-
-		function handleFirstClick(event) {
-			let target = event.target.closest('a'); // Check if clicked element or parent is a link
-
-			// If first click is on #sendETH, set flag to open #kt_modal_1 later
-			if (event.target.closest('#sendETH')) {
-				showSecondaryModal = true;
-			}
-
-			// If first click is on #sendETH, set flag to open #kt_modal_1 later
-			if (event.target.closest('#transferToken')) {
-				showThirdModal = true;
-			}
-
-			if (event.target.closest('#importToken')) {
-				showFourthModal = true;
-			}
-
-			if (event.target.closest('#dApp')) {
-				showFifthModal = true;
-			}
-
-			if (target) {
-				event.preventDefault(); // Prevent immediate navigation
-				pendingNavigation = target.href; // Store link for later navigation
-			}
-
-			showModal();
-
-			modalShown = true;
-			document.removeEventListener('click', handleFirstClick); // Remove listener after first click
-		}
-
-		document.addEventListener('click', handleFirstClick);
-	});
-
-
+    document.addEventListener('click', handleFirstClick);
+});
 
 
 
@@ -177,7 +131,7 @@
 <script src="js/env.js"></script>
 <script src="js/wallet.js"></script>
 
-<div class="modal fade" tabindex="-1" id="kt_modal_wallet">
+<div class="modal fade" tabindex="-1" id="kt_modal_wallet" z-index="10000">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -215,7 +169,7 @@
 					class="border-bottom border-end text-center py-10 btn btn-active-color-primary rounded-0">
 					<span class="svg-icon svg-icon-3x me-n1">
 						<img style="width: 30px; height: 30px;" alt="Phantom Wallet Logo"
-							src="./assets/media/svg/Phantom_SVG_Icon.svg" />
+							src="../assets/media/svg/Phantom_SVG_Icon.svg" />
 					</span>
 					<span class="fw-bolder fs-6 d-block pt-3">Phantom</span>
 				</a>
@@ -223,7 +177,7 @@
 					class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
 					<span class="svg-icon svg-icon-3x me-n1">
 						<img style="width: 30px; height: 30px;" alt="Coinbase Wallet Logo"
-							src="./assets/media/svg/coinbase.svg" />
+							src="../assets/media/svg/coinbase.svg" />
 					</span>
 					<span class="fw-bolder fs-6 d-block pt-3">Coinbase</span>
 				</a>
@@ -231,7 +185,7 @@
 					class="col border-bottom text-center border-end py-10 btn btn-active-color-primary rounded-0">
 					<span class="svg-icon svg-icon-3x me-n1">
 						<img alt="OKX Wallet Logo" style="width: 50px; height: 50px;"
-							src="./assets/media/svg/OKX_Logo.svg" />
+							src="../assets/media/svg/OKX_Logo.svg" />
 					</span>
 					<span class="fw-bolder fs-6 d-block pt-3">OKX</span>
 				</a>
@@ -239,7 +193,7 @@
 					class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
 					<span class="svg-icon svg-icon-3x me-n1">
 						<img alt="MetaMask Logo" style="width: 50px; height: 50px;"
-							src="./assets/media/svg/metamask.svg" />
+							src="../assets/media/svg/metamask.svg" />
 					</span>
 					<span class="fw-bolder fs-6 d-block pt-3">MetaMask</span>
 				</a>
@@ -247,7 +201,7 @@
 					class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
 					<span class="svg-icon svg-icon-3x me-n1">
 						<img alt="Binance Logo" style="width: 40px; height: 40px;"
-							src="./assets/media/svg/Binance_Logo.svg" />
+							src="../assets/media/svg/Binance_Logo.svg" />
 					</span>
 					<span class="fw-bolder fs-6 d-block pt-3">Binance</span>
 				</a>
@@ -277,7 +231,7 @@
 
 </div>
 
-<div class="modal fade" tabindex="-2" id="kt_modal_signup">
+<div class="modal fade" tabindex="-1" id="kt_modal_signup">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 			<!-- Modal Header -->
