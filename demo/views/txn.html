@@ -275,7 +275,7 @@
 								<!--begin::Item-->
 								<li class="nav-item mb-1" title="Account Settings" data-bs-toggle="tooltip"
 									data-bs-dismiss="click" data-bs-placement="right">
-									<a href="./views/accountsettings.html"
+									<a href="./accountsettings.html"
 										class="nav-link h-40px w-40px h-lg-50px w-lg-50px btn btn-custom btn-icon btn-color-white"
 										role="tab">
 										<!--begin::Svg Icon | path: icons/duotune/abstract/abs027.svg-->
@@ -297,7 +297,7 @@
 								<!--begin::Item-->
 								<li class="nav-item mb-1" title="New Contract" data-bs-toggle="tooltip"
 									data-bs-dismiss="click" data-bs-placement="right">
-									<a href="./../views/wizard.html"
+									<a href="../../views/wizard.html"
 										class="nav-link h-40px w-40px h-lg-50px w-lg-50px btn btn-custom btn-icon btn-color-white"
 										role="tab">
 										<!--begin::Svg Icon | path: icons/duotune/files/fil005.svg-->
@@ -489,7 +489,7 @@
 								<!--begin::Toggle-->
 								<div class="btn btn-icon btn-sm btn-active-bg-accent">
 									<!--begin::Svg Icon | path: icons/duotune/communication/com013.svg-->
-									<a href="./views/accountsettings.html">
+									<a href="./accountsettings.html">
 										<span class="svg-icon svg-icon-1 svg-icon-dark">
 											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
 												viewBox="0 0 24 24" fill="none">
@@ -601,10 +601,10 @@
 							<!--begin::Nav-->
 							<script> let qw = "./index.html?" + localStorage.contract; </script>
 							<div class="d-flex align-items-center flex-nowrap text-nowrap overflow-auto py-1">
-								<a href="../demo" id="homeLink" class="btn btn-active-accent fw-bolder">Home</a>
+								<a href="../index.html" id="homeLink" class="btn btn-active-accent fw-bolder">Home</a>
 								<a href="../../views/wizard.html"
 									class="btn btn-active-accent fw-bolder ms-3">Wizard</a>
-								<a href="./views/accountsettings.html"
+								<a href="./accountsettings.html"
 									class="btn btn-active-accent fw-bolder ms-3">Settings</a>
 								<a href="#" class="btn btn-active-accent fw-bolder ms-3">Docs</a>
 							</div>
@@ -959,7 +959,7 @@
 
 
 	// Update the link's href with the new query string
-	homeLink.href = "../demo";
+	homeLink.href = "../index.html";
 	let c = document.getElementById('confirm');
 	c.addEventListener('click', function () {
 		// Step 1: First, get the first user's own address
@@ -1106,10 +1106,10 @@
 	var homeLink = document.getElementById('homeLink'); // Get the link element
 
 	let logo = document.querySelectorAll('[id="logo"]').forEach(
-		element => { element.href = "../demo"; }
+		element => { element.href = "../index.html"; }
 	);
 	// Update the link's href with the new query string
-	homeLink.href = "../demo"
+	homeLink.href = "../index.html"
 
 	async function getAllTxns() {
 		let count = await contract.methods.transactionCount().call().then(function (result) {
