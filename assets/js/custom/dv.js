@@ -371,7 +371,7 @@ async function processPending(promise, container) {
 
 
                 ;
-            container.appendChild(txElement);
+            container.insertBefore(txElement, container.firstChild);
         }
 
     } catch (error) {

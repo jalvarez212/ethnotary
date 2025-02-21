@@ -6,10 +6,6 @@ let gasLimit;
 let gasPrice;
 let maxFeePerGas;
 let maxPriorityFeePerGas;
-let factoryAddress;
-
-
-
 
 // Function to detect network change and re-run `checkConnectedNetwork`
 // function detectNetworkChange(wallet) {
