@@ -23,9 +23,9 @@ Test out a live version of our contract interface on the Sepolia testnet:
 
 [ethnotary Demo](http://ethnotary.io/demo)
 
-Join our [Discord server](https://discord.com/channels/1293602554470469773/1293707747065462804). and get added as a contract owner to send demo transactions. 
+Join our [Discord server](https://discord.com/channels/1293602554470469773/1293707747065462804) and get added as a contract owner to send demo transactions. 
 
-## 📍 Roadmap
+## 🗺️ Roadmap
 
 We’re continually working to improve **ethnotary** and expand its capabilities. Here’s what’s coming next:
 
