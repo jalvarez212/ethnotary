@@ -4,7 +4,6 @@ Designed with decentralization in mind for the worldwide community. 🌐
 
 **ethnotary** helps users secure funds or treasuries for their on-chain activities. We take accepted standards from Ethereum to provide easy-to-use interfaces where users can customize smart contracts to fit their needs and manage their assets on the blockchain. We do not collect any user data. We provide our interface in a sufficiently distributed architecture that ensures robust and reliable operation globally on the World Wide Web.
 
-As such, we suggest a one-time donation for the use of the ethnotary tools. This donation helps support the maintenance, upkeep, and continuous improvements for our community of users.
 
 ![ethnotary Demo](/assets/media/demo/demo_gif1.gif)   ![ethnotary Demo](/assets/media/demo/demo_gif3.gif)
 
@@ -16,7 +15,15 @@ As such, we suggest a one-time donation for the use of the ethnotary tools. This
 - Double authentication for extra security. Add multiple wallet approvals to send transactions. 
 - Support for various layer 2 networks like Polygon, BNB Chain, OP, and Base.
 - Available globally on the World Wide Web.
-- Decentralized architecture: our interface does not collect any user data. All user data is stored on-chain!
+- Decentralized architecture: run our interface locally from your machines. 
+
+## 🕹️ Try our demo
+
+Test out a live version of contract interface at:
+
+- [ethnotary Demo](http://ethnotary.io/demo)
+
+Join our [Discord server](https://discord.com/channels/1293602554470469773/1293707747065462804). and get added as a contract owner to send demo transactions. 
 
 ## 📍 Roadmap
 
@@ -24,12 +31,12 @@ We’re continually working to improve **ethnotary** and expand its capabilities
 
 - [x] **Multi-Signature Approvals** for enhanced security
 - [x] **Layer 2 Network Support** for Polygon, BNB Chain, and Base
-- [x] **Interoperability between Layer 2 Networks** for easier user experience
-- [ ] **Mobile-Optimized Interface** for seamless access on the go
+- [ ] **Interoperability between Layer 2 Networks** for easier user experience
+- [x] **Mobile-Optimized Interface** for seamless access on the go
 - [ ] **Multi-Language Support** to better serve our global community
 - [ ] **Third-Party Security Audit** for increased reliability and trust
 - [ ] **Customizable Dashboard** for personalized user experience
-- [ ] **Integration with DeFi Tools** like DEXes and yield farms
+- [ ] **Integration with DeFi Contracts** agnostic support for liquidity pools, staking, CEXs, DEXs, and yield farms
 - [ ] **Support for ERC-721 contracts** to enable commmerce of media
 
 ### Got an idea? 💡
