@@ -19,9 +19,9 @@ Designed with decentralization in mind for the worldwide community. 🌐
 
 ## 🕹️ Try our demo
 
-Test out a live version of contract interface at:
+Test out a live version of our contract interface on the Sepolia testnet:
 
-- [ethnotary Demo](http://ethnotary.io/demo)
+[ethnotary Demo](http://ethnotary.io/demo)
 
 Join our [Discord server](https://discord.com/channels/1293602554470469773/1293707747065462804). and get added as a contract owner to send demo transactions. 
 
