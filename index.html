@@ -29,6 +29,33 @@
 	<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 	
 	<script src="assets/js/custom/wallet.js"></script>
+	<style>
+		@keyframes pulse {
+			0% {
+				transform: scale(1);
+				opacity: 1;
+				filter: none;
+			}
+			50% {
+				transform: scale(1.2);
+				opacity: 0.8;
+				filter: drop-shadow(0 0 8px #20d489);
+			}
+			100% {
+				transform: scale(1);
+				opacity: 1;
+				filter: none;
+			}
+		}
+
+		.pulse-animation {
+			animation: pulse 1s ease-in-out;
+		}
+
+		.pulse-animation svg path {
+			fill: #20d489 !important;
+		}
+	</style>
 
 
 	<!--end::Global Stylesheets Bundle-->
@@ -62,7 +89,15 @@
 			modal.hide(); // Hide the modal
 		}
 	}
-
+	function hideWallets() {
+		var modalElement = document.getElementById('kt_modal_wallet');
+		var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
+		if (modal) {
+			modal.hide(); // Hide the modal
+		}
+		updateWalletIcon(); // Update the wallet icon when wallet is connected
+	}
+	
 	//load contract
 
 	let queryString = window.location.search;
@@ -358,20 +393,21 @@
 								<div class="btn btn-icon btn-sm btn-active-bg-accent" data-kt-menu-trigger="click"
 									data-kt-menu-placement="bottom-end" id="kt_header_user_menu_toggle">
 									<!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
-									<span class="svg-icon svg-icon-1 svg-icon-dark">
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-											viewBox="0 0 24 24" fill="none">
-											<path opacity="0.3"
-												d="M3.20001 5.91897L16.9 3.01895C17.4 2.91895 18 3.219 18.1 3.819L19.2 9.01895L3.20001 5.91897Z"
-												fill="grey" />
-											<path opacity="0.3"
-												d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21C21.6 10.9189 22 11.3189 22 11.9189V15.9189C22 16.5189 21.6 16.9189 21 16.9189H16C14.3 16.9189 13 15.6189 13 13.9189ZM16 12.4189C15.2 12.4189 14.5 13.1189 14.5 13.9189C14.5 14.7189 15.2 15.4189 16 15.4189C16.8 15.4189 17.5 14.7189 17.5 13.9189C17.5 13.1189 16.8 12.4189 16 12.4189Z"
-												fill="grey" />
-											<path
-												d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21V7.91895C21 6.81895 20.1 5.91895 19 5.91895H3C2.4 5.91895 2 6.31895 2 6.91895V20.9189C2 21.5189 2.4 21.9189 3 21.9189H19C20.1 21.9189 21 21.0189 21 19.9189V16.9189H16C14.3 16.9189 13 15.6189 13 13.9189Z"
-												fill="grey" />
-										</svg>
-									</span>
+																		<!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
+																		<span class="svg-icon svg-icon-1 svg-icon-dark">
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+																				viewBox="0 0 24 24" fill="none">
+																				<path opacity="0.3"
+																					d="M3.20001 5.91897L16.9 3.01895C17.4 2.91895 18 3.219 18.1 3.819L19.2 9.01895L3.20001 5.91897Z"
+																					fill="grey" />
+																				<path opacity="0.3"
+																					d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21C21.6 10.9189 22 11.3189 22 11.9189V15.9189C22 16.5189 21.6 16.9189 21 16.9189H16C14.3 16.9189 13 15.6189 13 13.9189ZM16 12.4189C15.2 12.4189 14.5 13.1189 14.5 13.9189C14.5 14.7189 15.2 15.4189 16 15.4189C16.8 15.4189 17.5 14.7189 17.5 13.9189C17.5 13.1189 16.8 12.4189 16 12.4189Z"
+																					fill="grey" />
+																				<path
+																					d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21V7.91895C21 6.81895 20.1 5.91895 19 5.91895H3C2.4 5.91895 2 6.31895 2 6.91895V20.9189C2 21.5189 2.4 21.9189 3 21.9189H19C20.1 21.9189 21 21.0189 21 19.9189V16.9189H16C14.3 16.9189 13 15.6189 13 13.9189Z"
+																					fill="grey" />
+																			</svg>
+																		</span>
 									<!--end::Svg Icon-->
 
 
@@ -625,10 +661,7 @@
 																<svg xmlns="http://www.w3.org/2000/svg" width="24"
 																	height="24" viewBox="0 0 24 24" fill="none">
 																	<path opacity="0.3"
-																		d="M4.05424 15.1982C8.34524 7.76818 13.5782 3.26318 20.9282 2.01418C21.0729 1.98837 21.2216 1.99789 21.3618 2.04193C21.502 2.08597 21.6294 2.16323 21.7333 2.26712C21.8372 2.37101 21.9144 2.49846 21.9585 2.63863C22.0025 2.7788 22.012 2.92754 21.9862 3.07218C20.7372 10.4222 16.2322 15.6552 8.80224 19.9462L4.05424 15.1982ZM3.81924 17.3372L2.63324 20.4482C2.58427 20.5765 2.5735 20.7163 2.6022 20.8507C2.63091 20.9851 2.69788 21.1082 2.79503 21.2054C2.89218 21.3025 3.01536 21.3695 3.14972 21.3982C3.28408 21.4269 3.42387 21.4161 3.55224 21.3672L6.66524 20.1802L3.81924 17.3372ZM16.5002 5.99818C16.2036 5.99818 15.9136 6.08615 15.6669 6.25097C15.4202 6.41579 15.228 6.65006 15.1144 6.92415C15.0009 7.19824 14.9712 7.49984 15.0291 7.79081C15.0869 8.08178 15.2298 8.34906 15.4396 8.55884C15.6494 8.76862 15.9166 8.91148 16.2076 8.96935C16.4986 9.02723 16.8002 8.99753 17.0743 8.884C17.3484 8.77046 17.5826 8.5782 17.7474 8.33153C17.9123 8.08486 18.0002 7.79485 18.0002 7.49818C18.0002 7.10035 17.8422 6.71882 17.5609 6.43752C17.2796 6.15621 16.8981 5.99818 16.5002 5.99818Z"
-																		fill="black" />
-																	<path
-																		d="M4.05423 15.1982L2.24723 13.3912C2.15505 13.299 2.08547 13.1867 2.04395 13.0632C2.00243 12.9396 1.9901 12.8081 2.00793 12.679C2.02575 12.5498 2.07325 12.4266 2.14669 12.3189C2.22013 12.2112 2.31752 12.1219 2.43123 12.0582L9.15323 8.28918C7.17353 10.3717 5.4607 12.6926 4.05423 15.1982ZM8.80023 19.9442L10.6072 21.7512C10.6994 21.8434 10.8117 21.9129 10.9352 21.9545C11.0588 21.996 11.1903 22.0083 11.3195 21.9905C11.4486 21.9727 11.5718 21.9252 11.6795 21.8517C11.7872 21.7783 11.8765 21.6809 11.9402 21.5672L15.7092 14.8442C13.6269 16.8245 11.3061 18.5377 8.80023 19.9442ZM7.04023 18.1832L12.5832 12.6402C12.7381 12.4759 12.8228 12.2577 12.8195 12.032C12.8161 11.8063 12.725 11.5907 12.5653 11.4311C12.4057 11.2714 12.1901 11.1803 11.9644 11.1769C11.7387 11.1736 11.5205 11.2583 11.3562 11.4132L5.81323 16.9562L7.04023 18.1832Z"
+																		d="M4.05424 15.1982C8.34524 7.76818 13.5782 3.26318 20.9282 2.01418C21.0729 1.98837 21.2216 1.99789 21.3618 2.04193C21.502 2.08597 21.6294 2.16323 21.7333 2.26712C21.8372 2.37101 21.9144 2.49846 21.9585 2.63863C22.0025 2.7788 22.012 2.92754 21.9862 3.07218C20.7372 10.4222 16.2322 15.6552 8.80224 19.9462L4.05424 15.1982ZM8.80023 19.9442L10.6072 21.7512C10.6994 21.8434 10.8117 21.9129 10.9352 21.9545C11.0588 21.996 11.1903 22.0083 11.3195 21.9905C11.4486 21.9727 11.5718 21.9252 11.6795 21.8517C11.7872 21.7783 11.8765 21.6809 11.9402 21.5672L15.7092 14.8442C13.6269 16.8245 11.3061 18.5377 8.80023 19.9442ZM7.04023 18.1832L12.5832 12.6402C12.7381 12.4759 12.8228 12.2577 12.8195 12.032C12.8161 11.8063 12.725 11.5907 12.5653 11.4311C12.4057 11.2714 12.1901 11.1803 11.9644 11.1769C11.7387 11.1736 11.5205 11.2583 11.3562 11.4132L5.81323 16.9562L7.04023 18.1832Z"
 																		fill="black" />
 																</svg>
 															</span>
@@ -639,7 +672,7 @@
 													</div>
 													<div class="col mb-5">
 														<button type="button"
-															class="btn btn-outline btn-bg-light btn-color-gray-600 btn-active-light-primary border-dashed border-active px-6 py-7 text-start w-100 min-w-150px"
+															class="btn btn-outline btn-bg-light btn-color-gray-600 btn-active-light-primary border-dashed border-active border-primary px-6 py-7 text-start w-100 min-w-150px"
 															data-bs-toggle="modal" data-bs-target="#kt_modal_2">
 															<!--begin::Svg Icon | path: icons/duotune/general/gen005.svg-->
 															<span class="svg-icon svg-icon-2x ms-n1">
@@ -682,9 +715,8 @@
 																	data-bs-dismiss="modal" aria-label="Close">
 																	<!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
 																	<span class="svg-icon svg-icon-1">
-																		<svg xmlns="http://www.w3.org/2000/svg"
-																			width="24" height="24" viewBox="0 0 24 24"
-																			fill="none">
+																		<svg xmlns="http://www.w3.org/2000/svg" width="24"
+																			height="24" viewBox="0 0 24 24" fill="none">
 																			<rect opacity="0.5" x="6" y="17.3137"
 																				width="16" height="2" rx="1"
 																				transform="rotate(-45 6 17.3137)"
@@ -796,9 +828,8 @@
 																	data-bs-dismiss="modal" aria-label="Close">
 																	<!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
 																	<span class="svg-icon svg-icon-1">
-																		<svg xmlns="http://www.w3.org/2000/svg"
-																			width="24" height="24" viewBox="0 0 24 24"
-																			fill="none">
+																		<svg xmlns="http://www.w3.org/2000/svg" width="24"
+																			height="24" viewBox="0 0 24 24" fill="none">
 																			<rect opacity="0.5" x="6" y="17.3137"
 																				width="16" height="2" rx="1"
 																				transform="rotate(-45 6 17.3137)"
@@ -916,9 +947,8 @@
 																	data-bs-dismiss="modal" aria-label="Close">
 																	<!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
 																	<span class="svg-icon svg-icon-1">
-																		<svg xmlns="http://www.w3.org/2000/svg"
-																			width="24" height="24" viewBox="0 0 24 24"
-																			fill="none">
+																		<svg xmlns="http://www.w3.org/2000/svg" width="24"
+																			height="24" viewBox="0 0 24 24" fill="none">
 																			<rect opacity="0.5" x="6" y="17.3137"
 																				width="16" height="2" rx="1"
 																				transform="rotate(-45 6 17.3137)"
@@ -1037,7 +1067,7 @@
 												<div class="row">
 													<div class="col me-n2 mb-5">
 														<button type="button"
-															class="btn btn-outline btn-bg-light btn-color-gray-600 btn-active-light-primary border-dashed border-active px-6 py-7 text-start w-100 min-w-150px"
+															class="btn btn-outline btn-bg-light btn-color-gray-600 btn-active-light-primary border-dashed border-active border-primary px-6 py-7 text-start w-100 min-w-150px"
 															data-bs-toggle="modal" data-bs-target="#kt_modal_3">
 															<!--begin::Svg Icon | path: icons/duotune/files/fil005.svg-->
 															<span class="svg-icon svg-icon-2x ms-n1">
@@ -1059,7 +1089,7 @@
 
 													<div class="col mb-5">
 														<button type="button"
-															class="btn btn-outline btn-bg-light btn-color-gray-600 btn-active-light-primary border-dashed border-active px-6 py-7 text-start w-100 min-w-150px"
+															class="btn btn-outline btn-bg-light btn-color-gray-600 btn-active-light-primary border-dashed border-active border-primary px-6 py-7 text-start w-100 min-w-150px"
 															data-bs-toggle="modal" data-bs-target="#kt_modal_1">
 															<!--begin::Svg Icon | path: icons/duotune/general/gen005.svg-->
 															<span class="svg-icon svg-icon-2x ms-n1">
@@ -1570,7 +1600,7 @@
 					<div class="container-xxl d-flex flex-column flex-md-row flex-stack">
 						<!--begin::Copyright-->
 						<div class="text-dark order-2 order-md-1">
-							<span class="text-muted fw-bold me-2">2025©</span>
+							<span class="text-muted fw-bold me-2">2025</span>
 							<a href="https://keenthemes.com" target="_blank"
 								class="text-gray-800 text-hover-primary">eth notary</a>
 						</div>
@@ -1636,6 +1666,54 @@
 	
 
 	<!--end::Page Custom Javascript-->
+	<script>
+	// Function to check wallet connection and update notification button
+	function updateWalletConnectionStatus() {
+	  const activitiesToggle = document.getElementById("kt_activities_toggle");
+	  
+	  // Check if wallet is connected
+	  if (typeof wallet !== "undefined" && wallet !== null && wallet !== "") {
+	    // Wallet is connected - add primary class
+	    activitiesToggle.classList.remove("btn-light-danger", "pulse-danger");
+	    activitiesToggle.classList.add("btn-light-primary", "pulse-primary");
+	  } else {
+	    // Wallet is not connected - add danger class
+	    activitiesToggle.classList.remove("btn-light-primary", "pulse-primary");
+	    activitiesToggle.classList.add("btn-light-danger", "pulse-danger");
+	  }
+	}
+	
+	// Run the function when the page loads
+	document.addEventListener("DOMContentLoaded", function() {
+	  updateWalletConnectionStatus();
+	  
+	  // Set an interval to check wallet status periodically (every 2 seconds)
+	  setInterval(updateWalletConnectionStatus, 2000);
+	});
+	</script>
+	<script>
+		function updateWalletIcon() {
+			const iconContainer = document.querySelector('#kt_header_user_menu_toggle .svg-icon');
+			if (iconContainer) {
+				iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none">
+					<path d="M10.0813 3.7242C10.8849 2.16438 13.1151 2.16438 13.9187 3.7242V3.7242C14.4016 4.66147 15.4909 5.1127 16.4951 4.79139V4.79139C18.1663 4.25668 19.7433 5.83365 19.2086 7.50485V7.50485C18.8873 8.50905 19.3385 9.59842 20.2758 10.0813V10.0813C21.8356 10.8849 21.8356 13.1151 20.2758 13.9187V13.9187C19.3385 14.4016 18.8873 15.491 19.2086 16.4951V16.4951C19.7433 18.1663 18.1663 19.7433 16.4951 19.2086V19.2086C15.491 18.8873 14.4016 19.3385 13.9187 20.2758V20.2758C13.1151 21.8356 10.8849 21.8356 10.0813 20.2758V20.2758C9.59842 19.3385 8.50905 18.8873 7.50485 19.2086V19.2086C5.83365 19.7433 4.25668 18.1663 4.79139 16.4951V16.4951C5.1127 15.491 4.66147 14.4016 3.7242 13.9187V13.9187C2.16438 13.1151 2.16438 10.8849 3.7242 10.0813V10.0813C4.66147 9.59842 5.1127 8.50905 4.79139 7.50485V7.50485C4.25668 5.83365 5.83365 4.25668 7.50485 4.79139V4.79139C8.50905 5.1127 9.59842 4.66147 10.0813 3.7242V3.7242Z" fill="#20d489"/>
+					<path class="permanent" d="M14.8563 9.1903C15.0606 8.94984 15.3771 8.9385 15.6175 9.14289C15.858 9.34728 15.8229 9.66433 15.6185 9.9048L11.863 14.6558C11.6554 14.9001 11.2876 14.9258 11.048 14.7128L8.47656 12.4271C8.24068 12.2174 8.21944 11.8563 8.42911 11.6204C8.63877 11.3845 8.99996 11.3633 9.23583 11.5729L11.3706 13.4705L14.8563 9.1903Z" fill="white"/>
+				</svg>`;
+				
+				// Add pulse animation
+				iconContainer.classList.add('pulse-animation');
+				setTimeout(() => {
+					iconContainer.classList.remove('pulse-animation');
+				}, 1000);
+			}
+
+			// Hide the wallet menu if it exists
+			const walletMenu = document.querySelector('.menu.menu-sub.menu-sub-dropdown.menu-column.menu-rounded.menu-gray-600.menu-state-bg-light-primary');
+			if (walletMenu) {
+				walletMenu.style.display = 'none';
+			}
+		}
+	</script>
 	<!--end::Javascript-->
 </body>
 

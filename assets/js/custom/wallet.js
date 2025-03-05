@@ -6,11 +6,11 @@ let wallet;
 let selectAddress;
 let contract;
 
-// Initialize Web3 connection
+// Initialize ethers.js provider but keep the web3 variable name for compatibility
 let web3;
 const contractAddress = localStorage.contract;
 
-// Function to update the Web3 provider with a new RPC URL
+// Function to update the ethers provider with a new RPC URL
 function updateWeb3Provider(rpcUrl) {
     web3 = new Web3(rpcUrl);
 
@@ -164,7 +164,7 @@ async function connectMetaMask() {
         // 3) Save everything to localStorage
         localStorage.setItem('lastWallet', 'Metamask');
         localStorage.setItem('lastChain', chainId);
-        hideModal();
+        hideWallets();
     } catch (error) {
         console.error('User denied account access or error occurred:', error);
     }
@@ -253,7 +253,7 @@ async function connectCoinbase() {
         localStorage.setItem('lastChain', rawChainId);
         console.log("Detected Chain ID:", rawChainId);
 
-        hideModal();
+        hideWallets();
 
 
     } catch (error) {
@@ -304,7 +304,7 @@ async function connectPhantomWallet() {
         localStorage.setItem('lastWallet', 'Phantom');
         localStorage.setItem('lastChain', chainId);
 
-        hideModal();
+        hideWallets();
     } catch (error) {
         console.error('User denied account access or error occurred:', error);
     }
@@ -351,7 +351,7 @@ async function connectBinance() {
             // 3) Save everything to localStorage
             localStorage.setItem('lastChain', chainId);
     
-            hideModal();
+            hideWallets();
         } catch (error) {
             console.error('User denied account access or error occurred:', error);
         }
@@ -400,7 +400,7 @@ async function connectWallet() {
             localStorage.setItem('lastWallet', 'other');
             detectNetworkChange(wallet);
 
-            hideModal()
+            hideWallets();
 
             console.log("Detected Chain ID:", rawChainId);
         } catch (error) {
@@ -470,5 +470,7 @@ checkWalletConnectionAndNetwork().then(function () {
     contract = new web3.eth.Contract(contractABI, contractAddress);
     console.log("yoyo, this the contract :" + contract)
 });
+
+
 
 

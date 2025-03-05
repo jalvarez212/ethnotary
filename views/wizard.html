@@ -33,6 +33,34 @@
 		<script src="../assets/js/custom/env.js"></script>
 		<script src="../assets/js/custom/wallet.js"></script>
 
+		<style>
+			@keyframes pulse {
+				0% {
+					transform: scale(1);
+					opacity: 1;
+					filter: none;
+				}
+				50% {
+					transform: scale(1.2);
+					opacity: 0.8;
+					filter: drop-shadow(0 0 8px #20d489);
+				}
+				100% {
+					transform: scale(1);
+					opacity: 1;
+					filter: none;
+				}
+			}
+	
+			.pulse-animation {
+				animation: pulse 1s ease-in-out;
+			}
+	
+			.pulse-animation svg path {
+				fill: #20d489 !important;
+			}
+		</style>
+
 
 
 
@@ -65,6 +93,14 @@
 				modal.hide(); // Hide the modal
 			}
 		}
+		function hideWallets() {
+		var modalElement = document.getElementById('kt_modal_wallet');
+		var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
+		if (modal) {
+			modal.hide(); // Hide the modal
+		}
+		updateWalletIcon(); // Update the wallet icon when wallet is connected
+	}
 
 	</script>
 
@@ -324,7 +360,7 @@
 											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
 												viewBox="0 0 24 24" fill="none">
 												<path opacity="0.3"
-													d="M19 22H5C4.4 22 4 21.6 4 21V3C4 2.4 4.4 2 5 2H14L20 8V21C20 21.6 19.6 22 19 22ZM15 17C15 16.4 14.6 16 14 16H8C7.4 16 7 16.4 7 17C7 17.6 7.4 18 8 18H14C14.6 18 15 17.6 15 17ZM17 12C17 11.4 16.6 11 16 11H8C7.4 11 7 11.4 7 12C7 12.6 7.4 13 8 13H16C16.6 13 17 12.6 17 12ZM17 7C17 6.4 16.6 6 16 6H8C7.4 6 7 6.4 7 7C7 7.6 7.4 8 8 8H16C16.6 8 17 7.6 17 7Z"
+													d="M19 22H5C4.4 22 4 21.6 4 21V3C4 2.4 4.4 2 5 2H14L20 8V21C20 21.6 19.6 22 19 22ZM16 13H13V10C13 9.4 12.6 9 12 9C11.4 9 11 9.4 11 10V13H8C7.4 13 7 13.4 7 14C7 14.6 7.4 15 8 15H11V18C11 18.6 11.4 19 12 19C12.6 19 13 18.6 13 18V15H16C16.6 15 17 14.6 17 14C17 13.4 16.6 13 16 13Z"
 													fill="black" />
 												<path d="M15 8H20L14 2V7C14 7.6 14.4 8 15 8Z" fill="black" />
 											</svg>
@@ -358,6 +394,7 @@
 							<!--end::Mega Menu Toggler-->
 							<!--begin::Logo-->
 							<a id="logo" href="">
+
 								<img alt="Logo" src="../assets/media/logos/logo_full.png" class="h-30px" />
 							</a>
 							<!--end::Logo-->
@@ -530,30 +567,7 @@
 							</div>
 							<!--end::Wizard-->
 							<!--begin::Notifications-->
-							<div class="ms-1 ms-lg-6">
-								<!--begin::Dropdown-->
-								<button class="btn btn-icon btn-sm btn-light-danger fw-bolder pulse pulse-danger"
-									data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end"
-									id="kt_activities_toggle">
-									<span class="position-absolute fs-6" id="notifications"></span>
-									<span class="pulse-ring"></span>
-								</button>
-								<!--begin::Menu-->
-								<div id="notificationsTab"
-									class="menu menu-sub menu-sub-dropdown menu-column menu-rounded fw-bold menu-title-gray-800 menu-hover-bg menu-state-title-primary w-250px w-md-300px"
-									data-kt-menu="true">
-									<div class="menu-item mx-3">
-										<div class="menu-content fs-6 text-dark fw-bolder py-6" id="nn">
-										</div>
-									</div>
-									<div class="separator mb-3"></div>
 
-
-
-								</div>
-								<!--end::Menu-->
-								<!--end::Dropdown-->
-							</div>
 							<!--end::Notifications-->
 							<!--begin::Aside Toggler-->
 
@@ -745,7 +759,10 @@
 																					d="M20 15H4C2.9 15 2 14.1 2 13V7C2 6.4 2.4 6 3 6H21C21.6 6 22 6.4 22 7V13C22 14.1 21.1 15 20 15ZM13 12H11C10.5 12 10 12.4 10 13V16C10 16.5 10.4 17 11 17H13C13.6 17 14 16.6 14 16V13C14 12.4 13.6 12 13 12Z"
 																					fill="black" />
 																				<path
-																					d="M14 6V5H10V6H8V5C8 3.9 8.9 3 10 3H14C15.1 3 16 3.9 16 5V6H14ZM20 15H14V16C14 16.6 13.5 17 13 17H11C10.5 17 10 16.6 10 16V15H4C3.6 15 3.3 14.9 3 14.7V18C3 19.1 3.9 20 5 20H19C20.1 20 21 19.1 21 18V14.7C20.7 14.9 20.4 15 20 15Z"
+																					d="M14 6V5H10V6H8V5C8 3.9 8.9 3 10 3H14C15.1 3 16 3.9 16 5V6H14ZM17 4H20L22 10H18L17 4Z"
+																					fill="black" />
+																				<path opacity="0.3"
+																					d="M7 4H4L2 10H6L7 4Z"
 																					fill="black" />
 																			</svg></span>
 																		<!--end::Svg Icon-->
@@ -772,12 +789,12 @@
 															<div class="fv-row mb-10">
 
 																<input type="radio" class="btn-check"
-																	name="radio_buttons_1[]" value="Non-Fungible Token"
+																	name="radio_buttons_1[]" value="Token Offering"
 																	id="kt_radio_buttons_2_option_2"
-																	data-fv-choice___max="1" />
+																	data-fv-choice___max="1" disabled />
 																<label
-																	class="btn btn-outline btn-outline-dashed btn-outline-default p-7 d-flex align-items-center"
-																	for="kt_radio_buttons_2_option_2">
+																	class="btn btn-outline btn-outline-dashed btn-outline-default p-7 d-flex align-items-center opacity-50"
+																	for="kt_radio_buttons_2_option_2" data-bs-toggle="tooltip" data-bs-placement="right" title="This option is not currently available">
 																	<!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
 																	<span class="svg-icon svg-icon-4x me-4">
 
@@ -795,9 +812,6 @@
 																					fill="black" />
 																				<path opacity="0.3"
 																					d="M10 10C10 11.1 9.1 12 8 12C6.9 12 6 11.1 6 10H10Z"
-																					fill="black" />
-																				<path opacity="0.3"
-																					d="M18 10C18 11.1 17.1 12 16 12C14.9 12 14 11.1 14 10H18Z"
 																					fill="black" />
 																				<path opacity="0.3"
 																					d="M14 4H10V10H14V4Z"
@@ -837,10 +851,10 @@
 																	name="radio_buttons_1[]"
 																	value="Decentralized Autonomus Organization"
 																	id="kt_radio_buttons_3_option_3"
-																	data-fv-choice___max="1" />
+																	data-fv-choice___max="1" disabled />
 																<label
-																	class="btn btn-outline btn-outline-dashed btn-outline-default p-7 d-flex align-items-center"
-																	for="kt_radio_buttons_3_option_3">
+																	class="btn btn-outline btn-outline-dashed btn-outline-default p-7 d-flex align-items-center opacity-50"
+																	for="kt_radio_buttons_3_option_3" data-bs-toggle="tooltip" data-bs-placement="right" title="This option is not currently available">
 																	<!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
 																	<span class="svg-icon svg-icon-4x me-4">
 																		<!--begin::Svg Icon | path: assets/media/icons/duotune/finance/fin001.svg-->
@@ -850,7 +864,7 @@
 																				width="24" height="24"
 																				viewBox="0 0 24 24" fill="none">
 																				<path
-																					d="M20 19.725V18.725C20 18.125 19.6 17.725 19 17.725H5C4.4 17.725 4 18.125 4 18.725V19.725H3C2.4 19.725 2 20.125 2 20.725V21.725H22V20.725C22 20.125 21.6 19.725 21 19.725H20Z"
+																					d="M20 19.725V18.725C20 18.125 19.6 17.725 19 17.725H5C4.4 17.725 4 18.125 4 18.725V19.725H3C2.4 19.725 2 20.125 2 20.725V21.725H22V20.725C22 20.125 21.6 19.725 21 19.725H20ZM12 3.725C11.2 3.725 10.5 4.425 10.5 5.225C10.5 6.025 11.2 6.725 12 6.725C12.8 6.725 13.5 6.025 13.5 5.225C13.5 4.425 12.8 3.725 12 3.725Z"
 																					fill="black" />
 																				<path opacity="0.3"
 																					d="M22 6.725V7.725C22 8.325 21.6 8.725 21 8.725H18C18.6 8.725 19 9.125 19 9.725C19 10.325 18.6 10.725 18 10.725V15.725C18.6 15.725 19 16.125 19 16.725V17.725H15V16.725C15 16.125 15.4 15.725 16 15.725V10.725C15.4 10.725 15 10.325 15 9.725C15 9.125 15.4 8.725 16 8.725H13C13.6 8.725 14 9.125 14 9.725C14 10.325 13.6 10.725 13 10.725V15.725C13.6 15.725 14 16.125 14 16.725V17.725H10V16.725C10 16.125 10.4 15.725 11 15.725V10.725C10.4 10.725 10 10.325 10 9.725C10 9.125 10.4 8.725 11 8.725H8C8.6 8.725 9 9.125 9 9.725C9 10.325 8.6 10.725 8 10.725V15.725C8.6 15.725 9 16.125 9 16.725V17.725H5V16.725C5 16.125 5.4 15.725 6 15.725V10.725C5.4 10.725 5 10.325 5 9.725C5 9.125 5.4 8.725 6 8.725H3C2.4 8.725 2 8.325 2 7.725V6.725L11 2.225C11.6 1.925 12.4 1.925 13.1 2.225L22 6.725ZM12 3.725C11.2 3.725 10.5 4.425 10.5 5.225C10.5 6.025 11.2 6.725 12 6.725C12.8 6.725 13.5 6.025 13.5 5.225C13.5 4.425 12.8 3.725 12 3.725Z"
@@ -1158,7 +1172,7 @@
 					<div class="container-xxl d-flex flex-column flex-md-row flex-stack">
 						<!--begin::Copyright-->
 						<div class="text-dark order-2 order-md-1">
-							<span class="text-muted fw-bold me-2">2025©</span>
+							<span class="text-muted fw-bold me-2">2025</span>
 							<a href="https://keenthemes.com" target="_blank"
 								class="text-gray-800 text-hover-primary">eth notary</a>
 						</div>
@@ -1399,11 +1413,10 @@
 
 	</script>
 	<script src="../assets/js/custom/general/wizard.js"></script>
+		
+		<!-- Bootstrap Bundle with Popper -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
-	<!--end::Page Custom Javascript-->
-	<!--end::Javascript-->
-</body>
-<!--end::Body-->
-
+	</body>
 </html>

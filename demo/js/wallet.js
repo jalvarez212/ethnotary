@@ -122,6 +122,7 @@ async function connectMetaMask() {
 
             console.log("Detected Chain ID:", rawChainId);
             hideWallets(); // Hide your modal if everything is good
+        
         }
         catch (error) {
             console.error('User denied account access or an error occurred:', error);
@@ -159,7 +160,7 @@ async function connectOKXWallet() {
             switchToSepolia()
 
             console.log("Detected Chain ID:", rawChainId);
-            hideWallets();
+           hideWallets();
         } else {
             throw new Error('No accounts found. Connection may have been rejected.');
         }
@@ -200,7 +201,8 @@ async function connectCoinbase() {
         switchToSepolia()
 
         console.log("Detected Chain ID:", rawChainId);
-        hideWallets();
+ 
+       hideWallets();
     } catch (error) {
         alert(error);
     }
@@ -277,7 +279,7 @@ async function connectBinance() {
             switchToSepolia()
 
             console.log("Detected Chain ID:", rawChainId);
-            hideWallets();
+           hideWallets();
         } else {
             throw new Error('No accounts found. Connection may have been rejected.');
         }
