@@ -1,15 +1,33 @@
+let gas;
+const priorityFeeDecimal = 1;         // 0.1 Gwei in Wei
+const priorityFeeHex = '0x' + priorityFeeDecimal.toString(16);
+
+async function getGas(method) {
+
+	let gasLimit = await method.estimateGas({ from: selectAddress, to: contractAddress });
+	gas = gasLimit
+	console.log("gas: " + gas)
 
 
 
-switchToSepolia().then(function () {
+}
+
+checkConnectedNetwork().then(function () {
+
 
 
 	let submitTxn = document.getElementById('submitTxn');
 	submitTxn.addEventListener('click', function (tokenType) {
+		// Check if wallet is defined before proceeding
+		if (typeof wallet === 'undefined' || !wallet) {
+			console.error('Wallet not connected');
+			showConnect();
+			return;
+		}
 
 		let to = document.getElementById('toAddress').value;
 		let amt = document.getElementById('ethAmount').value;
-		const amount = BigInt(parseFloat(amt) * 10 ** 18).toString();
+		const amount = BigInt(parseFloat(amt) * 10**18).toString();
 
 
 
@@ -18,63 +36,57 @@ switchToSepolia().then(function () {
 
 		getGas(contract.methods.submitTransaction(to, amount, '0x'))
 
-		if (wallet == null) {
-			showConnect()
-		}
-		else {
-			wallet.request({ method: 'eth_requestAccounts' })
-				.then(accounts => {
-					if (accounts.length === 0) {
-						console.error('No accounts found. Please connect your Ethereum wallet.');
-					}
 
-					else {
-						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
-						wallet.request({
-							method: 'eth_sendTransaction',
-							params: [
-								{
-									to: localStorage.contract, // This now dynamically points to the user's account
-									from: selectAddress,
-									data: callData, // Ensure this is well defined in your original script
-									// gasLimit: gas,
-									// maxFeePerGas: maxFeePerGas,
-									// maxPriorityFeePerGas: maxPriorityFeePerGas,
-									// gas: gas,
-								},
-							],
+		wallet.request({ method: 'eth_requestAccounts' })
+			.then(accounts => {
+				if (accounts.length === 0) {
+					console.error('No accounts found. Please connect your Ethereum wallet.');
+				} else {
+					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
+
+					wallet.request({
+						method: 'eth_sendTransaction',
+						params: [
+							{
+								to: localStorage.contract, // This now dynamically points to the user's account
+								from: selectAddress,
+								data: callData, // Ensure this is well defined in your original script
+								gasLimit: gas,
+								maxPriorityFeePerGas: priorityFeeHex,
+							},
+						],
+					})
+						.then((txHash) => {
+							closeModal('#kt_modal_1')
+							console.log('Transaction Hash:', txHash);
+							startProcessingAnimation();
+							setTimeout(showSuccessAnimation, 6000);
+
+							// Hide animations after a short delay (optional)
+							setTimeout(hideAnimations, 8500);
+
 						})
-							.then((txHash) => {
-								closeModal('#kt_modal_1')
-								console.log('Transaction Hash:', txHash);
-								startProcessingAnimation();
-								setTimeout(showSuccessAnimation, 6000);
-
-								// Hide animations after a short delay (optional)
-								setTimeout(hideAnimations, 8500);
-
-							})
-							.catch((error) => {
-								console.error('Transaction failed:', error);
-								// Optionally handle error animation or message here
-								hideAnimations(); // Hide animations immediately if there's an error
-							});
-					}
-				})
-				.catch(error => {
-					console.error('An error occurred while fetching the connected accounts.', error);
-				});
-
-
-
-
-		}
+						.catch((error) => {
+							console.error('Transaction failed:', error);
+							// Optionally handle error animation or message here
+							hideAnimations(); // Hide animations immediately if there's an error
+						});
+				}
+			})
+			.catch(error => {
+				console.error('An error occurred while fetching the connected accounts.', error);
+			});
 	});
 
 	let transferToken = document.getElementById('transferToken');
 	transferToken.addEventListener('click', function () {
-
+		// Check if wallet is defined before proceeding
+		if (typeof wallet === 'undefined' || !wallet) {
+			console.error('Wallet not connected');
+			showConnect();
+			return;
+		}
 
 		let tokenSelect = document.getElementById('tokenHoldings2');
 		let to = document.getElementById('toAddress1').value;
@@ -115,9 +127,7 @@ switchToSepolia().then(function () {
 									from: selectAddress,
 									data: callData, // Ensure this is well defined in your original script
 									gasLimit: gas,
-									maxFeePerGas: maxFeePerGas,
-									maxPriorityFeePerGas: maxPriorityFeePerGas,
-									gas: gas,
+									maxPriorityFeePerGas: priorityFeeHex,
 								},
 							],
 						})
@@ -185,9 +195,7 @@ switchToSepolia().then(function () {
 									from: selectAddress,
 									data: callData, // Ensure this is well defined in your original script
 									gasLimit: gas,
-									maxFeePerGas: maxFeePerGas,
-									maxPriorityFeePerGas: maxPriorityFeePerGas,
-									gas: gas,
+									maxPriorityFeePerGas: priorityFeeHex,
 								},
 							],
 						})
@@ -216,229 +224,7 @@ switchToSepolia().then(function () {
 
 
 	});
-
-	// window.DOMContentLoaded = getEthereumPrice();
-	// window.DOMContentLoaded = getGasEstimates();
-	// window.DOMContentLoaded = getTransactionsLastBlock();
-	// window.DOMContentLoaded = getLatestBlock();
-	// window.DOMContentLoaded = updateNetworkCongestionBar();
-
-	// window.onload = processPending(getAllTxns(), document.getElementById('alltxns'));
-	// window.onload = processPending(getPending(), document.getElementById('pending'));
-	// window.onload = processPending(getConfirmed(), document.getElementById('confirmed'));
-	// window.onload = getEtherBalance(contractAddress, document.getElementById('ethbalance'));
-	// window.onload = processNotifications(getAllTxns(), document.getElementById('notificationsTab'))
-
-
-
-
-
-
-
-
-	// window.onload = processEvents(Alltxns, document.getElementById('main'));
-	// window.onload = processEvents(Confirm, document.getElementById('confirms'));
-	// window.onload = processEvents(Submit, document.getElementById('submits'));
-	// window.onload = processEvents(Execute, document.getElementById('executes'));
-	// window.onload = processEvents(Deposits, document.getElementById('deposits'));
-	// window.onload = processEvents(Account, document.getElementById('accounts'));
-
-	// document.getElementById("refresh").addEventListener('click', function () {
-	// 	getEthereumPrice();
-	// 	getTransactionsLastBlock();
-	// 	getLatestBlock();
-	// 	getGasEstimates();
-	// 	updateNetworkCongestionBar();
-
-	// })
-
-
-	// async function fetchTokenBalances(data) {
-	// 	const abiFunctions = [
-	// 		{
-	// 			"constant": true,
-	// 			"inputs": [
-	// 				{
-	// 					"name": "owner",
-	// 					"type": "address"
-	// 				}
-	// 			],
-	// 			"name": "balanceOf",
-	// 			"outputs": [
-	// 				{
-	// 					"name": "",
-	// 					"type": "uint256"
-	// 				}
-	// 			],
-	// 			"payable": false,
-	// 			"stateMutability": "view",
-	// 			"type": "function"
-	// 		},
-	// 		{
-	// 			"constant": true,
-	// 			"inputs": [
-	// 				{
-	// 					"name": "owner",
-	// 					"type": "address"
-	// 				},
-	// 				{
-	// 					"name": "index",
-	// 					"type": "uint256"
-	// 				}
-	// 			],
-	// 			"name": "tokenOfOwnerByIndex",
-	// 			"outputs": [
-	// 				{
-	// 					"name": "",
-	// 					"type": "uint256"
-	// 				}
-	// 			],
-	// 			"payable": false,
-	// 			"stateMutability": "view",
-	// 			"type": "function"
-	// 		},
-	// 		{
-	// 			"constant": false,
-	// 			"inputs": [
-	// 				{
-	// 					"name": "to",
-	// 					"type": "address"
-	// 				},
-	// 				{
-	// 					"name": "value",
-	// 					"type": "uint256"
-	// 				}
-	// 			],
-	// 			"name": "transfer",
-	// 			"outputs": [
-	// 				{
-	// 					"name": "",
-	// 					"type": "bool"
-	// 				}
-	// 			],
-	// 			"payable": false,
-	// 			"stateMutability": "nonpayable",
-	// 			"type": "function"
-	// 		},
-
-	// 		{
-	// 			"constant": true,
-	// 			"inputs": [],
-	// 			"name": "decimals",
-	// 			"outputs": [
-	// 				{
-	// 					"name": "",
-	// 					"type": "uint8"
-	// 				}
-	// 			],
-	// 			"payable": false,
-	// 			"stateMutability": "view",
-	// 			"type": "function"
-	// 		}
-	// 	];
-	// 	document.getElementById('tokenHoldings1').innerHTML = "<option></option>";
-	// 	document.getElementById('tokenHoldings2').innerHTML = "<option>Select Token</option>";
-
-
-
-	// 	let tokens = JSON.parse(data);
-
-	// 	console.log('these are the toks my boyy, ' + data)
-
-	// 	for (const token of tokens) {
-	// 		let tokenContract = new web3.eth.Contract(abiFunctions, token.address);
-	// 		let balance = await tokenContract.methods.balanceOf(localStorage.getItem('contract')).call();
-
-	// 		token.balance = balance.toString();
-
-
-
-	// 		console.log('token balance =' + token.balance)
-	// 		console.log(token)
-
-	// 		if (token.balance !== '0') {
-
-
-	// 			if (token.sym == 'erc721') {
-
-	// 				let tokenId;
-	// 				let optionHtml;
-
-
-	// 				for (let i = 0; i < token.balance; i++) {
-	// 					tokenId = await tokenContract.methods.tokenOfOwnerByIndex(contractAddress, i).call();
-
-	// 					console.log(tokenId)
-	// 					optionHtml = `<option class="${token.type}" data-id="${tokenId.toString()}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">#${tokenId.toString()} ${token.type}</option>`;
-	// 					document.getElementById('tokenHoldings1').innerHTML += optionHtml;
-	// 					document.getElementById('tokenHoldings2').innerHTML += optionHtml;
-
-	// 				}
-
-	// 				console.log(token.balance)
-
-	// 			}
-
-	// 			if (token.sym == 'erc20') {
-	// 				console.log("new token: " + JSON.stringify(token))
-
-
-
-
-	// 				let decimals = await tokenContract.methods.decimals().call();
-
-	// 				const balanceBigInt = BigInt(balance);
-	// 				const decimalsBigInt = BigInt(decimals);
-	// 				const factor = BigInt(10) ** decimalsBigInt;
-	// 				const formattedBalance = Number(balanceBigInt) / Number(factor);
-
-	// 				//let formattedBalance = await web3.utils.fromWei(balance, 'ether') * Math.pow(10, 18 - decimals);
-
-	// 				console.log('token balance =' + formattedBalance.toFixed(4))
-	// 				console.log('decimals =' + decimals.toString())
-
-	// 				// Constructing the option element to append to the dropdown
-
-	// 				const optionHtml = `<option class="${token.type}" value="${formattedBalance}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}" data-dec="${decimals.toString()}">${formattedBalance.toFixed(4)} ${token.type}</option>`;
-	// 				document.getElementById('tokenHoldings1').innerHTML += optionHtml;
-	// 				document.getElementById('tokenHoldings2').innerHTML += optionHtml;
-	// 				//document.querySelectorAll(`.clickable`).addEventListener('click', function(){console.log('hellollloolololoo')});
-
-
-	// 			}
-
-
-
-
-
-
-
-
-	// 		}
-
-
-	// 	}
-
-	// 	console.log(tokens);
-	// 	document.getElementsByClassName(`clickable`).forEach(element => {
-	// 		element.addEventListener('click', function () { console.log('hellollloolololoo') });
-	// 	});
-
-	// }
-	// fetchTokenBalances(localStorage.token_contracts);
-
-
-
-
-
-
-
-
-
-	//   // Run the network check on page load
-	//   
+  
 
 
 });
-
-

@@ -1,18 +1,21 @@
-  // ----- Global Variables -----
+//walletstate variables
 let rawChainId;
 let wallet;
 let selectAddress;
 let contract;
 
-// Initialize Web3 connection
-let web3 = null;
-const contractAddress = '0x0053746a266c9ad6dab54e42aa77715aa83243b1';
+// Initialize ethers.js provider but keep the web3 variable name for compatibility
+let web3;
+const contractAddress = localStorage.contract;
 
-// Function to update the Web3 provider with a new RPC URL
-function updateWeb3Provider() {
-    web3 = new Web3('https://sepolia.infura.io/v3/'+ENV.RPC_NODE_KEY );
+// Function to update the ethers provider with a new RPC URL
+function updateWeb3Provider(rpcUrl) {
+    web3 = new Web3(rpcUrl);
+
     // Further actions can be performed with the updated web3 instance
 }
+
+
 
 function normalizeToHex(input) {
     if (typeof input === 'string' && input.startsWith('0x')) {
@@ -24,331 +27,394 @@ function normalizeToHex(input) {
     }
 }
 
-// ---- Detect network and reconnect if needed ----
-async function checkConnectedNetwork() {
-    const lastWallet = localStorage.getItem('lastWallet');
-    const lastChain = localStorage.getItem('lastChain');
 
-    // If you specifically need Ethereum provider to be present for certain wallets,
-    // you can conditionally handle that. For now, just do a simple check:
-    if (!window.ethereum && !lastWallet) {
+async function checkConnectedNetwork() {
+    if (!window.ethereum) {
         console.log("No Web3 wallet detected");
-        showModal(); // If you have a modal
+        showModal();
         return;
     }
 
     try {
-        // Use the chainIdLookup map for a direct lookup of the last chain used
-        const matchedNetwork = chainIdLookup[lastChain];
+        // Use the chainIdLookup map for a direct lookup
+        const matchedNetwork = chainIdLookup[localStorage.getItem('lastChain', rawChainId)];
+        const lastWallet = localStorage.getItem('lastWallet');
+
+
+        console.log(matchedNetwork)
 
         if (matchedNetwork) {
-            console.log(`Reconnecting to network: ${matchedNetwork.name}`);
+            console.log(`Connected to ${matchedNetwork.name}`);
             updateWeb3Provider(matchedNetwork.rpcUrl);
-        } else {
-            console.log("Connected to an unsupported network or no chain stored.");
-        }
 
-        // Attempt to reconnect with whichever wallet was last used:
-        if (lastWallet === 'Metamask') {
-            connectMetaMask();
-        } else if (lastWallet === 'Coinbase') {
-            connectCoinbase();
-        } else if (lastWallet === 'Binance') {
-            connectBinance();
-        } else if (lastWallet === 'Phantom') {
-            connectPhantomWallet();
-        } else if (lastWallet === 'okx') {
-            connectOKXWallet();
-        } else if (lastWallet === 'other') {
-            connectWallet();
         } else {
-            console.log("No recognized lastWallet found in localStorage.");
+            console.log("Connected to an unsupported network");
+
         }
     } catch (error) {
-        console.error("Error during checkConnectedNetwork:", error);
-        showModal(); // Show your modal or handle error UI
+        console.error("Error fetching chain ID:", error);
+
     }
 }
 
 // Function to detect network change and re-run `checkConnectedNetwork`
-function detectNetworkChange(walletInstance) {
-    if (walletInstance && typeof walletInstance.on === 'function') {
-        walletInstance.on('chainChanged', async () => {
-            console.log("Network changed");
-            await checkConnectedNetwork();
-        });
-    }
+function detectNetworkChange(wallet) {
+    wallet.on('chainChanged', async () => {
+        console.log("Network changed");
+        await checkConnectedNetwork();
+    });
+
 }
 
-// ----- Wallet Connectors -----
+
 
 const ethers = window.ethers;
-const MMSDK = new MetaMaskSDK.MetaMaskSDK(
-    dappMetadata = {
+const MMSDK = new MetaMaskSDK.MetaMaskSDK({
+    dappMetadata: {
         name: "ethnotary",
-        url: "ethnotary.io",
-    }
-    // Other options
-);
+        url: "https://ethnotary.io/",
+    },
+    infuraAPIKey: ENV.RPC_NODE_KEY,
 
+    // Other options
+})
 const coinbaseWallet = new CoinbaseWalletSDK({
     appName: 'ethnotary',
-    appLogoUrl: 'ethnotary.io',
+    appLogoUrl: 'https://ethnotary.io/',
     darkMode: false
 });
 
-// 1) Metamask
-async function connectMetaMask() {
-    if (typeof window.ethereum !== 'undefined') {
-        try {
-            wallet = await MMSDK.getProvider();
+/**
+ * Listens for key wallet/provider events and handles them.
+ * Replace the console logs with your own logic—like reloading the page,
+ * re-calling checkConnectedNetwork(), or updating UI elements.
+ */
+function watchWalletChanges(wallet) {
+    if (!wallet || !wallet.on) {
+        console.error("No wallet instance found or wallet does not support event listeners.");
+        return;
+    }
 
-            // Prompt user to connect their wallet
-            const accounts = await wallet.request({ method: 'eth_requestAccounts' });
-            console.log(`User's address: ${accounts[0]}`);
-            selectAddress = accounts[0];
+    // Fired when the chain/network ID changes in the wallet
+    wallet.on('chainChanged', async (newChainId) => {
+        console.log("chainChanged event detected:", newChainId);
+        // Option 1: Reload the page
+        window.location.reload();
 
-            // Set default account in web3
+        // Option 2: Or re-run your existing network checks:
+        //await checkConnectedNetwork();
+    });
+
+    // Fired when the user changes the active account(s) in the wallet
+    wallet.on('accountsChanged', async (accounts) => {
+        console.log("accountsChanged event detected:", accounts);
+        // If the user has at least one address:
+        if (accounts && accounts.length > 0) {
+            localStorage.setItem('connectedWallet', accounts[0]);
             web3.eth.defaultAccount = accounts[0];
+            // You might also call checkConnectedNetwork() here if needed
+
+
+        } else {
+            // User might have disconnected or removed permissions
+            console.warn("No accounts provided. Handle accordingly.");
+            // e.g., show a disconnect message or revert to a default state
+        }
+    });
+}
+
+//1) MetaMask
+async function connectMetaMask() {
+    if (typeof window.ethereum === 'undefined') {
+        showModal();
+        return;
+    }
+
+    try {
+        // 1) Connect to wallet
+        const accounts = await MMSDK.connect()
+        let metaWallet = await MMSDK.getProvider();
+        wallet = await metaWallet;
+        wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+            const accounts = response;
+            console.log(`User's address is ${accounts[0]}`);
+            console.log(response)
+            selectAddress = this.selectAddress
+
+            // Optionally, have the default account set for web3.js
+            web3.eth.defaultAccount = accounts[0]
             localStorage.setItem('connectedWallet', accounts[0]);
 
-            // Store chain info
-            rawChainId = await normalizeToHex(wallet.getChainId());
-            localStorage.setItem('lastChain', rawChainId);
-            localStorage.setItem('lastWallet', 'Metamask');
-            
-            detectNetworkChange(wallet);
-            switchToSepolia()
+        })
+        // 2) Get chain ID and update Web3
+        const chainId = await wallet.request({ method: 'eth_chainId' });
+        const matchedNetwork = chainIdLookup[chainId];
+        if (matchedNetwork?.rpcUrl) {
+            updateWeb3Provider(matchedNetwork.rpcUrl); // or new Web3(provider)
+            console.log(`Connected to network: ${matchedNetwork.name}`);
 
-            console.log("Detected Chain ID:", rawChainId);
-            hideWallets(); // Hide your modal if everything is good
-        
+        } else {
+            console.warn("Unsupported or unknown network:", chainId);
+            // Optionally fall back to a default, or show a modal
         }
-        catch (error) {
-            console.error('User denied account access or an error occurred:', error);
-        }
+
+        watchWalletChanges(wallet);
+
+
+        // 3) Save everything to localStorage
+        localStorage.setItem('lastWallet', 'Metamask');
+        localStorage.setItem('lastChain', chainId);
+        hideWallets();
+    } catch (error) {
+        console.error('User denied account access or error occurred:', error);
     }
-    else {
-        alert('This browser is not web3 enabled, please use a different browser.');
-    }
+
+
 }
-
 // 2) OKX
+
 async function connectOKXWallet() {
+    if (typeof window.ethereum === 'undefined') {
+        showModal();
+        return;
+    }
+
     try {
-        if (!okxwallet) {
-            throw new Error('OKX Wallet not found. Please ensure it is installed and enabled.');
-        }
+        // 1) Connect to wallet
+        wallet = window.okxwallet;
+        wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+            const accounts = response;
+            console.log(`User's address is ${accounts[0]}`);
+            console.log(response)
+            selectAddress = this.selectAddress
 
-        console.log('Wallet object:', okxwallet);
+            // Optionally, have the default account set for web3.js
+            web3.eth.defaultAccount = accounts[0]
+            localStorage.setItem('connectedWallet', accounts[0]);
 
-        // Prompt user to connect
-        const accounts = await okxwallet.request({ method: 'eth_requestAccounts' });
-        if (accounts && accounts.length > 0) {
-            const selectedAddress = accounts[0];
 
-            wallet = window.okxwallet;
-            window.okxwallet.selectedAddress = selectedAddress;
-            web3.eth.defaultAccount = selectedAddress;
-            localStorage.setItem('connectedWallet', selectedAddress);
-            localStorage.setItem('lastWallet', 'okx');
-
-            const rawChainId = normalizeToHex(await okxwallet.request({ method: 'eth_chainId' }));
-            localStorage.setItem('lastChain', rawChainId);
-
-            detectNetworkChange(wallet);
-            switchToSepolia()
-
-            console.log("Detected Chain ID:", rawChainId);
-           hideWallets();
+        })
+        // 2) Get chain ID and update Web3
+        const chainId = await wallet.request({ method: 'eth_chainId' });
+        const matchedNetwork = chainIdLookup[chainId];
+        if (matchedNetwork?.rpcUrl) {
+            updateWeb3Provider(matchedNetwork.rpcUrl); // or new Web3(provider)
+            console.log(`Connected to network: ${matchedNetwork.name}`);
         } else {
-            throw new Error('No accounts found. Connection may have been rejected.');
+            console.warn("Unsupported or unknown network:", chainId);
+            // Optionally fall back to a default, or show a modal
         }
+
+        watchWalletChanges(wallet);
+
+
+        // 3) Save everything to localStorage
+        localStorage.setItem('lastWallet', 'okx');
+        localStorage.setItem('lastChain', chainId);
+        hideModal();
     } catch (error) {
-        if (error.code === 4001) {
-            console.error('User denied connection request.');
-            alert('Please approve the connection request to proceed.');
-        } else {
-            console.error('Error connecting wallet:', error);
-            alert('An error occurred while connecting to the wallet. Please try again.');
-            window.open('https://www.okx.com/download');
-        }
+        console.error('User denied account access or error occurred:', error);
     }
 }
-
-// 3) Coinbase
+// Function to connect to the user's Ethereum wallet
 async function connectCoinbase() {
+
     try {
-        const cbwallet = await coinbaseWallet.makeWeb3Provider(
-            'https://mainnet.infura.io/v3/' + ENV.RPC_NODE_KEY,
-            '1'
-        );
+        const cbwallet = await coinbaseWallet.makeWeb3Provider('https://mainnet.infura.io/v3/' + ENV.RPC_NODE_KEY, '1');
 
-        wallet = cbwallet;
-        const accounts = await cbwallet.request({ method: 'eth_requestAccounts' });
+        wallet = await cbwallet;
+        wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+            const accounts = response;
+            console.log(`User's address is ${accounts[0]}`);
+            selectAddress = accounts[0];
 
-        console.log(`User's address: ${accounts[0]}`);
-        selectAddress = accounts[0];
+            // Optionally, have the default account set for web3.js
+            web3.eth.defaultAccount = accounts[0];
+            localStorage.setItem('connectedWallet', selectAddress);
+            localStorage.setItem('lastWallet', 'Coinbase');
 
-        web3.eth.defaultAccount = accounts[0];
-        localStorage.setItem('connectedWallet', selectAddress);
-        localStorage.setItem('lastWallet', 'Coinbase');
 
+        })
         rawChainId = await normalizeToHex(wallet.getChainId());
+
+        const chainId = await wallet.request({ method: 'eth_chainId' });
+        const matchedNetwork = chainIdLookup[chainId];
+        if (matchedNetwork?.rpcUrl) {
+            updateWeb3Provider(matchedNetwork.rpcUrl); // or new Web3(provider)
+            console.log(`Connected to network: ${matchedNetwork.name}`);
+        } else {
+            console.warn("Unsupported or unknown network:", chainId);
+            // Optionally fall back to a default, or show a modal
+        }
+        watchWalletChanges(wallet);
         localStorage.setItem('lastChain', rawChainId);
-
-        detectNetworkChange(wallet);
-        switchToSepolia()
-
         console.log("Detected Chain ID:", rawChainId);
- 
-       hideWallets();
+
+        hideWallets();
+
+
     } catch (error) {
-        alert(error);
+        console.error('User denied account access or error occurred:', error);
+
+
     }
+
 }
 
 // 4) Phantom
 async function connectPhantomWallet() {
+    if (typeof window.ethereum === 'undefined') {
+        showModal();
+        return;
+    }
+
     try {
-        if (!phantom || !phantom.ethereum) {
-            throw new Error('Phantom Wallet not found. Please ensure it is installed and enabled.');
-        }
+        // 1) Connect to wallet
+        wallet = window.phantom.ethereum;
+        wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+            const accounts = response;
+            console.log(`User's address is ${accounts[0]}`);
+            console.log(response)
+            selectAddress = this.selectAddress
 
-        console.log('Phantom wallet object:', phantom.ethereum);
+            // Optionally, have the default account set for web3.js
+            web3.eth.defaultAccount = accounts[0]
+            localStorage.setItem('connectedWallet', accounts[0]);
 
-        const accounts = await phantom.ethereum.request({ method: 'eth_requestAccounts' });
-        if (accounts && accounts.length > 0) {
-            const selectedAddress = accounts[0];
 
-            wallet = window.phantom.ethereum;
-            window.phantom.ethereum.selectedAddress = selectedAddress;
-            web3.eth.defaultAccount = selectedAddress;
-            localStorage.setItem('connectedWallet', selectedAddress);
-            localStorage.setItem('lastWallet', 'Phantom');
-
-            const chainIdHex = normalizeToHex(
-                await phantom.ethereum.request({ method: 'eth_chainId' })
-            );
-            localStorage.setItem('lastChain', chainIdHex);
-
-            detectNetworkChange(wallet);
-            switchToSepolia()
-
-            console.log("Detected Chain ID:", chainIdHex);
-            hideWallets();
+        })
+        // 2) Get chain ID and update Web3
+        const chainId = await wallet.request({ method: 'eth_chainId' });
+        const matchedNetwork = chainIdLookup[chainId];
+        if (matchedNetwork?.rpcUrl) {
+            updateWeb3Provider(matchedNetwork.rpcUrl); // or new Web3(provider)
+            console.log(`Connected to network: ${matchedNetwork.name}`);
         } else {
-            throw new Error('No accounts found. Connection may have been rejected.');
+            console.warn("Unsupported or unknown network:", chainId);
+            // Optionally fall back to a default, or show a modal
         }
+
+        watchWalletChanges(wallet);
+
+
+        // 3) Save everything to localStorage
+        localStorage.setItem('lastWallet', 'Phantom');
+        localStorage.setItem('lastChain', chainId);
+
+        hideWallets();
     } catch (error) {
-        if (error.code === 4001) {
-            console.error('User denied connection request.');
-            alert('Please approve the connection request to proceed.');
-        } else {
-            console.error('Error connecting wallet:', error);
-            alert('An error occurred while connecting to the wallet. Please try again.');
-            window.open('https://phantom.app/');
-        }
+        console.error('User denied account access or error occurred:', error);
     }
 }
+
+
 
 // 5) Binance
+
 async function connectBinance() {
-    try {
-        if (!BinanceChain) {
-            throw new Error('Binance Wallet not found. Please ensure it is installed and enabled.');
+
+    if (typeof window.trustwallet !== 'undefined') {
+
+        try {
+            // 1) Connect to wallet
+            wallet = await window.trustwallet;
+            wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+                const accounts = response;
+                console.log(`User's address is ${accounts[0]}`);
+                selectAddress = accounts[0];
+
+                // Optionally, have the default account set for web3.js
+                web3.eth.defaultAccount = accounts[0];
+                localStorage.setItem('connectedWallet', selectAddress);
+                localStorage.setItem('lastWallet', 'Binance');
+
+
+            })
+            // 2) Get chain ID and update Web3
+            const chainId = await wallet.request({ method: 'eth_chainId' });
+
+            console.log(chainId)
+            const matchedNetwork = chainIdLookup[chainId];
+            if (matchedNetwork?.rpcUrl) {
+                updateWeb3Provider(matchedNetwork.rpcUrl); // or new Web3(provider)
+                console.log(`Connected to network: ${matchedNetwork.name}`);
+            } else {
+                console.warn("Unsupported or unknown network:", chainId);
+                // Optionally fall back to a default, or show a modal
+            }
+            watchWalletChanges(wallet);
+
+
+            // 3) Save everything to localStorage
+            localStorage.setItem('lastChain', chainId);
+
+            hideWallets();
+        } catch (error) {
+            console.error('User denied account access or error occurred:', error);
         }
 
-        if (typeof BinanceChain.request !== 'function') {
-            throw new Error('Binance Chain object is not ready or improperly initialized.');
-        }
 
-        const accounts = await BinanceChain.request({ method: 'eth_requestAccounts' });
-        if (accounts && accounts.length > 0) {
-            const selectedAddress = accounts[0];
-
-            wallet = BinanceChain;
-            BinanceChain.selectedAddress = selectedAddress;
-            localStorage.setItem('connectedWallet', selectedAddress);
-            localStorage.setItem('lastWallet', 'Binance');
-
-            const rawChainId = await BinanceChain.request({ method: 'eth_chainId' });
-            localStorage.setItem('lastChain', normalizeToHex(rawChainId));
-
-            detectNetworkChange(wallet);
-            switchToSepolia()
-
-            console.log("Detected Chain ID:", rawChainId);
-           hideWallets();
-        } else {
-            throw new Error('No accounts found. Connection may have been rejected.');
-        }
-    } catch (error) {
-        if (error.code === 4001) {
-            console.error('User denied connection request.');
-            alert('Please approve the connection request to proceed.');
-        } else {
-            console.error('Error connecting wallet:', error);
-            alert('An error occurred while connecting to the wallet. Please try again.');
-            window.open('https://www.binance.org/en/download');
-        }
     }
+
+
+
+
 }
 
-// 6) "Other" wallet
 async function connectWallet() {
     if (typeof window.ethereum !== 'undefined') {
         try {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            wallet = wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+                const accounts = response;
+                console.log(`User's address is ${accounts[0]}`);
+                console.log(response)
+                selectAddress = this.selectAddress
+
+                // Optionally, have the default account set for web3.js
+                web3.eth.defaultAccount = accounts[0]
+                localStorage.setItem('connectedWallet', accounts[0]);
+
+
+            })
             console.log('Connected account:', accounts[0]);
 
             // Store the connected account in localStorage
             localStorage.setItem('connectedAccount', accounts[0]);
 
-            hideWallets();
-            rawChainId = await window.ethereum.request({ method: "eth_chainId" });
+            const chainId = await wallet.request({ method: 'eth_chainId' });
+            const matchedNetwork = chainIdLookup[chainId];
+            if (matchedNetwork?.rpcUrl) {
+                updateWeb3Provider(matchedNetwork.rpcUrl); // or new Web3(provider)
+                console.log(`Connected to network: ${matchedNetwork.name}`);
+            } else {
+                console.warn("Unsupported or unknown network:", chainId);
+                // Optionally fall back to a default, or show a modal
+            }
+
+            watchWalletChanges(wallet);
+
             localStorage.setItem('lastChain', rawChainId);
             localStorage.setItem('lastWallet', 'other');
-
-            // If we get the provider from window.ethereum
-            wallet = window.ethereum;
-
             detectNetworkChange(wallet);
-            switchToSepolia()
+
+            hideWallets();
 
             console.log("Detected Chain ID:", rawChainId);
         } catch (error) {
             console.error('User denied account access or there was an issue:', error);
         }
     } else {
-        console.log('No Ethereum provider detected. Please install or enable a web3 provider.');
+        console.error('User denied account access or error occurred:', error);
     }
 }
 
-// Create a promise that resolves when the wallet is ready
-window.walletReady = new Promise(async (resolve) => {
-    try {
-        await checkWalletConnectionAndNetwork();
-        if (web3 && contractABI && contractAddress) {
-            contract = new web3.eth.Contract(contractABI, contractAddress);
-            console.log("Contract initialized:", contract);
-        }
-        resolve();
-    } catch (error) {
-        console.error("Error during wallet initialization:", error);
-        resolve(); // Resolve anyway to not block the page
+
+function getTokens(array) {
+    for (let i = 0; i < array.length; i++) {
+        // Function content here
     }
-});
+}
 
-// Add event listener for network changes
-window.ethereum?.on('chainChanged', async () => {
-    await checkWalletConnectionAndNetwork();
-});
-
-// Add event listener for account changes
-window.ethereum?.on('accountsChanged', async () => {
-    await checkWalletConnectionAndNetwork();
-});
 
 async function checkWalletConnectionAndNetwork() {
     if (typeof wallet == 'undefined') {
@@ -392,58 +458,456 @@ async function checkWalletConnectionAndNetwork() {
     }
 }
 
-updateWeb3Provider();
+// Helper function to check if wallet is available and connected
+async function isWalletConnected() {
+    // Check if ethereum provider exists
+    if (typeof window.ethereum !== 'undefined') {
+        try {
+            // Try to get accounts which will return empty array if not connected
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            return accounts && accounts.length > 0;
+        } catch (error) {
+            console.log("Error checking wallet connection:", error);
+            return false;
+        }
+    }
+    return false;
+}
+
+// Helper function to decide whether to show wrong network modal or wallet connect modal
+async function handleNetworkOrWalletIssue() {
+    if (await isWalletConnected()) {
+        // Wallet is connected but wrong network
+        console.log("Wallet is connected, showing wrong network modal");
+        wrongNetwork();
+    } else {
+        // Wallet is not connected, show connect wallet modal
+        console.log("Wallet is not connected, showing wallet connect modal");
+        showModal();
+    }
+}
 
 checkWalletConnectionAndNetwork().then(function () {
+    console.log("Wallet connection check completed");
     checkConnectedNetwork();
+    console.log("Network check completed");
+
+    // Add a try-catch to see if there are any errors during contract initialization
+    try {
+        console.log("Attempting to initialize contract with address:", contractAddress);
+        contract = new web3.eth.Contract(contractABI, contractAddress);
+        console.log("Contract initialization result:", contract);
+
+        // Use a more explicit check and log all intermediate results
+        const contractExists = contract !== null && contract !== undefined;
+        console.log("Contract exists:", contractExists);
+
+        const methodsExists = contractExists && contract.methods !== undefined;
+        console.log("Contract methods exist:", methodsExists);
+
+        // Verify contract has expected methods by attempting to access a specific method
+        // This is a more reliable check than just checking if methods property exists
+        let hasExpectedMethods = false;
+        if (methodsExists) {
+            try {
+                // Try to access a method that should exist on your contract
+                hasExpectedMethods = typeof contract.methods.getOwners === 'function' ||
+                    typeof contract.methods.deposit === 'function' ||
+                    Object.keys(contract.methods).length > 0;
+                console.log("Contract has expected methods:", hasExpectedMethods);
+            } catch (e) {
+                console.error("Error checking contract methods:", e);
+                hasExpectedMethods = false;
+            }
+        }
+
+        // If contract validation fails, check wallet connection and show appropriate modal
+        if (!contractExists || !methodsExists || !hasExpectedMethods) {
+            console.error("CONTRACT VALIDATION FAILED - checking wallet connection");
+            // Add a small delay to ensure this runs after page is fully loaded
+            setTimeout(function () {
+                handleNetworkOrWalletIssue();
+            }, 500);
+        } else {
+            console.log("Contract validation passed");
+        }
+    } catch (error) {
+        console.error("Error during contract initialization:", error);
+        setTimeout(function () {
+            handleNetworkOrWalletIssue();
+        }, 500);
+    }
+}).catch(function (error) {
+    console.error("Error in wallet connection promise chain:", error);
+    setTimeout(function () {
+        handleNetworkOrWalletIssue();
+    }, 500);
 });
 
-async function switchToSepolia() {
-    const sepoliaChainId = '0xaa36a7'; // Chain ID for Sepolia (in hexadecimal)
-    
-    if (typeof window.ethereum === 'undefined') {
-        console.error('MetaMask is not installed.');
-        return;
-    }
-    
-    try {
-        // Check the current network
-        const currentChainId = await wallet.request({ method: 'eth_chainId' });
-        if (currentChainId === sepoliaChainId) {
-            console.log('Already connected to Sepolia.');
-            return;
+// Add a backup check in case the async initialization is missed
+window.addEventListener('DOMContentLoaded', function () {
+    console.log("DOM loaded - checking contract initialization");
+    // Wait a bit to ensure the contract initialization has had time to run
+    setTimeout(function () {
+        if (!contract || !contract.methods) {
+            console.error("Contract not properly initialized on DOMContentLoaded");
+            handleNetworkOrWalletIssue();
         }
-        
-        // Request to switch to Sepolia
-        await wallet.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: sepoliaChainId }],
-        });
-        console.log('Switched to Sepolia network.');
-    } catch (error) {
-        // If the network is not added to MetaMask, you need to add it
-        if (error.code === 4902) {
-            try {
-                await wallet.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [{
-                        chainId: sepoliaChainId,
-                        chainName: 'Sepolia Testnet',
-                        nativeCurrency: {
-                            name: 'Ethereum',
-                            symbol: 'ETH',
-                            decimals: 18,
-                        },
-                        rpcUrls: [`https://sepolia.infura.io/v3/`+ ENV.RPC_NODE_KEY], 
-                        blockExplorerUrls: ['https://sepolia.etherscan.io'],
-                    }],
+    }, 2000);
+});
+
+// Function to handle wrong network errors
+function wrongNetwork() {
+    console.error("Error: You are connected to the wrong network or the contract is not deployed on this network.");
+
+    // Only show the modal if it's not already visible
+    const modal = document.getElementById('wrongNetworkModal');
+    if (modal) {
+        // Make sure Bootstrap is available
+        if (typeof bootstrap !== 'undefined') {
+            // Initialize the modal
+            const wrongNetworkModal = new bootstrap.Modal(modal);
+
+            // Show the modal
+            wrongNetworkModal.show();
+
+            // Add event listeners to the network options
+            const networkOptions = document.querySelectorAll('.network-option');
+            networkOptions.forEach(option => {
+                // Remove any existing event listeners to prevent duplicates
+                const newOption = option.cloneNode(true);
+                option.parentNode.replaceChild(newOption, option);
+
+                // Add click handler to each network option
+                newOption.addEventListener('click', async (event) => {
+                    try {
+                        const chainId = event.currentTarget.getAttribute('data-chain-id');
+                        const networkName = event.currentTarget.textContent.trim();
+
+                        console.log(`Attempting to switch to ${networkName} (Chain ID: ${chainId})`);
+                        
+                        // Save the selected chain ID to localStorage before doing anything else
+                        localStorage.setItem('lastChain', chainId);
+                        console.log(`Saved chain ID ${chainId} to localStorage`);
+
+                        // Hide the modal
+                        wrongNetworkModal.hide();
+
+                        // Show loading indicator
+                        const loadingMessage = document.createElement('div');
+                        loadingMessage.style.position = 'fixed';
+                        loadingMessage.style.top = '50%';
+                        loadingMessage.style.left = '50%';
+                        loadingMessage.style.transform = 'translate(-50%, -50%)';
+                        loadingMessage.style.padding = '20px';
+                        loadingMessage.style.background = 'rgba(0, 0, 0, 0.7)';
+                        loadingMessage.style.color = 'white';
+                        loadingMessage.style.borderRadius = '5px';
+                        loadingMessage.style.zIndex = '9999';
+                        loadingMessage.textContent = `Switching to ${networkName}...`;
+                        document.body.appendChild(loadingMessage);
+
+                        // Try to switch to the selected network
+                        if (window.ethereum) {
+                            try {
+                                // Request network switch
+                                await window.ethereum.request({
+                                    method: 'wallet_switchEthereumChain',
+                                    params: [{ chainId: chainId }]
+                                });
+
+                                // Success - reload the page
+                                console.log(`Successfully switched to ${networkName}`);
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 1000);
+                            } catch (switchError) {
+                                // This error code indicates that the chain has not been added to MetaMask
+                                if (switchError.code === 4902) {
+                                    try {
+                                        // Get network details for adding
+                                        const networkDetails = getNetworkDetailsForChainId(chainId);
+
+                                        if (networkDetails) {
+                                            // Add the network
+                                            await window.ethereum.request({
+                                                method: 'wallet_addEthereumChain',
+                                                params: [networkDetails]
+                                            });
+
+                                            // Success - reload the page
+                                            console.log(`Successfully added and switched to ${networkName}`);
+                                            setTimeout(() => {
+                                                window.location.reload();
+                                            }, 1000);
+                                        } else {
+                                            throw new Error(`Network details not found for chain ID ${chainId}`);
+                                        }
+                                    } catch (addError) {
+                                        console.error(`Error adding the network: ${addError.message}`);
+                                        document.body.removeChild(loadingMessage);
+                                        alert(`Error adding ${networkName}: ${addError.message}`);
+                                    }
+                                } else {
+                                    console.error(`Error switching networks: ${switchError.message}`);
+                                    document.body.removeChild(loadingMessage);
+                                    alert(`Error switching to ${networkName}: ${switchError.message}`);
+                                }
+                            }
+                        } else {
+                            document.body.removeChild(loadingMessage);
+                            alert('No Ethereum wallet found. Please install MetaMask or another compatible wallet.');
+                        }
+                    } catch (error) {
+                        console.error('Error in network selection:', error);
+                        if (document.body.contains(loadingMessage)) {
+                            document.body.removeChild(loadingMessage);
+                        }
+                        alert(`An error occurred: ${error.message}`);
+                    }
                 });
-                console.log('Sepolia network added and switched.');
-            } catch (addError) {
-                console.error('Failed to add Sepolia network:', addError);
-            }
+            });
         } else {
-            console.error('Error switching to Sepolia:', error);
+            // Fallback if Bootstrap is not available
+            alert("You are connected to the wrong network. Please switch to a supported network in your wallet.");
         }
+    } else {
+        // Modal element not found - fallback to alert
+        alert("You are connected to the wrong network. Please switch to a supported network in your wallet.");
     }
+}
+
+// Function to prompt user to select and switch to a supported network
+async function switchNetwork() {
+    try {
+        // Create a modal for network selection
+        const modalHtml = `
+            <div class="modal fade" id="networkSelectionModal" tabindex="-1" aria-labelledby="networkSelectionModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="networkSelectionModalLabel">Select Network</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Please select one of the supported networks:</p>
+                            <div class="list-group network-list">
+                                <button type="button" class="list-group-item list-group-item-action network-item" data-chain-id="0x1">
+                                    Ethereum Mainnet
+                                </button>
+                                <button type="button" class="list-group-item list-group-item-action network-item" data-chain-id="0xaa36a7">
+                                    Sepolia Testnet
+                                </button>
+                                <button type="button" class="list-group-item list-group-item-action network-item" data-chain-id="0x89">
+                                    Polygon
+                                </button>
+                                <button type="button" class="list-group-item list-group-item-action network-item" data-chain-id="0xa">
+                                    Optimism
+                                </button>
+                                <button type="button" class="list-group-item list-group-item-action network-item" data-chain-id="0x2105">
+                                    Base
+                                </button>
+                                <button type="button" class="list-group-item list-group-item-action network-item" data-chain-id="0x38">
+                                    BNB Chain
+                                </button>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add the modal to the document if it doesn't exist
+        let modalElement = document.getElementById('networkSelectionModal');
+        if (!modalElement) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = modalHtml;
+            document.body.appendChild(tempDiv.firstElementChild);
+            modalElement = document.getElementById('networkSelectionModal');
+        }
+
+        // Initialize and show the modal
+        const networkModal = new bootstrap.Modal(modalElement);
+        networkModal.show();
+
+        // Add event listeners to network items
+        const networkItems = document.querySelectorAll('.network-item');
+        networkItems.forEach(item => {
+            item.addEventListener('click', async function () {
+                const chainId = this.getAttribute('data-chain-id');
+                const networkName = this.textContent.trim();
+
+                try {
+                    // Save the selected chain ID to localStorage before doing anything else
+                    localStorage.setItem('lastChain', chainId);
+                    console.log(`Saved chain ID ${chainId} to localStorage`);
+
+                    // Hide the modal
+                    networkModal.hide();
+
+                    // Show loading indicator
+                    const loadingMessage = document.createElement('div');
+                    loadingMessage.style.position = 'fixed';
+                    loadingMessage.style.top = '50%';
+                    loadingMessage.style.left = '50%';
+                    loadingMessage.style.transform = 'translate(-50%, -50%)';
+                    loadingMessage.style.padding = '20px';
+                    loadingMessage.style.background = 'rgba(0, 0, 0, 0.7)';
+                    loadingMessage.style.color = 'white';
+                    loadingMessage.style.borderRadius = '5px';
+                    loadingMessage.style.zIndex = '9999';
+                    loadingMessage.textContent = `Switching to ${networkName}...`;
+                    document.body.appendChild(loadingMessage);
+
+                    console.log(`Attempting to switch to ${networkName} (Chain ID: ${chainId})`);
+
+                    // Try to switch to the selected network
+                    if (window.ethereum) {
+                        try {
+                            // Request network switch
+                            await window.ethereum.request({
+                                method: 'wallet_switchEthereumChain',
+                                params: [{ chainId: chainId }]
+                            });
+
+                            // Success - reload the page
+                            console.log(`Successfully switched to ${networkName}`);
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        } catch (switchError) {
+                            // This error code indicates that the chain has not been added to MetaMask
+                            if (switchError.code === 4902) {
+                                try {
+                                    // Get network details for adding
+                                    const networkDetails = getNetworkDetailsForChainId(chainId);
+
+                                    if (networkDetails) {
+                                        // Add the network
+                                        await window.ethereum.request({
+                                            method: 'wallet_addEthereumChain',
+                                            params: [networkDetails]
+                                        });
+
+                                        // Success - reload the page
+                                        console.log(`Successfully added and switched to ${networkName}`);
+                                        setTimeout(() => {
+                                            window.location.reload();
+                                        }, 1000);
+                                    } else {
+                                        throw new Error(`Network details not found for chain ID ${chainId}`);
+                                    }
+                                } catch (addError) {
+                                    console.error(`Error adding the network: ${addError.message}`);
+                                    document.body.removeChild(loadingMessage);
+                                    alert(`Error adding ${networkName}: ${addError.message}`);
+                                }
+                            } else {
+                                console.error(`Error switching networks: ${switchError.message}`);
+                                document.body.removeChild(loadingMessage);
+                                alert(`Error switching to ${networkName}: ${switchError.message}`);
+                            }
+                        }
+                    } else {
+                        document.body.removeChild(loadingMessage);
+                        alert('No Ethereum wallet found. Please install MetaMask or another compatible wallet.');
+                    }
+                } catch (error) {
+                    console.error('Error in network selection:', error);
+                    if (document.body.contains(loadingMessage)) {
+                        document.body.removeChild(loadingMessage);
+                    }
+                    alert(`An error occurred: ${error.message}`);
+                }
+            });
+        });
+
+    } catch (error) {
+        console.error('Error showing network selection:', error);
+        alert(`An error occurred while trying to show network selection: ${error.message}`);
+    }
+}
+
+// Helper function to get network details for adding to wallet
+function getNetworkDetailsForChainId(chainId) {
+    // Network details by chain ID
+    const networkDetails = {
+        // Ethereum Mainnet
+        '0x1': {
+            chainId: '0x1',
+            chainName: 'Ethereum Mainnet',
+            nativeCurrency: {
+                name: 'Ether',
+                symbol: 'ETH',
+                decimals: 18
+            },
+            rpcUrls: ['https://mainnet.infura.io/v3/'],
+            blockExplorerUrls: ['https://etherscan.io']
+        },
+        // Sepolia Testnet
+        '0xaa36a7': {
+            chainId: '0xaa36a7',
+            chainName: 'Sepolia Testnet',
+            nativeCurrency: {
+                name: 'Sepolia Ether',
+                symbol: 'ETH',
+                decimals: 18
+            },
+            rpcUrls: ['https://sepolia.infura.io/v3/'],
+            blockExplorerUrls: ['https://sepolia.etherscan.io']
+        },
+        // Polygon
+        '0x89': {
+            chainId: '0x89',
+            chainName: 'Polygon Mainnet',
+            nativeCurrency: {
+                name: 'MATIC',
+                symbol: 'MATIC',
+                decimals: 18
+            },
+            rpcUrls: ['https://polygon-rpc.com'],
+            blockExplorerUrls: ['https://polygonscan.com']
+        },
+        // Optimism
+        '0xa': {
+            chainId: '0xa',
+            chainName: 'Optimism',
+            nativeCurrency: {
+                name: 'Ether',
+                symbol: 'ETH',
+                decimals: 18
+            },
+            rpcUrls: ['https://mainnet.optimism.io'],
+            blockExplorerUrls: ['https://optimistic.etherscan.io']
+        },
+        // Base
+        '0x2105': {
+            chainId: '0x2105',
+            chainName: 'Base',
+            nativeCurrency: {
+                name: 'Ether',
+                symbol: 'ETH',
+                decimals: 18
+            },
+            rpcUrls: ['https://mainnet.base.org'],
+            blockExplorerUrls: ['https://basescan.org']
+        },
+        // BNB Chain
+        '0x38': {
+            chainId: '0x38',
+            chainName: 'BNB Smart Chain',
+            nativeCurrency: {
+                name: 'BNB',
+                symbol: 'BNB',
+                decimals: 18
+            },
+            rpcUrls: ['https://bsc-dataseed.binance.org'],
+            blockExplorerUrls: ['https://bscscan.com']
+        }
+    };
+
+    return networkDetails[chainId];
 }

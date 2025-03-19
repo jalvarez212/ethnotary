@@ -15,11 +15,13 @@
 	<link rel="shortcut icon" href="../assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-	<script src="../key.js?cachebuster=1"></script>
+	<script src="../keys.js?cachebuster=1"></script>
 	<!--end::Fonts-->
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
 	<link href="../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="../assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
 	
 	<style>
 		@keyframes pulse {
@@ -104,19 +106,38 @@ function showConnect() {
 
 	function hideModal() {
 		var modalElement = document.getElementById('kt_modal_signup');
-		var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
+		var modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);; // Get the modal instance
 		if (modal) {
 			modal.hide(); // Hide the modal
 		}
 	}
 
 	function hideWallets() {
-		var modalElement = document.getElementById('kt_modal_wallet');
-		var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
-		if (modal) {
-			modal.hide(); // Hide the modal
+		// Check if DOM is fully loaded
+		if (document.readyState === 'loading') {
+			// If DOM is still loading, add an event listener to execute when DOM is ready
+			document.addEventListener('DOMContentLoaded', function() {
+				hideWalletsExecution();
+			});
+		} else {
+			// If DOM is already loaded, execute immediately
+			hideWalletsExecution();
 		}
-		updateWalletIcon(); // Update the wallet icon when wallet is connected
+	}
+
+	// Helper function that contains the actual implementation
+	function hideWalletsExecution() {
+		var modalElement = document.getElementById('kt_modal_wallet');
+		if (modalElement) {
+			var modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement); // Get the modal instance
+			if (modal) {
+				modal.hide(); // Hide the modal
+			}
+			// Only call updateWalletIcon if it exists
+			if (typeof updateWalletIcon === 'function') {
+				updateWalletIcon(); // Update the wallet icon when wallet is connected
+			}
+		}
 	}
 
 	//load contract
@@ -170,6 +191,16 @@ function showConnect() {
 
     document.addEventListener('click', handleFirstClick);
 });
+
+function requestError() {
+        var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        errorModal.show();
+    }
+
+	function wrongNetwork() {
+        var wrongNetwork = new bootstrap.Modal(document.getElementById('wrongNetworkModal'));
+        wrongNetwork.show();
+    }
 
 
 
@@ -516,8 +547,8 @@ function showConnect() {
 									data-kt-menu-placement="bottom-end" id="kt_header_user_menu_toggle">
 									<!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
 									<span class="svg-icon svg-icon-1 svg-icon-dark">
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-											viewBox="0 0 24 24" fill="none">
+										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+											fill="none">
 											<path opacity="0.3"
 												d="M3.20001 5.91897L16.9 3.01895C17.4 2.91895 18 3.219 18.1 3.819L19.2 9.01895L3.20001 5.91897Z"
 												fill="grey" />
@@ -533,7 +564,7 @@ function showConnect() {
 
 
 								</div>
-								<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold w-300px"
+								<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold w-300px w-md-300px"
 									data-kt-menu="true">
 									<div class="menu-content fw-bold d-flex align-items-center bgi-no-repeat bgi-position-y-top rounded-top"
 										style="background-image:url('../assets/media//misc/dropdown-header-bg.jpg')">
@@ -633,8 +664,8 @@ function showConnect() {
 									<!--begin::Svg Icon | path: icons/duotune/communication/com013.svg-->
 									<a href="./views/accountsettings.html">
 										<span class="svg-icon svg-icon-1 svg-icon-dark">
-											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-												viewBox="0 0 24 24" fill="none">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+												fill="none">
 												<path
 													d="M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z"
 													fill="black" />
@@ -658,14 +689,14 @@ function showConnect() {
 									<a href="../../views/wizard.html">
 										<span class="svg-icon svg-icon-1 svg-icon-dark">
 											<!--begin::Svg Icon | path: assets/media/icons/duotune/files/fil005.svg-->
-											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-												viewBox="0 0 24 24" fill="none">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+												fill="none">
 												<path opacity="0.3"
 													d="M19 22H5C4.4 22 4 21.6 4 21V3C4 2.4 4.4 2 5 2H14L20 8V21C20 21.6 19.6 22 19 22ZM16 13H13V10C13 9.4 12.6 9 12 9C11.4 9 11 9.4 11 10V13H8C7.4 13 7 13.4 7 14C7 14.6 7.4 15 8 15H11V18C11 18.6 11.4 19 12 19C12.6 19 13 18.6 13 18V15H16C16.6 15 17 14.6 17 14C17 13.4 16.6 13 16 13Z"
 													fill="black" />
 												<path d="M15 8H20L14 2V7C14 7.6 14.4 8 15 8Z" fill="black" />
 											</svg></span>
-										<!--end::Svg Icon-->
+											<!--end::Svg Icon-->
 									</a>
 									<!--end::Svg Icon-->
 								</div>
@@ -836,9 +867,8 @@ function showConnect() {
 																	data-bs-dismiss="modal" aria-label="Close">
 																	<!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
 																	<span class="svg-icon svg-icon-1">
-																		<svg xmlns="http://www.w3.org/2000/svg"
-																			width="24" height="24" viewBox="0 0 24 24"
-																			fill="none">
+																		<svg xmlns="http://www.w3.org/2000/svg" width="24"
+																			height="24" viewBox="0 0 24 24" fill="none">
 																			<rect opacity="0.5" x="6" y="17.3137"
 																				width="16" height="2" rx="1"
 																				transform="rotate(-45 6 17.3137)"
@@ -950,9 +980,8 @@ function showConnect() {
 																	data-bs-dismiss="modal" aria-label="Close">
 																	<!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
 																	<span class="svg-icon svg-icon-1">
-																		<svg xmlns="http://www.w3.org/2000/svg"
-																			width="24" height="24" viewBox="0 0 24 24"
-																			fill="none">
+																		<svg xmlns="http://www.w3.org/2000/svg" width="24"
+																			height="24" viewBox="0 0 24 24" fill="none">
 																			<rect opacity="0.5" x="6" y="17.3137"
 																				width="16" height="2" rx="1"
 																				transform="rotate(-45 6 17.3137)"
@@ -1069,9 +1098,8 @@ function showConnect() {
 																	data-bs-dismiss="modal" aria-label="Close">
 																	<!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
 																	<span class="svg-icon svg-icon-1">
-																		<svg xmlns="http://www.w3.org/2000/svg"
-																			width="24" height="24" viewBox="0 0 24 24"
-																			fill="none">
+																		<svg xmlns="http://www.w3.org/2000/svg" width="24"
+																			height="24" viewBox="0 0 24 24" fill="none">
 																			<rect opacity="0.5" x="6" y="17.3137"
 																				width="16" height="2" rx="1"
 																				transform="rotate(-45 6 17.3137)"
@@ -1233,7 +1261,6 @@ function showConnect() {
 													</div>
 												</div>
 												<!--end::Row-->
-
 											</div>
 											<!--end::Stats-->
 										</div>
@@ -1834,6 +1861,11 @@ function showConnect() {
 		document.getElementById('success-animation').style.display = 'block';
 	}
 
+	function showRevokeAnimation() {
+		document.getElementById('processing-animation').style.display = 'none';
+		document.getElementById('revoke-animation').style.display = 'block';
+	}
+
 	// Function to hide animations
 	function hideAnimations() {
 		document.getElementById('animation-container').style.display = 'none';
@@ -2015,7 +2047,100 @@ function showConnect() {
 	  // Set an interval to check wallet status periodically (every 2 seconds)
 	  setInterval(updateWalletConnectionStatus, 2000);
 	});
+
+
+	function transactionFailed() {
+        var transactionModal = new bootstrap.Modal(document.getElementById('transactionFailedModal'));
+        transactionModal.show();
+    }
+
+    function reloadWithDelay() {
+        var reloadBtn = document.getElementById("reloadBtn");
+
+        // Change button text to loading state
+        reloadBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Reloading...`;
+        reloadBtn.disabled = true; // Prevent multiple clicks
+
+        // Wait 2 seconds before reloading the page
+        setTimeout(() => {
+            location.reload();
+        }, 2000);
+    }
 	</script>
+
+<!-- Start Error Handeling Modal -->
+<div class="modal fade" tabindex="-1" id="errorModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">Something Went Wrong</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>The network experiencing an issue processing your request. Please wait a moment and try reloading the page.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="reloadBtn" onclick="reloadWithDelay()">Reload</button>
+				</div>
+        </div>
+    </div>
+</div> 
+<div class="modal fade" tabindex="-1" id="transactionFailedModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">Transaction Failed</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>Uunable to process your transaction. Please check your connection and try again.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="wrongNetworkModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-warning">Wrong Network Detected</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>You are connected to the wrong network. Please select one of the supported networks below:</p>
+                <div class="list-group mt-3">
+                    <button type="button" class="list-group-item list-group-item-action network-option" data-chain-id="0x1">
+                        Ethereum Mainnet
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action network-option" data-chain-id="0xaa36a7">
+                        Sepolia Testnet
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action network-option" data-chain-id="0x89">
+                        Polygon
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action network-option" data-chain-id="0xa">
+                        Optimism
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action network-option" data-chain-id="0x2105">
+                        Base
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action network-option" data-chain-id="0x38">
+                        BNB Chain
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Error Handeling Modal -->
 
 <div id="animation-container" style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; display: none;">
 	<dotlottie-player id="processing-animation"

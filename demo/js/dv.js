@@ -56,10 +56,12 @@ async function getEventLogs(eventName) {
             toBlock: 'latest'
         });
     } catch (error) {
+
         console.error(`Error fetching ${eventName} logs:`, error);
         throw error;
+
     }
-}
+} 
 
 
 async function getTransactionDetailsFromLogs(eventLogs, container) {
@@ -223,6 +225,7 @@ async function processEvents(eventNames, container) {
 
     } catch (error) {
         console.error('Error in processing events:', error);
+        
     }
 }
 

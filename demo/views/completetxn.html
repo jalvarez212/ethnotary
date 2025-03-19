@@ -14,7 +14,7 @@
 	<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="pragma" content="no-cache" />
 	<link rel="canonical" href="https://preview.keenthemes.com/start" />
-	<script src="../key.js?cachebuster=1"></script>
+	<script src="../keys.js?cachebuster=1"></script>
 
 	<link rel="shortcut icon" href="../assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
@@ -26,6 +26,8 @@
 	<script src="../assets/js/bundle.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
 	<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
 		<!--begin::Global Stylesheets Bundle(used by all pages)-->
 		<link href="../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 		<link href="../assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
@@ -74,7 +76,7 @@
 
 	function hideWallets() {
 		var modalElement = document.getElementById('kt_modal_wallet');
-		var modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
+		var modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);; // Get the modal instance
 		if (modal) {
 			modal.hide(); // Hide the modal
 		}
@@ -1404,6 +1406,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 	function updateWalletIcon() {
+		// Update icon container if it exists
 		const iconContainer = document.querySelector('#kt_header_user_menu_toggle .svg-icon');
 		if (iconContainer) {
 			iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24">
@@ -1411,19 +1414,19 @@ document.addEventListener('DOMContentLoaded', function() {
 			<path class="permanent" d="M14.8563 9.1903C15.0606 8.94984 15.3771 8.9385 15.6175 9.14289C15.858 9.34728 15.8229 9.66433 15.6185 9.9048L11.863 14.6558C11.6554 14.9001 11.2876 14.9258 11.048 14.7128L8.47656 12.4271C8.24068 12.2174 8.21944 11.8563 8.42911 11.6204C8.63877 11.3845 8.99996 11.3633 9.23583 11.5729L11.3706 13.4705L14.8563 9.1903Z" fill="white"/>
 		</svg>`;
 		
-		// Add pulse animation
-		iconContainer.classList.add('pulse-animation');
-		setTimeout(() => {
-			iconContainer.classList.remove('pulse-animation');
-		}, 1000);
-	}
+			// Add pulse animation only if iconContainer exists
+			iconContainer.classList.add('pulse-animation');
+			setTimeout(() => {
+				iconContainer.classList.remove('pulse-animation');
+			}, 1000);
+		}
 
-	// Hide the wallet menu if it exists
-	const walletMenu = document.querySelector('.menu.menu-sub.menu-sub-dropdown.menu-column.menu-rounded.menu-gray-600.menu-state-bg-light-primary');
-	if (walletMenu) {
-		walletMenu.style.display = 'none';
+		// Hide the wallet menu if it exists
+		const walletMenu = document.querySelector('.menu.menu-sub.menu-sub-dropdown.menu-column.menu-rounded.menu-gray-600.menu-state-bg-light-primary');
+		if (walletMenu) {
+			walletMenu.style.display = 'none';
+		}
 	}
-}
 </script>
 	<!-- <script src="assets/js/custom/txn.js"></script> -->
 
