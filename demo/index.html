@@ -15,7 +15,7 @@
 	<link rel="shortcut icon" href="../assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-	<script src="../key.js?cachebuster=1"></script>
+	<script src="../keys.js?cachebuster=1"></script>
 	<!--end::Fonts-->
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
 	<link href="../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
@@ -418,8 +418,8 @@ function requestError() {
 										data-bs-toggle="tab" data-bs-target="#kt_aside_tab_1" role="tab">
 										<!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
 										<span class="svg-icon svg-icon-2 svg-icon-toggle-1">
-											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-												viewBox="0 0 24 24" fill="none">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+												fill="none">
 												<rect x="2" y="2" width="9" height="9" rx="2" fill="black" />
 												<rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2"
 													fill="black" />
@@ -578,7 +578,7 @@ function requestError() {
 								</div>
 								<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold w-300px w-md-300px"
 									data-kt-menu="true">
-									<div class="menu-content fw-bold d-flex align-items-center bgi-no-repeat bgi-position-y-top rounded-top"
+									<div class="menu-content fw-bold d-flex align-items-center flex-column bgi-no-repeat bgi-position-y-top rounded-top"
 										style="background-image:url('../assets/media//misc/dropdown-header-bg.jpg')">
 										<div class="symbol symbol-45px mx-5 py-5">
 											<span class="symbol-label align-items-end">
@@ -825,7 +825,7 @@ function requestError() {
 																<svg xmlns="http://www.w3.org/2000/svg" width="24"
 																	height="24" viewBox="0 0 24 24" fill="none">
 																	<path opacity="0.3"
-																		d="M4.05424 15.1982C8.34524 7.76818 13.5782 3.26318 20.9282 2.01418C21.0729 1.98837 21.2216 1.99789 21.3618 2.04193C21.502 2.08597 21.6294 2.16323 21.7333 2.26712C21.8372 2.37101 21.9144 2.49846 21.9585 2.63863C22.0025 2.7788 22.012 2.92754 21.9862 3.07218C20.7372 10.4222 16.2322 15.6552 8.80224 19.9462L4.05424 15.1982ZM8.80023 19.9442L10.6072 21.7512C10.6994 21.8434 10.8117 21.9129 10.9352 21.9545C11.0588 21.996 11.1903 22.0083 11.3195 21.9905C11.4486 21.9727 11.5718 21.9252 11.6795 21.8517C11.7872 21.7783 11.8765 21.6809 11.9402 21.5672L15.7092 14.8442C13.6269 16.8245 11.3061 18.5377 8.80023 19.9442ZM7.04023 18.1832L12.5832 12.6402C12.7381 12.4759 12.8228 12.2577 12.8195 12.032C12.8161 11.8063 12.725 11.5907 12.5653 11.4311C12.4057 11.2714 12.1901 11.1803 11.9644 11.1769C11.7387 11.1736 11.5205 11.2583 11.3562 11.4132L5.81323 16.9562L7.04023 18.1832Z"
+																		d="M4.05424 15.1982C8.34524 7.76818 13.5782 3.26318 20.9282 2.01418C21.0729 1.98837 21.2216 1.99789 21.3618 2.04193C21.502 2.08597 21.6294 2.16323 21.7333 2.26712C21.8372 2.37101 21.9144 2.49846 21.9585 2.63863C22.0025 2.7788 22 2.92754 21.9862 3.07218C20.7372 10.4222 16.2322 15.6552 8.80224 19.9462L4.05424 15.1982ZM8.80023 19.9442L10.6072 21.7512C10.6994 21.8434 10.8117 21.9129 10.9352 21.9545C11.0588 21.996 11.1903 22.0083 11.3195 21.9905C11.4486 21.9727 11.5718 21.9252 11.6795 21.8517C11.7872 21.7783 11.8765 21.6809 11.9402 21.5672L15.7092 14.8442C13.6269 16.8245 11.3061 18.5377 8.80023 19.9442ZM7.04023 18.1832L12.5832 12.6402C12.7381 12.4759 12.8228 12.2577 12.8195 12.032C12.8161 11.8063 12.725 11.5907 12.5653 11.4311C12.4057 11.2714 12.1901 11.1803 11.9644 11.1769C11.7387 11.1736 11.5205 11.2583 11.3562 11.4132L5.81323 16.9562L7.04023 18.1832Z"
 																		fill="black" />
 																</svg>
 															</span>
@@ -1239,8 +1239,7 @@ function requestError() {
 																	<path opacity="0.3"
 																		d="M19 22H5C4.4 22 4 21.6 4 21V3C4 2.4 4.4 2 5 2H14L20 8V21C20 21.6 19.6 22 19 22ZM16 13H13V10C13 9.4 12.6 9 12 9C11.4 9 11 9.4 11 10V13H8C7.4 13 7 13.4 7 14C7 14.6 7.4 15 8 15H11V18C11 18.6 11.4 19 12 19C12.6 19 13 18.6 13 18V15H16C16.6 15 17 14.6 17 14C17 13.4 16.6 13 16 13Z"
 																		fill="black" />
-																	<path d="M15 8H20L14 2V7C14 7.6 14.4 8 15 8Z"
-																		fill="black" />
+																	<path d="M15 8H20L14 2V7C14 7.6 14.4 8 15 8Z" fill="black" />
 																</svg>
 															</span>
 															<!--end::Svg Icon-->
@@ -1860,28 +1859,8 @@ function requestError() {
 		}
 	}
 
-	// Function to start processing animation
-	function startProcessingAnimation() {
-		document.getElementById('animation-container').style.display = 'block';
-		document.getElementById('processing-animation').style.display = 'block';
-		document.getElementById('success-animation').style.display = 'none';
-	}
-
-	// Function to show success animation
-	function showSuccessAnimation() {
-		document.getElementById('processing-animation').style.display = 'none';
-		document.getElementById('success-animation').style.display = 'block';
-	}
-
-	function showRevokeAnimation() {
-		document.getElementById('processing-animation').style.display = 'none';
-		document.getElementById('revoke-animation').style.display = 'block';
-	}
-
-	// Function to hide animations
-	function hideAnimations() {
-		document.getElementById('animation-container').style.display = 'none';
-	}
+	// Animation functions (startProcessingAnimation, showSuccessAnimation, showRevokeAnimation, hideAnimations)
+	// have been moved to txn.js and attached to the window object to make them globally accessible
 
 	async function getAllTokenIdsOwnedByAddress(tokenAdd, ownerAddress) {
 		try {
@@ -2032,6 +2011,14 @@ function requestError() {
 	function closeModal(modal) {
 		// Use Bootstrap's modal method to hide the modal
 		$(modal).modal('hide');
+		
+		// Manually remove the modal backdrop
+		$('.modal-backdrop').remove();
+		
+		// Reset body classes and styles
+		$('body').removeClass('modal-open');
+		$('body').css('overflow', '');
+		$('body').css('paddingRight', '');
 	}
 </script>
 
@@ -2147,6 +2134,7 @@ function requestError() {
                 </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="switchNetworkBtn">Switch Network</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
@@ -2165,6 +2153,7 @@ function requestError() {
 		speed="1"
 		style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
 		loop autoplay></dotlottie-player>
+	<dotlottie-player id="revoke-animation" src="https://lottie.host/59528ec6-b14b-4a39-961a-78a8321a632a/Q3B9vsaZyM.lottie" background="transparent" speed="1" style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;" loop autoplay></dotlottie-player>
 </div>
 
 <!--end::Body-->

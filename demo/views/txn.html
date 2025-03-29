@@ -17,7 +17,7 @@
 	<link rel="shortcut icon" href="../assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-	<script src="../../key.js?cachebuster=1"></script>
+	<script src="../../keys.js?cachebuster=1"></script>
 	<!--end::Fonts-->
 	<style>
 		@keyframes pulse {
@@ -526,7 +526,7 @@
 							<!--begin::User-->
 							<div class="ms-1 ms-lg-6">
 								<!--begin::Toggle-->
-								<div class="btn btn-icon btn-sm btn-active-light-primary">
+								<div class="btn btn-icon btn-sm btn-active-bg-accent">
 									<!--begin::Svg Icon | path: icons/duotune/communication/com013.svg-->
 									<a href="./accountsettings.html">
 										<span class="svg-icon svg-icon-1 svg-icon-dark">
@@ -1158,10 +1158,10 @@ function showModal() {
 								.then((txHash) => {
 									console.log('Transaction Hash:', txHash);
 									startProcessingAnimation();
-									setTimeout(showRevokeAnimation, 6000);
+									setTimeout(showSuccessAnimation, 6000);
 
 									// Hide animations after a short delay (optional)
-									setTimeout(hideAnimations, 7500);
+									setTimeout(hideAnimations, 8500);
 
 								})
 								.catch((error) => {

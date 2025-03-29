@@ -1,3 +1,108 @@
+// Define animation functions globally
+window.startProcessingAnimation = function() {
+	console.log('startProcessingAnimation called');
+	const animContainer = document.getElementById('animation-container');
+	const processingAnim = document.getElementById('processing-animation');
+	const successAnim = document.getElementById('success-animation');
+	
+	console.log('Animation elements found?', {
+		animContainer: !!animContainer,
+		processingAnim: !!processingAnim,
+		successAnim: !!successAnim
+	});
+	
+	// Immediately remove any existing modal backdrops
+	window.removeModalBackdrops();
+	
+	if (animContainer && processingAnim && successAnim) {
+		// Set custom z-index to ensure animation displays on top without modal backdrop
+		animContainer.style.zIndex = '9999';
+		animContainer.style.display = 'block';
+		processingAnim.style.display = 'block';
+		successAnim.style.display = 'none';
+		console.log('Processing animation should now be visible');
+	} else {
+		console.error('Animation elements not found in the DOM');
+	}
+};
+
+window.showSuccessAnimation = function() {
+	console.log('showSuccessAnimation called');
+	const processingAnim = document.getElementById('processing-animation');
+	const successAnim = document.getElementById('success-animation');
+	
+	console.log('Animation elements found?', {
+		processingAnim: !!processingAnim,
+		successAnim: !!successAnim
+	});
+	
+	// Immediately remove any existing modal backdrops
+	window.removeModalBackdrops();
+	
+	if (processingAnim && successAnim) {
+		processingAnim.style.display = 'none';
+		successAnim.style.display = 'block';
+		console.log('Success animation should now be visible');
+	} else {
+		console.error('Animation elements not found in the DOM');
+	}
+};
+
+window.showRevokeAnimation = function() {
+	console.log('showRevokeAnimation called');
+	const processingAnim = document.getElementById('processing-animation');
+	const revokeAnim = document.getElementById('revoke-animation');
+	
+	console.log('Animation elements found?', {
+		processingAnim: !!processingAnim,
+		revokeAnim: !!revokeAnim
+	});
+	
+	// Immediately remove any existing modal backdrops
+	window.removeModalBackdrops();
+	
+	if (processingAnim && revokeAnim) {
+		processingAnim.style.display = 'none';
+		revokeAnim.style.display = 'block';
+		console.log('Revoke animation should now be visible');
+	} else {
+		console.error('Animation elements not found in the DOM');
+	}
+};
+
+window.hideAnimations = function() {
+	console.log('hideAnimations called');
+	const animContainer = document.getElementById('animation-container');
+	
+	console.log('Animation container found?', !!animContainer);
+	
+	// Remove any modal backdrops
+	window.removeModalBackdrops();
+	
+	if (animContainer) {
+		animContainer.style.display = 'none';
+		console.log('Animations should now be hidden');
+	} else {
+		console.error('Animation container not found in the DOM');
+	}
+};
+
+// Make removeModalBackdrops globally accessible
+window.removeModalBackdrops = function() {
+	console.log('removeModalBackdrops called');
+	// Remove any modal backdrops that might be lingering
+	const modalBackdrops = document.querySelectorAll('.modal-backdrop');
+	console.log('Found backdrop elements:', modalBackdrops.length);
+	modalBackdrops.forEach(backdrop => {
+		backdrop.remove();
+	});
+	
+	// Ensure body doesn't have modal-open class
+	document.body.classList.remove('modal-open');
+	document.body.style.overflow = '';
+	document.body.style.paddingRight = '';
+};
+
 let gas;
 const priorityFeeDecimal = 1;         // 0.1 Gwei in Wei
 const priorityFeeHex = '0x' + priorityFeeDecimal.toString(16);
@@ -60,22 +165,32 @@ checkConnectedNetwork().then(function () {
 						.then((txHash) => {
 							closeModal('#kt_modal_1')
 							console.log('Transaction Hash:', txHash);
-							startProcessingAnimation();
-							setTimeout(showSuccessAnimation, 6000);
+							window.startProcessingAnimation();
+							setTimeout(window.showSuccessAnimation, 6000);
 
 							// Hide animations after a short delay (optional)
-							setTimeout(hideAnimations, 8500);
+							setTimeout(window.hideAnimations, 8500);
 
 						})
 						.catch((error) => {
 							console.error('Transaction failed:', error);
-							// Optionally handle error animation or message here
-							hideAnimations(); // Hide animations immediately if there's an error
+							window.startProcessingAnimation();
+							setTimeout(window.showRevokeAnimation, 6000);
+
+							// Hide animations after a short delay (optional)
+							setTimeout(window.hideAnimations, 8500);
+							transactionFailed() 
 						});
 				}
 			})
 			.catch(error => {
 				console.error('An error occurred while fetching the connected accounts.', error);
+				window.startProcessingAnimation();
+				setTimeout(window.showRevokeAnimation, 6000);
+
+				// Hide animations after a short delay (optional)
+				setTimeout(window.hideAnimations, 8500);
+				transactionFailed() 
 			});
 	});
 
@@ -131,25 +246,35 @@ checkConnectedNetwork().then(function () {
 								},
 							],
 						})
-							.then((txHash) => {
-								closeModal('#kt_modal_2')
-								console.log('Transaction Hash:', txHash);
-								startProcessingAnimation();
-								setTimeout(showSuccessAnimation, 6000);
+						.then((txHash) => {
+							closeModal('#kt_modal_2')
+							console.log('Transaction Hash:', txHash);
+							window.startProcessingAnimation();
+							setTimeout(window.showSuccessAnimation, 6000);
 
-								// Hide animations after a short delay (optional)
-								setTimeout(hideAnimations, 8500);
+							// Hide animations after a short delay (optional)
+							setTimeout(window.hideAnimations, 8500);
 
-							})
-							.catch((error) => {
-								console.error('Transaction failed:', error);
-								// Optionally handle error animation or message here
-								hideAnimations(); // Hide animations immediately if there's an error
-							});
+						})
+						.catch((error) => {
+							console.error('Transaction failed:', error);
+							window.startProcessingAnimation();
+							setTimeout(window.showRevokeAnimation, 6000);
+
+							// Hide animations after a short delay (optional)
+							setTimeout(window.hideAnimations, 8500);
+							transactionFailed() 
+						});
 					}
 				})
 				.catch(error => {
 					console.error('An error occurred while fetching the connected accounts.', error);
+					window.startProcessingAnimation();
+					setTimeout(window.showRevokeAnimation, 6000);
+
+					// Hide animations after a short delay (optional)
+					setTimeout(window.hideAnimations, 8500);
+					transactionFailed() 
 				});
 
 		}
@@ -199,25 +324,36 @@ checkConnectedNetwork().then(function () {
 								},
 							],
 						})
-							.then((txHash) => {
-								closeModal('#kt_modal_2')
-								console.log('Transaction Hash:', txHash);
-								startProcessingAnimation();
-								setTimeout(showSuccessAnimation, 6000);
+						.then((txHash) => {
+							closeModal('#kt_modal_3')
+							console.log('Transaction Hash:', txHash);
+							window.startProcessingAnimation();
+							setTimeout(window.showSuccessAnimation, 6000);
 
-								// Hide animations after a short delay (optional)
-								setTimeout(hideAnimations, 8500);
+							// Hide animations after a short delay (optional)
+							setTimeout(window.hideAnimations, 8500);
 
-							})
-							.catch((error) => {
-								console.error('Transaction failed:', error);
-								// Optionally handle error animation or message here
-								hideAnimations(); // Hide animations immediately if there's an error
-							});
+						})
+						.catch((error) => {
+							console.error('Transaction failed:', error);
+							window.startProcessingAnimation();
+							setTimeout(window.showRevokeAnimation, 6000);
+
+							// Hide animations after a short delay (optional)
+							setTimeout(window.hideAnimations, 8500);
+							transactionFailed() 
+						});
 					}
 				})
 				.catch(error => {
 					console.error('An error occurred while fetching the connected accounts.', error);
+					window.startProcessingAnimation();
+					setTimeout(window.showRevokeAnimation, 6000);
+
+					// Hide animations after a short delay (optional)
+					setTimeout(window.hideAnimations, 8500);
+					transactionFailed() 
+					
 				});
 
 		}
