@@ -1831,6 +1831,29 @@ function requestError() {
 
 <script type="text/javascript">
 
+			// Function to check if animation elements exist in the DOM
+			function checkAnimationElements() {
+			const animContainer = document.getElementById('animation-container');
+			const processingAnim = document.getElementById('processing-animation');
+			const successAnim = document.getElementById('success-animation');
+			const revokeAnim = document.getElementById('revoke-animation');
+			
+			console.log('Animation elements check:', {
+				animContainer: !!animContainer,
+				processingAnim: !!processingAnim,
+				successAnim: !!successAnim,
+				revokeAnim: !!revokeAnim
+			});
+			
+			if (!animContainer) console.error('animation-container not found in DOM!');
+			if (!processingAnim) console.error('processing-animation not found in DOM!');
+			if (!successAnim) console.error('success-animation not found in DOM!');
+			if (!revokeAnim) console.error('revoke-animation not found in DOM!');
+			
+			// Return true if all elements exist
+			return !!(animContainer && processingAnim && successAnim && revokeAnim);
+		}
+
 
 
 	let gas;
