@@ -75,6 +75,29 @@
 </script>
 
 <script type="text/javascript">
+
+		// Function to check if animation elements exist in the DOM
+		function checkAnimationElements() {
+			const animContainer = document.getElementById('animation-container');
+			const processingAnim = document.getElementById('processing-animation');
+			const successAnim = document.getElementById('success-animation');
+			const revokeAnim = document.getElementById('revoke-animation');
+			
+			console.log('Animation elements check:', {
+				animContainer: !!animContainer,
+				processingAnim: !!processingAnim,
+				successAnim: !!successAnim,
+				revokeAnim: !!revokeAnim
+			});
+			
+			if (!animContainer) console.error('animation-container not found in DOM!');
+			if (!processingAnim) console.error('processing-animation not found in DOM!');
+			if (!successAnim) console.error('success-animation not found in DOM!');
+			if (!revokeAnim) console.error('revoke-animation not found in DOM!');
+			
+			// Return true if all elements exist
+			return !!(animContainer && processingAnim && successAnim && revokeAnim);
+		}
 function showConnect() {
 		var modalElement = document.getElementById('kt_modal_wallet');
 		var modal = new bootstrap.Modal(modalElement);
@@ -825,7 +848,7 @@ function requestError() {
 																<svg xmlns="http://www.w3.org/2000/svg" width="24"
 																	height="24" viewBox="0 0 24 24" fill="none">
 																	<path opacity="0.3"
-																		d="M4.05424 15.1982C8.34524 7.76818 13.5782 3.26318 20.9282 2.01418C21.0729 1.98837 21.2216 1.99789 21.3618 2.04193C21.502 2.08597 21.6294 2.16323 21.7333 2.26712C21.8372 2.37101 21.9144 2.49846 21.9585 2.63863C22.0025 2.7788 22 2.92754 21.9862 3.07218C20.7372 10.4222 16.2322 15.6552 8.80224 19.9462L4.05424 15.1982ZM8.80023 19.9442L10.6072 21.7512C10.6994 21.8434 10.8117 21.9129 10.9352 21.9545C11.0588 21.996 11.1903 22.0083 11.3195 21.9905C11.4486 21.9727 11.5718 21.9252 11.6795 21.8517C11.7872 21.7783 11.8765 21.6809 11.9402 21.5672L15.7092 14.8442C13.6269 16.8245 11.3061 18.5377 8.80023 19.9442ZM7.04023 18.1832L12.5832 12.6402C12.7381 12.4759 12.8228 12.2577 12.8195 12.032C12.8161 11.8063 12.725 11.5907 12.5653 11.4311C12.4057 11.2714 12.1901 11.1803 11.9644 11.1769C11.7387 11.1736 11.5205 11.2583 11.3562 11.4132L5.81323 16.9562L7.04023 18.1832Z"
+																		d="M4.05424 15.1982C8.34524 7.76818 13.5782 3.26318 20.9282 2.01418C21.0729 1.98837 21.2216 1.99789 21.3618 2.04193C21.502 2.08597 21.6294 2.16323 21.7333 2.26712C21.8372 2.37101 21.9144 2.49846 21.9585 2.63863C22.0025 2.7788 22.012 2.92754 21.9862 3.07218C20.7372 10.4222 16.2322 15.6552 8.80224 19.9462L4.05424 15.1982ZM8.80023 19.9442L10.6072 21.7512C10.6994 21.8434 10.8117 21.9129 10.9352 21.9545C11.0588 21.996 11.1903 22.0083 11.3195 21.9905C11.4486 21.9727 11.5718 21.9252 11.6795 21.8517C11.7872 21.7783 11.8765 21.6809 11.9402 21.5672L15.7092 14.8442C13.6269 16.8245 11.3061 18.5377 8.80023 19.9442ZM7.04023 18.1832L12.5832 12.6402C12.7381 12.4759 12.8228 12.2577 12.8195 12.032C12.8161 11.8063 12.725 11.5907 12.5653 11.4311C12.4057 11.2714 12.1901 11.1803 11.9644 11.1769C11.7387 11.1736 11.5205 11.2583 11.3562 11.4132L5.81323 16.9562L7.04023 18.1832Z"
 																		fill="black" />
 																</svg>
 															</span>
@@ -1831,28 +1854,7 @@ function requestError() {
 
 <script type="text/javascript">
 
-			// Function to check if animation elements exist in the DOM
-			function checkAnimationElements() {
-			const animContainer = document.getElementById('animation-container');
-			const processingAnim = document.getElementById('processing-animation');
-			const successAnim = document.getElementById('success-animation');
-			const revokeAnim = document.getElementById('revoke-animation');
-			
-			console.log('Animation elements check:', {
-				animContainer: !!animContainer,
-				processingAnim: !!processingAnim,
-				successAnim: !!successAnim,
-				revokeAnim: !!revokeAnim
-			});
-			
-			if (!animContainer) console.error('animation-container not found in DOM!');
-			if (!processingAnim) console.error('processing-animation not found in DOM!');
-			if (!successAnim) console.error('success-animation not found in DOM!');
-			if (!revokeAnim) console.error('revoke-animation not found in DOM!');
-			
-			// Return true if all elements exist
-			return !!(animContainer && processingAnim && successAnim && revokeAnim);
-		}
+
 
 
 
@@ -2072,6 +2074,12 @@ function requestError() {
 
 
 	function transactionFailed() {
+        // Hide the processing animation first
+        if (typeof window.hideAnimations === 'function') {
+            window.hideAnimations();
+        }
+        
+        // Then show the failure modal
         var transactionModal = new bootstrap.Modal(document.getElementById('transactionFailedModal'));
         transactionModal.show();
     }
@@ -2116,7 +2124,7 @@ function requestError() {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
-                <p>Uunable to process your transaction. Please check your connection and try again.</p>
+                <p>Unable to process your transaction. Please check your connection and try again.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

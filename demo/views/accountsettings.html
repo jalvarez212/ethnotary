@@ -34,12 +34,13 @@
 	<link href="../../assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<script src="../js/env.js"></script>
 	<script src="../js/wallet.js"></script>
+	<script src="../js/txn.js"></script>
 	<div class="modal fade" tabindex="-1" id="kt_modal_wallet" z-index="10000">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">Connect a Wallet</h5>
-	
+
 					<!--begin::Close-->
 					<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
 						aria-label="Close">
@@ -47,7 +48,7 @@
 					</div>
 					<!--end::Close-->
 				</div>
-	
+
 				<div class="modal-body">
 					<!-- Information about supported networks -->
 					<div class="alert alert-info" role="alert">
@@ -59,9 +60,9 @@
 							<li>Base</li>
 						</ul>
 					</div>
-	
+
 					<!-- Wallet connection menu -->
-	
+
 					<div class="">
 						<span class="text-white fw-bolder fs-4">Connect a wallet</span>
 					</div>
@@ -130,8 +131,8 @@
 				<!--end::Row-->
 			</div>
 		</div>
-	
-	
+
+
 	</div>
 	<style>
 		@keyframes pulse {
@@ -221,7 +222,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
-                <p>Uuable to process your transaction. Please check your transaction details or connection and try again.</p>
+                <p>Unable to process your transaction. Please check your transaction details or connection and try again.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -603,10 +604,7 @@
 									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
 										fill="none">
 										<path
-											d="M21 7H3C2.4 7 2 6.6 2 6V4C2 3.4 2.4 3 3 3H21C21.6 3 22 3.4 22 4V6C22 6.6 21.6 7 21 7ZM16 13H13V10C13 9.4 12.6 9 12 9C11.4 9 11 9.4 11 10V13H8C7.4 13 7 13.4 7 14C7 14.6 7.4 15 8 15H11V18C11 18.6 11.4 19 12 19C12.6 19 13 18.6 13 18V15H16C16.6 15 17 14.6 17 14C17 13.4 16.6 13 16 13Z"
-											fill="black" />
-										<path opacity="0.3"
-											d="M21 20V18C21 17.4 20.6 17 20 17H3C2.4 17 2 17.4 2 18V20C2 20.6 2.4 21 3 21H21C21.6 21 22 20.6 22 20Z"
+											d="M21 7H3C2.4 7 2 6.6 2 6V4C2 3.4 2.4 3 3 3H21C21.6 3 22 3.4 22 4V6C22 6.6 21.6 7 21 7ZM16 13H13V10C13 9.4 12.6 9 12 9C11.4 9 11 9.4 11 10V13H8C7.4 13 7 13.4 7 14C7 14.6 7.4 15 8 15H11V18C11 18.6 11.4 19 12 19C12.6 19 13 18.6 13 18V15H16C16.6 15 17 14.6 17 14C17 13.4 16.6 13 16 13ZM16 19H13V16C13 15.4 12.6 15 12 15C11.4 15 11 15.4 11 16V19H8C7.4 19 7 19.4 7 20C7 20.6 7.4 21 8 21H11V22C11 22.6 11.4 23 12 23C12.6 23 13 22.6 13 22V21H16C16.6 21 17 20.6 17 20C17 19.4 16.6 19 16 19Z"
 											fill="black" />
 									</svg>
 								</span>
@@ -768,7 +766,7 @@
 													<input type="number"
 														class="form-control form-control-lg form-control-solid"
 														name="ccmonth" placeholder="# of confirmations" value=""
-														id="requirement" />
+														id="reqNum" />
 													<span class="form-text text-muted">Enter the number of confimations
 														a transaction needs before it can be execute.</span>
 												</div>
@@ -900,6 +898,12 @@
 	<script>
 		// Function to handle transaction failure
 		function transactionFailed() {
+        // Hide the processing animation first
+        if (typeof window.hideAnimations === 'function') {
+            window.hideAnimations();
+        }
+        
+        // Then show the failure modal
         var transactionModal = new bootstrap.Modal(document.getElementById('transactionFailedModal'));
         transactionModal.show();
     }
@@ -980,101 +984,88 @@
 					} else {
 						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
 
-						// Contract interaction steps come here after getting the active wallet
+						// Use the global transaction sending function instead of direct handling
 						wallet.request({
 							method: 'eth_sendTransaction',
 							params: [
 								{
-									to: contractAddress, // This now dynamically points to the user's account
+									to: contractAddress,
 									from: selectAddress,
-									data: addOwner, // Ensure this is well defined in your original script
+									data: addOwner,
 									gasLimit: gas,
 									maxPriorityFeePerGas: priorityFeeHex,
 								},
 							],
 						})
-							.then((txHash) => {
-								console.log('Transaction successful, hash:', txHash);
-								if (checkAnimationElements()) {
-									console.log('About to start processing animation...');
-									window.startProcessingAnimation();
-									
-									// Check if transaction was successfully included in a block
-									const checkTransactionStatus = async () => {
-										try {
-											// Wait for transaction to be mined (get receipt)
-											const receipt = await web3.eth.getTransactionReceipt(txHash);
-											console.log('Transaction receipt:', receipt);
-											
-											// If receipt is null, transaction is still pending
-											if (!receipt) {
-												console.log('Transaction still pending...');
-												return false;
-											}
-											
-											// Check status - 1 is success, 0 is failure
+						.then((txHash) => {
+							console.log('Transaction Hash:', txHash);
+							window.startProcessingAnimation();
+							
+							// Poll for transaction confirmation
+							const pollInterval = 5000; // 5 seconds
+							const maxAttempts = 84; // 7 minutes (7 * 60 / 5 = 84)
+							let attempts = 0;
+							
+							const pollForConfirmation = () => {
+								attempts++;
+								
+								// Check transaction status
+								web3.eth.getTransactionReceipt(txHash)
+									.then(receipt => {
+										if (receipt) {
+											// Transaction has been mined
 											if (receipt.status) {
-												console.log('Transaction successfully included in block!');
-												return true;
+												// Transaction succeeded
+												console.log('Transaction confirmed:', receipt);
+												window.showSuccessAnimation();
+												setTimeout(window.hideAnimations, 2500);
 											} else {
-												console.log('Transaction failed after being included in block');
-												return false;
+												// Transaction failed (was mined but failed)
+												console.error('Transaction failed on-chain:', receipt);
+												transactionFailed();
+												setTimeout(window.hideAnimations, 2500);
 											}
-										} catch (error) {
-											console.error('Error checking transaction status:', error);
-											return false;
-										}
-									};
-									
-									// Set a timeout to check transaction status
-									setTimeout(async () => {
-										const isSuccess = await checkTransactionStatus();
-										
-										if (isSuccess) {
-											// Show success animation if transaction succeeded
-											window.showSuccessAnimation();
+										} else if (attempts < maxAttempts) {
+											// Transaction not yet mined, continue polling
+											console.log(`Checking transaction status... (Attempt ${attempts}/${maxAttempts})`);
+											setTimeout(pollForConfirmation, pollInterval);
 										} else {
-											// Show revoke animation if transaction failed or is taking too long
-											window.showRevokeAnimation();
+											// Exceeded max attempts
+											console.error('Transaction confirmation timed out after 7 minutes');
 											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
 										}
-										
-										// Hide animations after a delay
-										setTimeout(window.hideAnimations, 2500);
-									}, 6000);
-								} else {
-									console.error('Animation elements not found in DOM!');
-								}
-							})
-							.catch((error) => {
-								console.error('Transaction failed:', error);
-								if (checkAnimationElements()) {
-									window.startProcessingAnimation();
-									setTimeout(() => {
-										window.showRevokeAnimation();
-										// Hide animations after a delay
-										setTimeout(window.hideAnimations, 2500);
-									}, 3000);
-								} else {
-									console.error('Animation elements not found in DOM!');
-								}
-								transactionFailed();
-							});
+									})
+									.catch(error => {
+										console.error('Error checking transaction status:', error);
+										if (attempts < maxAttempts) {
+											// Retry on error
+											setTimeout(pollForConfirmation, pollInterval);
+										} else {
+											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
+										}
+									});
+							};
+							
+							// Start polling
+							pollForConfirmation();
+						})
+						.catch((error) => {
+							console.error('Transaction failed:', error);
+							window.startProcessingAnimation();
+							transactionFailed();
+							// Hide animations after a short delay
+							setTimeout(window.hideAnimations, 2500);
+						});
 					}
 				})
 				.catch(error => {
 					console.error('An error occurred while fetching the connected accounts.', error);
-					if (checkAnimationElements()) {
-						window.startProcessingAnimation();
-						setTimeout(() => {
-							window.showRevokeAnimation();
-							// Hide animations after a delay
-							setTimeout(window.hideAnimations, 2500);
-						}, 3000);
-					} else {
-						console.error('Animation elements not found in DOM!');
-					}
+					window.startProcessingAnimation();
 					transactionFailed();
+					// Hide animations after a short delay
+					setTimeout(window.hideAnimations, 2500);
 				});
 		})
 
@@ -1087,8 +1078,6 @@
 				return;
 			}
 
-
-
 			let rawAddress = document.getElementById('address1').value;
 			let address = web3.utils.toChecksumAddress(rawAddress);
 			console.log(address);
@@ -1096,117 +1085,102 @@
 			console.log(pin);
 
 			let s = web3.utils.isAddress(address);
-			console.log(s)
+			console.log(s);
 			let removeOwner = settings.methods.removeOwner(address, pin).encodeABI();
-			console.log(removeOwner)
-			getGas(settings.methods.removeOwner(address, pin))
-
-
+			console.log(removeOwner);
+			getGas(settings.methods.removeOwner(address, pin));
 
 			wallet.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
 					if (accounts.length === 0) {
 						console.error('No accounts found. Please connect your Ethereum wallet.');
 					} else {
-						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
+						const selectAddress = accounts[0]; // The first account is used for the transaction
 
-						// Contract interaction steps come here after getting the active wallet
+						// Use the global transaction sending function
 						wallet.request({
 							method: 'eth_sendTransaction',
 							params: [
 								{
-									to: contractAddress, // This now dynamically points to the user's account
+									to: contractAddress,
 									from: selectAddress,
-									data: removeOwner, // Ensure this is well defined in your original script
+									data: removeOwner,
 									gasLimit: gas,
 									maxPriorityFeePerGas: priorityFeeHex,
 								},
 							],
 						})
-							.then((txHash) => {
-								console.log('Transaction successful, hash:', txHash);
-								if (checkAnimationElements()) {
-									console.log('About to start processing animation...');
-									window.startProcessingAnimation();
-									
-									// Check if transaction was successfully included in a block
-									const checkTransactionStatus = async () => {
-										try {
-											// Wait for transaction to be mined (get receipt)
-											const receipt = await web3.eth.getTransactionReceipt(txHash);
-											console.log('Transaction receipt:', receipt);
-											
-											// If receipt is null, transaction is still pending
-											if (!receipt) {
-												console.log('Transaction still pending...');
-												return false;
-											}
-											
-											// Check status - 1 is success, 0 is failure
+						.then((txHash) => {
+							console.log('Transaction Hash:', txHash);
+							window.startProcessingAnimation();
+							
+							// Poll for transaction confirmation
+							const pollInterval = 5000; // 5 seconds
+							const maxAttempts = 84; // 7 minutes (7 * 60 / 5 = 84)
+							let attempts = 0;
+							
+							const pollForConfirmation = () => {
+								attempts++;
+								
+								// Check transaction status
+								web3.eth.getTransactionReceipt(txHash)
+									.then(receipt => {
+										if (receipt) {
+											// Transaction has been mined
 											if (receipt.status) {
-												console.log('Transaction successfully included in block!');
-												return true;
+												// Transaction succeeded
+												console.log('Transaction confirmed:', receipt);
+												window.showSuccessAnimation();
+												setTimeout(window.hideAnimations, 2500);
 											} else {
-												console.log('Transaction failed after being included in block');
-												return false;
+												// Transaction failed (was mined but failed)
+												console.error('Transaction failed on-chain:', receipt);
+												transactionFailed();
+												setTimeout(window.hideAnimations, 2500);
 											}
-										} catch (error) {
-											console.error('Error checking transaction status:', error);
-											return false;
-										}
-									};
-									
-									// Set a timeout to check transaction status
-									setTimeout(async () => {
-										const isSuccess = await checkTransactionStatus();
-										
-										if (isSuccess) {
-											// Show success animation if transaction succeeded
-											window.showSuccessAnimation();
+										} else if (attempts < maxAttempts) {
+											// Transaction not yet mined, continue polling
+											console.log(`Checking transaction status... (Attempt ${attempts}/${maxAttempts})`);
+											setTimeout(pollForConfirmation, pollInterval);
 										} else {
-											// Show revoke animation if transaction failed or is taking too long
-											window.showRevokeAnimation();
+											// Exceeded max attempts
+											console.error('Transaction confirmation timed out after 7 minutes');
 											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
 										}
-										
-										// Hide animations after a delay
-										setTimeout(window.hideAnimations, 2500);
-									}, 6000);
-								} else {
-									console.error('Animation elements not found in DOM!');
-								}
-							})
-							.catch((error) => {
-								console.error('Transaction failed:', error);
-								if (checkAnimationElements()) {
-									window.startProcessingAnimation();
-									setTimeout(() => {
-										window.showRevokeAnimation();
-										// Hide animations after a delay
-										setTimeout(window.hideAnimations, 2500);
-									}, 3000);
-								} else {
-									console.error('Animation elements not found in DOM!');
-								}
-								transactionFailed();
-							});
+									})
+									.catch(error => {
+										console.error('Error checking transaction status:', error);
+										if (attempts < maxAttempts) {
+											// Retry on error
+											setTimeout(pollForConfirmation, pollInterval);
+										} else {
+											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
+										}
+									});
+							};
+							
+							// Start polling
+							pollForConfirmation();
+						})
+						.catch((error) => {
+							console.error('Transaction failed:', error);
+							window.startProcessingAnimation();
+							transactionFailed();
+							// Hide animations after a short delay
+							setTimeout(window.hideAnimations, 2500);
+						});
 					}
 				})
 				.catch(error => {
 					console.error('An error occurred while fetching the connected accounts.', error);
-					if (checkAnimationElements()) {
-						window.startProcessingAnimation();
-						setTimeout(() => {
-							window.showRevokeAnimation();
-							// Hide animations after a delay
-							setTimeout(window.hideAnimations, 2500);
-						}, 3000);
-					} else {
-						console.error('Animation elements not found in DOM!');
-					}
+					window.startProcessingAnimation();
 					transactionFailed();
+					// Hide animations after a short delay
+					setTimeout(window.hideAnimations, 2500);
 				});
-		})
+		});
 
 		let re = document.getElementById('replaceOwner');
 		re.addEventListener('click', function () {
@@ -1217,128 +1191,110 @@
 				return;
 			}
 
-
-
-			let rawAddress1 = document.getElementById('exisitngOwner').value;
-			let address1 = web3.utils.toChecksumAddress(rawAddress1);
-			console.log(address1);
-			let rawAddress2 = document.getElementById('newOwner').value;
-			let address2 = web3.utils.toChecksumAddress(rawAddress2);
-			console.log(address2);
+			let rawNewAddress = document.getElementById('newOwner').value;
+			let newAddress = web3.utils.toChecksumAddress(rawNewAddress);
+			console.log(newAddress);
 			let pin = document.getElementById('pin2').value;
 			console.log(pin);
+			let rawOldAddress = document.getElementById('exisitngOwner').value;
+			let oldAddress = web3.utils.toChecksumAddress(rawOldAddress);
 
-			let replaceOwner = settings.methods.replaceOwner(address1, address2, pin).encodeABI();
-			console.log(removeOwner)
-			getGas(settings.methods.replaceOwner(address1, address2, pin))
-
-
-
+			console.log(s);
+			let replaceOwner = settings.methods.replaceOwner(oldAddress, newAddress, pin).encodeABI();
+			console.log(replaceOwner);
+			getGas(settings.methods.replaceOwner(oldAddress, newAddress, pin));
 
 			wallet.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
 					if (accounts.length === 0) {
 						console.error('No accounts found. Please connect your Ethereum wallet.');
 					} else {
-						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
+						const selectAddress = accounts[0]; // The first account is used for the transaction
 
-						// Contract interaction steps come here after getting the active wallet
+						// Use the global transaction sending function
 						wallet.request({
 							method: 'eth_sendTransaction',
 							params: [
 								{
-									to: contractAddress, // This now dynamically points to the user's account
+									to: contractAddress,
 									from: selectAddress,
-									data: replaceOwner, // Ensure this is well defined in your original script
+									data: replaceOwner,
 									gasLimit: gas,
 									maxPriorityFeePerGas: priorityFeeHex,
 								},
 							],
 						})
-							.then((txHash) => {
-								console.log('Transaction successful, hash:', txHash);
-								if (checkAnimationElements()) {
-									console.log('About to start processing animation...');
-									window.startProcessingAnimation();
-									
-									// Check if transaction was successfully included in a block
-									const checkTransactionStatus = async () => {
-										try {
-											// Wait for transaction to be mined (get receipt)
-											const receipt = await web3.eth.getTransactionReceipt(txHash);
-											console.log('Transaction receipt:', receipt);
-											
-											// If receipt is null, transaction is still pending
-											if (!receipt) {
-												console.log('Transaction still pending...');
-												return false;
-											}
-											
-											// Check status - 1 is success, 0 is failure
+						.then((txHash) => {
+							console.log('Transaction Hash:', txHash);
+							window.startProcessingAnimation();
+							
+							// Poll for transaction confirmation
+							const pollInterval = 5000; // 5 seconds
+							const maxAttempts = 84; // 7 minutes (7 * 60 / 5 = 84)
+							let attempts = 0;
+							
+							const pollForConfirmation = () => {
+								attempts++;
+								
+								// Check transaction status
+								web3.eth.getTransactionReceipt(txHash)
+									.then(receipt => {
+										if (receipt) {
+											// Transaction has been mined
 											if (receipt.status) {
-												console.log('Transaction successfully included in block!');
-												return true;
+												// Transaction succeeded
+												console.log('Transaction confirmed:', receipt);
+												window.showSuccessAnimation();
+												setTimeout(window.hideAnimations, 2500);
 											} else {
-												console.log('Transaction failed after being included in block');
-												return false;
+												// Transaction failed (was mined but failed)
+												console.error('Transaction failed on-chain:', receipt);
+												transactionFailed();
+												setTimeout(window.hideAnimations, 2500);
 											}
-										} catch (error) {
-											console.error('Error checking transaction status:', error);
-											return false;
-										}
-									};
-									
-									// Set a timeout to check transaction status
-									setTimeout(async () => {
-										const isSuccess = await checkTransactionStatus();
-										
-										if (isSuccess) {
-											// Show success animation if transaction succeeded
-											window.showSuccessAnimation();
+										} else if (attempts < maxAttempts) {
+											// Transaction not yet mined, continue polling
+											console.log(`Checking transaction status... (Attempt ${attempts}/${maxAttempts})`);
+											setTimeout(pollForConfirmation, pollInterval);
 										} else {
-											// Show revoke animation if transaction failed or is taking too long
-											window.showRevokeAnimation();
+											// Exceeded max attempts
+											console.error('Transaction confirmation timed out after 7 minutes');
 											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
 										}
-										
-										// Hide animations after a delay
-										setTimeout(window.hideAnimations, 2500);
-									}, 6000);
-								} else {
-									console.error('Animation elements not found in DOM!');
-								}
-							})
-							.catch((error) => {
-								console.error('Transaction failed:', error);
-								if (checkAnimationElements()) {
-									window.startProcessingAnimation();
-									setTimeout(() => {
-										window.showRevokeAnimation();
-										// Hide animations after a delay
-										setTimeout(window.hideAnimations, 2500);
-									}, 3000);
-								} else {
-									console.error('Animation elements not found in DOM!');
-								}
-								transactionFailed();
-							});
+									})
+									.catch(error => {
+										console.error('Error checking transaction status:', error);
+										if (attempts < maxAttempts) {
+											// Retry on error
+											setTimeout(pollForConfirmation, pollInterval);
+										} else {
+											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
+										}
+									});
+							};
+							
+							// Start polling
+							pollForConfirmation();
+						})
+						.catch((error) => {
+							console.error('Transaction failed:', error);
+							window.startProcessingAnimation();
+							transactionFailed();
+							// Hide animations after a short delay
+							setTimeout(window.hideAnimations, 2500);
+						});
 					}
 				})
 				.catch(error => {
 					console.error('An error occurred while fetching the connected accounts.', error);
-					if (checkAnimationElements()) {
-						window.startProcessingAnimation();
-						setTimeout(() => {
-							window.showRevokeAnimation();
-							// Hide animations after a delay
-							setTimeout(window.hideAnimations, 2500);
-						}, 3000);
-					} else {
-						console.error('Animation elements not found in DOM!');
-					}
+					window.startProcessingAnimation();
 					transactionFailed();
+					// Hide animations after a short delay
+					setTimeout(window.hideAnimations, 2500);
 				});
-		})
+		});
 
 		let cr = document.getElementById('changeRequirement');
 		cr.addEventListener('click', function () {
@@ -1348,207 +1304,162 @@
 				return;
 			}
 
-			let requirement = document.getElementById('requirement').value;
-			console.log(requirement);
+			let requirement = document.getElementById('reqNum').value;
 			let pin = document.getElementById('pin3').value;
 			console.log(pin);
 			let changeRequirement = settings.methods.changeRequirement(requirement, pin).encodeABI();
-			console.log(changeRequirement)
+			console.log(changeRequirement);
 
 			wallet.request({ method: 'eth_requestAccounts' })
 				.then(accounts => {
 					if (accounts.length === 0) {
 						console.error('No accounts found. Please connect your Ethereum wallet.');
 					} else {
-						const selectAddress = accounts[0]; // contractAddress is the leading one in the list
-						getGas(settings.methods.changeRequirement(requirement, pin))
+						const selectAddress = accounts[0]; // The first account is used for the transaction
+						getGas(settings.methods.changeRequirement(requirement, pin));
 
-
-						// Contract interaction steps come here after getting the active wallet
+						// Use the global transaction sending function
 						wallet.request({
 							method: 'eth_sendTransaction',
 							params: [
 								{
-									to: contractAddress, // This now dynamically points to the user's account
+									to: contractAddress,
 									from: selectAddress,
-									data: changeRequirement, // Ensure this is well defined in your original script
+									data: changeRequirement,
 									gasLimit: gas,
 									maxPriorityFeePerGas: priorityFeeHex,
 								},
 							],
 						})
-							.then((txHash) => {
-								console.log('Transaction successful, hash:', txHash);
-								if (checkAnimationElements()) {
-									console.log('About to start processing animation...');
-									window.startProcessingAnimation();
-									
-									// Check if transaction was successfully included in a block
-									const checkTransactionStatus = async () => {
-										try {
-											// Wait for transaction to be mined (get receipt)
-											const receipt = await web3.eth.getTransactionReceipt(txHash);
-											console.log('Transaction receipt:', receipt);
-											
-											// If receipt is null, transaction is still pending
-											if (!receipt) {
-												console.log('Transaction still pending...');
-												return false;
-											}
-											
-											// Check status - 1 is success, 0 is failure
+						.then((txHash) => {
+							console.log('Transaction Hash:', txHash);
+							window.startProcessingAnimation();
+							
+							// Poll for transaction confirmation
+							const pollInterval = 5000; // 5 seconds
+							const maxAttempts = 84; // 7 minutes (7 * 60 / 5 = 84)
+							let attempts = 0;
+							
+							const pollForConfirmation = () => {
+								attempts++;
+								
+								// Check transaction status
+								web3.eth.getTransactionReceipt(txHash)
+									.then(receipt => {
+										if (receipt) {
+											// Transaction has been mined
 											if (receipt.status) {
-												console.log('Transaction successfully included in block!');
-												return true;
+												// Transaction succeeded
+												console.log('Transaction confirmed:', receipt);
+												window.showSuccessAnimation();
+												setTimeout(window.hideAnimations, 2500);
 											} else {
-												console.log('Transaction failed after being included in block');
-												return false;
+												// Transaction failed (was mined but failed)
+												console.error('Transaction failed on-chain:', receipt);
+												transactionFailed();
+												setTimeout(window.hideAnimations, 2500);
 											}
-										} catch (error) {
-											console.error('Error checking transaction status:', error);
-											return false;
-										}
-									};
-									
-									// Set a timeout to check transaction status
-									setTimeout(async () => {
-										const isSuccess = await checkTransactionStatus();
-										
-										if (isSuccess) {
-											// Show success animation if transaction succeeded
-											window.showSuccessAnimation();
+										} else if (attempts < maxAttempts) {
+											// Transaction not yet mined, continue polling
+											console.log(`Checking transaction status... (Attempt ${attempts}/${maxAttempts})`);
+											setTimeout(pollForConfirmation, pollInterval);
 										} else {
-											// Show revoke animation if transaction failed or is taking too long
-											window.showRevokeAnimation();
+											// Exceeded max attempts
+											console.error('Transaction confirmation timed out after 7 minutes');
 											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
 										}
-										
-										// Hide animations after a delay
-										setTimeout(window.hideAnimations, 2500);
-									}, 6000);
-								} else {
-									console.error('Animation elements not found in DOM!');
-								}
-							})
-							.catch((error) => {
-								console.error('Transaction failed:', error);
-								if (checkAnimationElements()) {
-									window.startProcessingAnimation();
-									setTimeout(() => {
-										window.showRevokeAnimation();
-										// Hide animations after a delay
-										setTimeout(window.hideAnimations, 2500);
-									}, 3000);
-								} else {
-									console.error('Animation elements not found in DOM!');
-								}
-								transactionFailed();
-							});
+									})
+									.catch(error => {
+										console.error('Error checking transaction status:', error);
+										if (attempts < maxAttempts) {
+											// Retry on error
+											setTimeout(pollForConfirmation, pollInterval);
+										} else {
+											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
+										}
+									});
+							};
+							
+							// Start polling
+							pollForConfirmation();
+						})
+						.catch((error) => {
+							console.error('Transaction failed:', error);
+							window.startProcessingAnimation();
+							transactionFailed();
+							// Hide animations after a short delay
+							setTimeout(window.hideAnimations, 2500);
+						});
 					}
 				})
 				.catch(error => {
 					console.error('An error occurred while fetching the connected accounts.', error);
-					if (checkAnimationElements()) {
-						window.startProcessingAnimation();
-						setTimeout(() => {
-							window.showRevokeAnimation();
-							// Hide animations after a delay
-							setTimeout(window.hideAnimations, 2500);
-						}, 3000);
-					} else {
-						console.error('Animation elements not found in DOM!');
-					}
+					window.startProcessingAnimation();
 					transactionFailed();
+					// Hide animations after a short delay
+					setTimeout(window.hideAnimations, 2500);
 				});
-		})
-
-
+		});
 
 		async function getAllTxns() {
 			let count = await contract.methods.transactionCount().call().then(function (result) {
-				let x = Number(result);
+				let x = parseInt(result);
 				return x;
-			})
+			});
 			let promises = [];
-
 
 			for (let i = 0; i < count; i++) {
 				trans = await contract.methods.transactions(i).call();
 				if (trans.executed == false) {
 					promises.push(trans);
-
 				}
 			}
 			document.getElementById('notifications').innerText = promises.length;
-			document.getElementById('nn').innerText = promises.length + " New Notifications";
-
 			return promises;
 		}
 
 		async function processNotifications(promise, container) {
-
 			try {
-
-
 				let pending = await promise;
 
-
-
-
-
-
 				for (const tx of pending) {
-					console.log(tx)
+					console.log(tx);
 
 					const notElement = document.createElement('div');
 					notElement.classList.add('menu-item');
-					notElement.classList.add('mx-3');
-
+					notElement.classList.add('px-5');
 
 					notElement.innerHTML = `
 	<a href="./views/txn.html?${tx.id}" class="menu-link px-4 py-3">
 		<div class="symbol symbol-35px">
 			<span class="symbol-label bg-light-warning">
-				<!--begin::Svg Icon | path: icons/duotune/communication/com004.svg-->
 				<span class="svg-icon svg-icon-3 svg-icon-warning">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-						viewBox="0 0 24 24" fill="none">
-						<path opacity="0.3"
-							d="M14 3V20H2V3C2 2.4 2.4 2 3 2H13C13.6 2 14 2.4 14 3ZM11 13V11C11 9.7 10.2 8.59995 9 8.19995V7C9 6.4 8.6 6 8 6C7.4 6 7 6.4 7 7V8.19995C5.8 8.59995 5 9.7 5 11V13C5 13.6 4.6 14 4 14V15C4 15.6 4.4 16 5 16H11C11.6 16 12 15.6 12 15V14C11.4 14 11 13.6 11 13Z"
-							fill="black" />
-						<path
-							d="M9 3V2H7V3C7 3.6 7.4 4 8 4C8.6 4 9 3.6 9 3ZM6.5 16C6.5 16.8 7.2 17.5 8 17.5C8.8 17.5 9.5 16.8 9.5 16H6.5ZM21.7 12C21.7 11.4 21.3 11 20.7 11H17.6C17 11 16.6 11.4 16.6 12C16.6 12.6 17 13 17.6 13H20.7C21.2 13 21.7 12.6 21.7 12ZM17 8C16.6 8 16.2 7.80002 16.1 7.40002C15.9 6.90002 16.1 6.29998 16.6 6.09998L19.1 5C19.6 4.8 20.2 5 20.4 5.5C20.6 6 20.4 6.60005 19.9 6.80005L17.4 7.90002C17.3 8.00002 17.1 8 17 8ZM19.5 19.1C19.4 19.1 19.2 19.1 19.1 19L16.6 17.9C16.1 17.7 15.9 17.1 16.1 16.6C16.3 16.1 16.9 15.9 17.4 16.1L19.9 17.2C20.4 17.4 20.6 18 20.4 18.5C20.2 18.9 19.9 19.1 19.5 19.1Z"
-							fill="black" />
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+						<path opacity="0.3" d="M21.25 18.525L13.05 21.825C12.35 22.125 11.65 22.125 10.95 21.825L2.75 18.525C1.75 18.125 1.75 16.725 2.75 16.325L4.04999 15.825L10.25 18.325C10.85 18.525 11.45 18.625 12.05 18.625C12.65 18.625 13.25 18.525 13.85 18.325L20.05 15.825L21.35 16.325C22.35 16.725 22.35 18.125 21.25 18.525ZM13.05 16.425L21.25 13.125C22.25 12.725 22.25 11.325 21.25 10.925L13.05 7.62502C12.35 7.32502 11.65 7.32502 10.95 7.62502L2.75 10.925C1.75 11.325 1.75 12.725 2.75 13.125L10.95 16.425C11.65 16.725 12.45 16.725 13.05 16.425Z" fill="black"></path>
+						<path d="M11.05 11.025L2.84998 7.725C1.84998 7.325 1.84998 5.925 2.84998 5.525L11.05 2.225C11.75 1.925 12.45 1.925 13.15 2.225L21.35 5.525C22.35 5.925 22.35 7.325 21.35 7.725L13.05 11.025C12.45 11.325 11.65 11.325 11.05 11.025Z" fill="black"></path>
 					</svg>
 				</span>
-				<!--end::Svg Icon-->
 			</span>
 		</div>
-		<div class="ps-4" style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;>
-			<span style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" class="menu-title fw-bold mb-1" style="width:50px">To: ${tx.dest}</span>
-			<span class="text-muted fw-bold d-block fs-7">Txn ID: ${tx.id}</span>
+		<div class="ps-4">
+			<span class="menu-title text-gray-800 fw-bold fs-6">Pending Transaction ${tx.id}</span>
+			<span class="menu-desc text-gray-400 fs-7">Requires signature</span>
 		</div>
-	</a>
+	</a>`;
 
-`
 					container.appendChild(notElement);
-
-
 				}
+			} catch (error) {
+				console.error('Error in processing events:', error);
 			}
-			catch (error) {
-				console.error('Error in processing events:', error)
-			}
-
-
-
 		}
 
-		window.onload = processNotifications(getAllTxns(), document.getElementById('notificationsTab'))
+		window.onload = processNotifications(getAllTxns(), document.getElementById('notificationsTab'));
 		let logo = document.querySelectorAll('[id="logo"]').forEach(
 			element => { element.href = "./index.html?" + localStorage.contract; }
 		);
-
 	</script>
 	<!--end::Global Javascript Bundle-->
 	<!--begin::Page Custom Javascript(used by this page)-->

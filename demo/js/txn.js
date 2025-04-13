@@ -166,33 +166,74 @@ checkConnectedNetwork().then(function () {
 							closeModal('#kt_modal_1')
 							console.log('Transaction Hash:', txHash);
 							window.startProcessingAnimation();
-							setTimeout(window.showSuccessAnimation, 6000);
-
-							// Hide animations after a short delay (optional)
-							setTimeout(window.hideAnimations, 8500);
-
+							
+							// Poll for transaction confirmation
+							const pollInterval = 5000; // 5 seconds
+							const maxAttempts = 84; // 7 minutes (7 * 60 / 5 = 84)
+							let attempts = 0;
+							
+							const pollForConfirmation = () => {
+								attempts++;
+								
+								// Check transaction status
+								web3.eth.getTransactionReceipt(txHash)
+									.then(receipt => {
+										if (receipt) {
+											// Transaction has been mined
+											if (receipt.status) {
+												// Transaction succeeded
+												console.log('Transaction confirmed:', receipt);
+												window.showSuccessAnimation();
+												setTimeout(window.hideAnimations, 2500);
+											} else {
+												// Transaction failed (was mined but failed)
+												console.error('Transaction failed on-chain:', receipt);
+												transactionFailed();
+												setTimeout(window.hideAnimations, 2500);
+											}
+										} else if (attempts < maxAttempts) {
+											// Transaction not yet mined, continue polling
+											console.log(`Checking transaction status... (Attempt ${attempts}/${maxAttempts})`);
+											setTimeout(pollForConfirmation, pollInterval);
+										} else {
+											// Exceeded max attempts
+											console.error('Transaction confirmation timed out after 7 minutes');
+											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
+										}
+									})
+									.catch(error => {
+										console.error('Error checking transaction status:', error);
+										if (attempts < maxAttempts) {
+											// Retry on error
+											setTimeout(pollForConfirmation, pollInterval);
+										} else {
+											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
+										}
+									});
+							};
+							
+							// Start polling
+							pollForConfirmation();
 						})
 						.catch((error) => {
 							console.error('Transaction failed:', error);
 							window.startProcessingAnimation();
-							setTimeout(window.showRevokeAnimation, 6000);
-
-							// Hide animations after a short delay (optional)
-							setTimeout(window.hideAnimations, 8500);
-							transactionFailed() 
+							transactionFailed();
+							// Hide animations after a short delay
+							setTimeout(window.hideAnimations, 2500);
 						});
-				}
-			})
-			.catch(error => {
-				console.error('An error occurred while fetching the connected accounts.', error);
-				window.startProcessingAnimation();
-				setTimeout(window.showRevokeAnimation, 6000);
-
-				// Hide animations after a short delay (optional)
-				setTimeout(window.hideAnimations, 8500);
-				transactionFailed() 
+					}
+				})
+				.catch(error => {
+					console.error('An error occurred while fetching the connected accounts.', error);
+					window.startProcessingAnimation();
+					transactionFailed();
+					// Hide animations after a short delay
+					setTimeout(window.hideAnimations, 2500);
+				});
 			});
-	});
 
 	let transferToken = document.getElementById('transferToken');
 	transferToken.addEventListener('click', function () {
@@ -250,33 +291,73 @@ checkConnectedNetwork().then(function () {
 							closeModal('#kt_modal_2')
 							console.log('Transaction Hash:', txHash);
 							window.startProcessingAnimation();
-							setTimeout(window.showSuccessAnimation, 6000);
-
-							// Hide animations after a short delay (optional)
-							setTimeout(window.hideAnimations, 8500);
-
+							
+							// Poll for transaction confirmation
+							const pollInterval = 5000; // 5 seconds
+							const maxAttempts = 84; // 7 minutes (7 * 60 / 5 = 84)
+							let attempts = 0;
+							
+							const pollForConfirmation = () => {
+								attempts++;
+								
+								// Check transaction status
+								web3.eth.getTransactionReceipt(txHash)
+									.then(receipt => {
+										if (receipt) {
+											// Transaction has been mined
+											if (receipt.status) {
+												// Transaction succeeded
+												console.log('Transaction confirmed:', receipt);
+												window.showSuccessAnimation();
+												setTimeout(window.hideAnimations, 3500);
+											} else {
+												// Transaction failed (was mined but failed)
+												console.error('Transaction failed on-chain:', receipt);
+												transactionFailed();
+												setTimeout(window.hideAnimations, 2500);
+											}
+										} else if (attempts < maxAttempts) {
+											// Transaction not yet mined, continue polling
+											console.log(`Checking transaction status... (Attempt ${attempts}/${maxAttempts})`);
+											setTimeout(pollForConfirmation, pollInterval);
+										} else {
+											// Exceeded max attempts
+											console.error('Transaction confirmation timed out after 7 minutes');
+											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
+										}
+									})
+									.catch(error => {
+										console.error('Error checking transaction status:', error);
+										if (attempts < maxAttempts) {
+											// Retry on error
+											setTimeout(pollForConfirmation, pollInterval);
+										} else {
+											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
+										}
+									});
+							};
+							
+							// Start polling
+							pollForConfirmation();
 						})
 						.catch((error) => {
 							console.error('Transaction failed:', error);
 							window.startProcessingAnimation();
-							setTimeout(window.showRevokeAnimation, 6000);
-
-							// Hide animations after a short delay (optional)
-							setTimeout(window.hideAnimations, 8500);
-							transactionFailed() 
+							transactionFailed();
+							// Hide animations after a short delay
+							setTimeout(window.hideAnimations, 2500);
 						});
 					}
 				})
 				.catch(error => {
 					console.error('An error occurred while fetching the connected accounts.', error);
 					window.startProcessingAnimation();
-					setTimeout(window.showRevokeAnimation, 6000);
-
-					// Hide animations after a short delay (optional)
-					setTimeout(window.hideAnimations, 8500);
-					transactionFailed() 
+					transactionFailed();
+					// Hide animations after a short delay
+					setTimeout(window.hideAnimations, 2500);
 				});
-
 		}
 		if (tokenSelect[tokenSelect.selectedIndex].getAttribute('data-type') == 'erc20') {
 
@@ -328,31 +409,75 @@ checkConnectedNetwork().then(function () {
 							closeModal('#kt_modal_3')
 							console.log('Transaction Hash:', txHash);
 							window.startProcessingAnimation();
-							setTimeout(window.showSuccessAnimation, 6000);
-
-							// Hide animations after a short delay (optional)
-							setTimeout(window.hideAnimations, 8500);
-
+							
+							// Poll for transaction confirmation
+							const pollInterval = 5000; // 5 seconds
+							const maxAttempts = 84; // 7 minutes (7 * 60 / 5 = 84)
+							let attempts = 0;
+							
+							const pollForConfirmation = () => {
+								attempts++;
+								
+								// Check transaction status
+								web3.eth.getTransactionReceipt(txHash)
+									.then(receipt => {
+										if (receipt) {
+											// Transaction has been mined
+											if (receipt.status) {
+												// Transaction succeeded
+												console.log('Transaction confirmed:', receipt);
+												window.showSuccessAnimation();
+												setTimeout(window.hideAnimations, 2500);
+											} else {
+												// Transaction failed (was mined but failed)
+												console.error('Transaction failed on-chain:', receipt);
+												transactionFailed();
+												setTimeout(window.hideAnimations, 2500);
+											}
+										} else if (attempts < maxAttempts) {
+											// Transaction not yet mined, continue polling
+											console.log(`Checking transaction status... (Attempt ${attempts}/${maxAttempts})`);
+											setTimeout(pollForConfirmation, pollInterval);
+										} else {
+											// Exceeded max attempts
+											console.error('Transaction confirmation timed out after 7 minutes');
+											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
+										}
+									})
+									.catch(error => {
+										console.error('Error checking transaction status:', error);
+										if (attempts < maxAttempts) {
+											// Retry on error
+											setTimeout(pollForConfirmation, pollInterval);
+										} else {
+											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
+										}
+									});
+							};
+							
+							// Start polling
+							pollForConfirmation();
 						})
 						.catch((error) => {
 							console.error('Transaction failed:', error);
 							window.startProcessingAnimation();
-							setTimeout(window.showRevokeAnimation, 6000);
-
-							// Hide animations after a short delay (optional)
-							setTimeout(window.hideAnimations, 8500);
 							transactionFailed() 
+
+							// Hide animations after a short delay
+							setTimeout(window.hideAnimations, 2500);
+		
+							
 						});
 					}
 				})
 				.catch(error => {
 					console.error('An error occurred while fetching the connected accounts.', error);
 					window.startProcessingAnimation();
-					setTimeout(window.showRevokeAnimation, 6000);
-
-					// Hide animations after a short delay (optional)
-					setTimeout(window.hideAnimations, 8500);
-					transactionFailed() 
+					transactionFailed();
+					// Hide animations after a short delay
+					setTimeout(window.hideAnimations, 2500);
 					
 				});
 
