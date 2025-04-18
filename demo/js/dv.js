@@ -225,6 +225,7 @@ async function processEvents(eventNames, container) {
 
     } catch (error) {
         console.error('Error in processing events:', error);
+        requestError();
         
     }
 }
@@ -376,6 +377,7 @@ async function processPending(promise, container) {
 
     } catch (error) {
         console.error('Error in processing events:', error);
+        requestError();
     }
 }
 
@@ -431,7 +433,8 @@ async function processNotifications(promise, container) {
         }
     }
     catch (error) {
-        console.error('Error in processing events:', error)
+        console.error('Error in processing events:', error);
+        requestError();
     }
 
 

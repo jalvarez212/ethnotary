@@ -5,7 +5,6 @@
 
 <head>
 	<title>Completed Transaction</title>
-	<base href="../">
 
 
 	<meta http-equiv="cache-control" content="max-age=0" />
@@ -13,26 +12,28 @@
 	<meta http-equiv="expires" content="0" />
 	<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="pragma" content="no-cache" />
-	<link rel="canonical" href="https://preview.keenthemes.com/start" />
-	<script src="../key.js?cachebuster=1"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-	<link rel="shortcut icon" href="../assets/media/logos/en_logo.png" />
+	<link rel="canonical" href="https://preview.keenthemes.com/start" />
+	<script src="../../keys.js?cachebuster=1"></script>
+
+	<link rel="shortcut icon" href="../../assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 	<!--end::Fonts-->
 	<!--end::Global Stylesheets Bundle-->
 	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
 	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
-	<script src="../assets/js/bundle.js"></script>
+	<script src="../../assets/js/bundle.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
 	<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 		<!--begin::Global Stylesheets Bundle(used by all pages)-->
-		<link href="../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-		<link href="../assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
-		<script src="./js/env.js"></script>
-		<script src="./js/wallet.js"></script>
+		<link href="../../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+		<link href="../../assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+		<script src="../js/env.js"></script>
+		<script src="../js/wallet.js"></script>
 
 		<style>
 			@keyframes pulse {
@@ -66,6 +67,81 @@
 
 <!--end::Head-->
 <!--begin::Body-->
+
+<!-- Start Error Handeling Modal -->
+<div class="modal fade" tabindex="-1" id="errorModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">Something Went Wrong</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>The network experiencing an issue processing your request. Please wait a moment and try reloading the page.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="reloadBtn" onclick="reloadWithDelay()">Reload</button>
+				</div>
+        </div>
+    </div>
+</div> 
+<div class="modal fade" tabindex="-1" id="transactionFailedModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">Transaction Failed</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>Unable to process your transaction. Please check your connection or transaction details and try again.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="wrongNetworkModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-warning">Wrong Network Detected</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>You are connected to the wrong network. Please select one of the supported networks below:</p>
+                <div class="list-group mt-3">
+                    <button type="button" class="list-group-item list-group-item-action network-option" data-chain-id="0x1">
+                        Ethereum Mainnet
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action network-option" data-chain-id="0xaa36a7">
+                        Sepolia Testnet
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action network-option" data-chain-id="0x89">
+                        Polygon
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action network-option" data-chain-id="0xa">
+                        Optimism
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action network-option" data-chain-id="0x2105">
+                        Base
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action network-option" data-chain-id="0x38">
+                        BNB Chain
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="switchNetworkBtn">Switch Network</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Error Handeling Modal -->
 <script>
 	let queryString = window.location.search;
 	const paramValue = queryString.substring(1);
@@ -658,7 +734,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					<div class="aside-logo d-flex flex-column align-items-center flex-column-auto py-4 pt-lg-10 pb-lg-7"
 						id="kt_aside_logo">
 						<a id="logo" href="">
-							<img alt="Logo" src="../assets/media/logos/en_logo.png" class="mh-50px" />
+							<img alt="Logo" src="../../assets/media/logos/en_logo.png" class="mh-50px" />
 						</a>
 					</div>
 					<!--end::Logo-->
@@ -804,7 +880,7 @@ document.addEventListener('DOMContentLoaded', function() {
 							<!--end::Mega Menu Toggler-->
 							<!--begin::Logo-->
 							<a id="logo" href="">
-								<img alt="Logo" src="../assets/media/logos/logo_full.png" class="h-30px" />
+								<img alt="Logo" src="../../assets/media/logos/logo_full.png" class="h-30px" />
 							</a>
 							<!--end::Logo-->
 						</div>
@@ -838,10 +914,10 @@ document.addEventListener('DOMContentLoaded', function() {
 								<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-hover-bg menu-state-title-primary w-300px w-md-300px"
 									data-kt-menu="true">
 									<div class="menu-content fw-bold d-flex align-items-center bgi-no-repeat bgi-position-y-top rounded-top"
-										style="background-image:url('../assets/media//misc/dropdown-header-bg.jpg')">
+										style="background-image:url('../../assets/media/misc/dropdown-header-bg.jpg')">
 										<div class="symbol symbol-45px mx-5 py-5">
 											<span class="symbol-label align-items-end">
-												<img alt="Logo" src="../assets/media/icons/duotune/arrows/arr076.svg"
+												<img alt="Logo" src="../../assets/media/icons/duotune/arrows/arr076.svg"
 													class="mh-35px" style="margin-bottom: auto;
 													margin-top: auto;" />
 											</span>
@@ -878,7 +954,7 @@ document.addEventListener('DOMContentLoaded', function() {
 											<!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img style="width: 30px; height: 30px;" alt="Logo"
-													src="../assets/media/svg/coinbase.svg" />
+													src="../../assets/media/svg/coinbase.svg" />
 											</span>
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">Coinbase Wallet</span>
@@ -888,7 +964,7 @@ document.addEventListener('DOMContentLoaded', function() {
 											<!--begin::Svg Icon | path: icons/duotune/finance/fin009.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="../assets/media/svg/walletconnect.svg" />
+													src="../../assets/media/svg/walletconnect.svg" />
 											</span>
 											<!--end::Svg Icon-->
 											<span class="fw-bolder fs-6 d-block pt-3">WalletConnect</span>
@@ -898,7 +974,7 @@ document.addEventListener('DOMContentLoaded', function() {
 											<!--begin::Svg Icon | path: icons/duotune/arrows/arr077.svg-->
 											<span class="svg-icon svg-icon-3x me-n1">
 												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="../assets/media/svg/metamask.svg" />
+													src="../../assets/media/svg/metamask.svg" />
 
 											</span>
 											<!--end::Svg Icon-->
@@ -970,80 +1046,13 @@ document.addEventListener('DOMContentLoaded', function() {
 									class="menu menu-sub menu-sub-dropdown menu-column menu-rounded fw-bold menu-title-gray-800 menu-hover-bg menu-state-title-primary w-250px w-md-300px"
 									data-kt-menu="true">
 									<div class="menu-item mx-3">
-										<div class="menu-content fw-bold d-flex align-items-center bgi-no-repeat bgi-position-y-top rounded-top"
-											style="background-image:url('../assets/media//misc/dropdown-header-bg.jpg')">
-											<div class="symbol symbol-45px mx-5 py-5">
-												<span class="symbol-label align-items-end">
-													<img alt="Logo" src="../assets/media/icons/duotune/arrows/arr076.svg"
-														class="mh-35px" style="margin-bottom: auto;
-														margin-top: auto;" />
-												</span>
-												<!--end::Svg Icon-->
-											</div>
-											<div class="">
-												<span class="text-white fw-bolder fs-4">Connect a wallet</span>
-											</div>
+										<div class="menu-content fs-6 text-dark fw-bolder py-6" id="nn">
 										</div>
-										<div class="separator mb-3"></div>
-
-
-
 									</div>
-									<!--begin::Row-->
-									<div class="row row-cols-2 g-0">
-										<a href="#"
-											class="border-bottom border-end text-center py-10 btn btn-active-color-primary rounded-0">
-											<!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
+									<div class="separator mb-3"></div>
 
-											<!--begin::Svg Icon | path: assets/media/icons/duotune/general/gen025.svg-->
-											<span class="svg-icon svg-icon-3x me-n1"><svg
-													xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-													viewBox="0 0 24 24" fill="none">
-													<rect x="2" y="2" width="9" height="9" rx="2" fill="black" />
-													<rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2"
-														fill="black" />
-													<rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2"
-														fill="black" />
-													<rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2"
-														fill="black" />
-												</svg></span>
-											<!--end::Svg Icon-->
-											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Browser Wallet</span>
-										</a>
-										<a href="#"
-											class="col border-bottom text-center py-10 btn btn-active-color-primary rounded-0">
-											<!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
-											<span class="svg-icon svg-icon-3x me-n1">
-												<img style="width: 30px; height: 30px;" alt="Logo"
-													src="../assets/media/svg/coinbase.svg" />
-											</span>
-											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">Coinbase Wallet</span>
-										</a>
-										<a href="#"
-											class="col text-center border-end py-10 btn btn-active-color-primary rounded-0">
-											<!--begin::Svg Icon | path: icons/duotune/finance/fin009.svg-->
-											<span class="svg-icon svg-icon-3x me-n1">
-												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="../assets/media/svg/walletconnect.svg" />
-											</span>
-											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">WalletConnect</span>
-										</a>
-										<a href="#"
-											class="col text-center py-10 btn btn-active-color-primary rounded-0">
-											<!--begin::Svg Icon | path: icons/duotune/arrows/arr077.svg-->
-											<span class="svg-icon svg-icon-3x me-n1">
-												<img alt="Logo" style="width: 50px; height: 50px;"
-													src="../assets/media/svg/metamask.svg" />
 
-											</span>
-											<!--end::Svg Icon-->
-											<span class="fw-bolder fs-6 d-block pt-3">MetaMask</span>
-										</a>
-									</div>
-									<!--end::Row-->
+
 								</div>
 								<!--end::Menu-->
 							</div>
@@ -1054,16 +1063,12 @@ document.addEventListener('DOMContentLoaded', function() {
 							<!--begin::Sidebar Toggler-->
 							<button class="btn btn-icon btn-sm btn-active-bg-accent d-lg-none ms-1 ms-lg-6"
 								id="kt_sidebar_toggler">
-								<!--begin::Svg Icon | path: icons/duotune/abstract/abs015.svg-->
-								<span class="svg-icon svg-icon-1 svg-icon-dark">
-									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-										fill="none">
-										<path
-											d="M21 7H3C2.4 7 2 6.6 2 6V4C2 3.4 2.4 3 3 3H21C21.6 3 22 3.4 22 4V6C22 6.6 21.6 7 21 7ZM22 20V18C22 17.4 21.6 17 21 17H3C2.4 17 2 17.4 2 18V20C2 20.6 2.4 21 3 21H21C21.6 21 22 20.6 22 20ZM22 10V8C22 7.4 21.6 7 21 7H3C2.4 7 2 7.4 2 8V10C2 10.6 2.4 11 3 11H21C21.6 11 22 10.6 22 10ZM4 17.5C4 18.9 5.1 20 6.5 20C7.9 20 9 18.9 9 17.5C9 16.1 7.9 15 6.5 15C5.1 15 4 16.1 4 17.5Z"
-											fill="black" />
-									</svg>
-								</span>
-								<!--end::Svg Icon-->
+								<!--begin::Svg Icon | path: assets/media/icons/duotune/abstract/abs015.svg-->
+<span class="svg-icon svg-icon-muted svg-icon-2hx"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+	<path d="M21 7H3C2.4 7 2 6.6 2 6V4C2 3.4 2.4 3 3 3H21C21.6 3 22 3.4 22 4V6C22 6.6 21.6 7 21 7Z" fill="black"/>
+	<path opacity="0.3" d="M21 14H3C2.4 14 2 13.6 2 13V11C2 10.4 2.4 10 3 10H21C21.6 10 22 10.4 22 11V13C22 13.6 21.6 14 21 14ZM22 20V18C22 17.4 21.6 17 21 17H3C2.4 17 2 17.4 2 18V20C2 20.6 2.4 21 3 21H21C21.6 21 22 20.6 22 20Z" fill="black"/>
+	</svg></span>
+	<!--end::Svg Icon-->
 							</button>
 							<!--end::Sidebar Toggler-->
 						</div>
@@ -1306,19 +1311,24 @@ document.addEventListener('DOMContentLoaded', function() {
 	</div>
 	<!--end::Scrolltop-->
 	<!--end::Main-->
-	<script>var hostUrl = "assets/";</script>
+	<!-- <script>var hostUrl = "assets/";</script> -->
 	<!--begin::Javascript-->
 	<!--begin::Global Javascript Bundle(used by all pages)-->
-	<script src="../assets/plugins/global/plugins.bundle.js"></script>
-	<script src="../assets/js/scripts.bundle.js"></script>
+	<script src="../../assets/plugins/global/plugins.bundle.js"></script>
+	<script src="../../assets/js/scripts.bundle.js"></script>
 	<script>
+
+function requestError() {
+        var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        errorModal.show();
+    }
 		 // Get the user input
 		var homeLink = document.getElementById('homeLink'); // Get the link element
 		
 
 
 		// Update the link's href with the new query string
-		homeLink.href = "../index.html"
+		//homeLink.href = "../index.html"
 
 		let logo = document.querySelectorAll('[id="logo"]').forEach(
 		element => {element.href = "../demo"});
@@ -1401,10 +1411,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		}
 
-		window.onload = processNotifications(getAllTxns(), document.getElementById('notificationsTab'))
+		//window.onload = processNotifications(getAllTxns(), document.getElementById('notificationsTab'))
 	</script>
 
 <script>
+
+
+function reloadWithDelay() {
+        var reloadBtn = document.getElementById("reloadBtn");
+
+        // Change button text to loading state
+        reloadBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Reloading...`;
+        reloadBtn.disabled = true; // Prevent multiple clicks
+
+        // Wait 2 seconds before reloading the page
+        setTimeout(() => {
+            location.reload();
+        }, 2000);
+    }
 	function updateWalletIcon() {
 		// Update icon container if it exists
 		const iconContainer = document.querySelector('#kt_header_user_menu_toggle .svg-icon');
@@ -1428,6 +1452,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 	}
 </script>
+<script src="../js/notifs.js"></script>
+
 	<!-- <script src="assets/js/custom/txn.js"></script> -->
 
 	<!--end::Global Javascript Bundle-->
