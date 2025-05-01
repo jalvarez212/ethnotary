@@ -119,6 +119,123 @@ async function getGas(method) {
 
 checkConnectedNetwork().then(function () {
 
+	let contractTxn = document.getElementById('contractTxn');
+	contractTxn.addEventListener('click', function (tokenType) {
+		// Check if wallet is defined before proceeding
+		if (typeof wallet === 'undefined' || !wallet) {
+			console.error('Wallet not connected');
+			showConnect();
+			return;
+		}
+
+		let to = document.getElementById('toAddress4').value;
+		let amtRaw = document.getElementById('amount4').value;
+		let amt = amtRaw.trim() === '' ? '0' : amtRaw;
+		const amount = BigInt(parseFloat(amt) * 10**18).toString();
+		let calldata = document.getElementById('calldata4').value;
+
+
+
+		let callData = contract.methods.submitTransaction(to, amount, calldata).encodeABI();
+		console.log(callData);
+
+		getGas(contract.methods.submitTransaction(to, amount, callData))
+
+
+
+		wallet.request({ method: 'eth_requestAccounts' })
+			.then(accounts => {
+				if (accounts.length === 0) {
+					console.error('No accounts found. Please connect your Ethereum wallet.');
+				} else {
+					const selectAddress = accounts[0]; // contractAddress is the leading one in the list
+
+					wallet.request({
+						method: 'eth_sendTransaction',
+						params: [
+							{
+								to: localStorage.contract, // This now dynamically points to the user's account
+								from: selectAddress,
+								data: callData, // Ensure this is well defined in your original script
+								gasLimit: gas,
+								maxPriorityFeePerGas: priorityFeeHex,
+							},
+						],
+					})
+						.then((txHash) => {
+							closeModal('#kt_modal_4')
+							console.log('Transaction Hash:', txHash);
+							window.startProcessingAnimation();
+							
+							// Poll for transaction confirmation
+							const pollInterval = 5000; // 5 seconds
+							const maxAttempts = 84; // 7 minutes (7 * 60 / 5 = 84)
+							let attempts = 0;
+							
+							const pollForConfirmation = () => {
+								attempts++;
+								
+								// Check transaction status
+								web3.eth.getTransactionReceipt(txHash)
+									.then(receipt => {
+										if (receipt) {
+											// Transaction has been mined
+											if (receipt.status) {
+												// Transaction succeeded
+												console.log('Transaction confirmed:', receipt);
+												window.showSuccessAnimation();
+												setTimeout(window.hideAnimations, 2500);
+											} else {
+												// Transaction failed (was mined but failed)
+												console.error('Transaction failed on-chain:', receipt);
+												transactionFailed();
+												setTimeout(window.hideAnimations, 2500);
+											}
+										} else if (attempts < maxAttempts) {
+											// Transaction not yet mined, continue polling
+											console.log(`Checking transaction status... (Attempt ${attempts}/${maxAttempts})`);
+											setTimeout(pollForConfirmation, pollInterval);
+										} else {
+											// Exceeded max attempts
+											console.error('Transaction confirmation timed out after 7 minutes');
+											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
+										}
+									})
+									.catch(error => {
+										console.error('Error checking transaction status:', error);
+										if (attempts < maxAttempts) {
+											// Retry on error
+											setTimeout(pollForConfirmation, pollInterval);
+										} else {
+											transactionFailed();
+											setTimeout(window.hideAnimations, 2500);
+										}
+									});
+							};
+							
+							// Start polling
+							pollForConfirmation();
+						})
+						.catch((error) => {
+							console.error('Transaction failed:', error);
+							window.startProcessingAnimation();
+							transactionFailed();
+							// Hide animations after a short delay
+							setTimeout(window.hideAnimations, 2500);
+						});
+					}
+				})
+				.catch(error => {
+					console.error('An error occurred while fetching the connected accounts.', error);
+					window.startProcessingAnimation();
+					transactionFailed();
+					// Hide animations after a short delay
+					setTimeout(window.hideAnimations, 2500);
+				});
+			});
+
+
 
 
 	let submitTxn = document.getElementById('submitTxn');

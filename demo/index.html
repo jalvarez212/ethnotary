@@ -16,7 +16,7 @@
 	<link rel="shortcut icon" href="../assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-	<script src="../key.js?cachebuster=1"></script>
+	<script src="../keys.js?cachebuster=1"></script>
 	<!--end::Fonts-->
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
 	<link href="../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
@@ -530,13 +530,12 @@ function requestError() {
 										data-bs-toggle="tab" data-bs-target="#kt_aside_tab_6" role="tab">
 										<!--begin::Svg Icon | path: icons/duotune/files/fil005.svg-->
 										<span class="svg-icon svg-icon-2 svg-icon-lg-1">
-											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-												fill="none">
-												<path opacity="0.3"
-													d="M19 22H5C4.4 22 4 21.6 4 21V3C4 2.4 4.4 2 5 2H14L20 8V21C20 21.6 19.6 22 19 22ZM16 13H13V10C13 9.4 12.6 9 12 9C11.4 9 11 9.4 11 10V13H8C7.4 13 7 13.4 7 14C7 14.6 7.4 15 8 15H11V18C11 18.6 11.4 19 12 19C12.6 19 13 18.6 13 18V15H16C16.6 15 17 14.6 17 14C17 13.4 16.6 13 16 13Z"
-													fill="black" />
-												<path d="M15 8H20L14 2V7C14 7.6 14.4 8 15 8Z" fill="black" />
-											</svg>
+<!--begin::Svg Icon | path: assets/media/icons/duotune/general/gen005.svg-->
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+	<path opacity="0.3" d="M19 22H5C4.4 22 4 21.6 4 21V3C4 2.4 4.4 2 5 2H14L20 8V21C20 21.6 19.6 22 19 22ZM15 17C15 16.4 14.6 16 14 16H8C7.4 16 7 16.4 7 17C7 17.6 7.4 18 8 18H14C14.6 18 15 17.6 15 17ZM17 12C17 11.4 16.6 11 16 11H8C7.4 11 7 11.4 7 12C7 12.6 7.4 13 8 13H16C16.6 13 17 12.6 17 12ZM17 7C17 6.4 16.6 6 16 6H8C7.4 6 7 6.4 7 7C7 7.6 7.4 8 8 8H16C16.6 8 17 7.6 17 7Z" fill="black"/>
+	<path d="M15 8H20L14 2V7C14 7.6 14.4 8 15 8Z" fill="black"/>
+	</svg>
+	<!--end::Svg Icon-->
 										</span>
 										<!--end::Svg Icon-->
 									</a>
@@ -1242,6 +1241,83 @@ function requestError() {
 													</div>
 												</div>
 												<!--end::Modal - New Product-->
+
+												<!--begin::Modal - New Product-->
+												<div class="modal fade" id="kt_modal_4" tabindex="-1" aria-hidden="true">
+													<!--begin::Modal dialog-->
+													<div class="modal-dialog modal-dialog-centered mw-650px">
+														<!--begin::Modal content-->
+														<div class="modal-content">
+															<!--begin::Form-->
+															<!--begin::Modal header-->
+															<div class="modal-header">
+																<!--begin::Modal title-->
+																<h2 class="fw-bolder" data-kt-calendar="title">Contract Transaction</h2>
+																<!--end::Modal title-->
+																<!--begin::Close-->
+																<div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close">
+																	<!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+																	<span class="svg-icon svg-icon-1">
+																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+																			<rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="black" />
+																			<rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
+																		</svg>
+																	</span>
+																	<!--end::Svg Icon-->
+																</div>
+																<!--end::Close-->
+															</div>
+															<!--end::Modal header-->
+															<!--begin::Modal body-->
+															<div class="modal-body py-10 px-lg-17">
+																<!--begin::Input group-->
+																<div class="fv-row mb-9">
+																	<label class="fs-6 fw-bold required mb-2">To Address:</label>
+																	<div class="input-group mb-5">
+																		<span class="input-group-text" id="basic-addon4">
+																			<i class="las la-wallet fs-1"></i>
+																		</span>
+																		<input type="text" class="form-control" id="toAddress4" placeholder="Recipient Address" aria-describedby="basic-addon4" />
+																	</div>
+																</div>
+																<!--end::Input group-->
+
+																<!--begin::Input group-->
+																<div class="fv-row mb-9">
+																	<label class="fs-6 fw-bold required mb-2">Amount:</label>
+																	<div class="input-group mb-5">
+																		<span class="input-group-text" id="basic-addon5">
+																			<i class="bi bi-graph-down fs-2"></i>
+																		</span>
+																		<input type="text" class="form-control" id="amount4" placeholder="Enter amount" aria-describedby="basic-addon5" />
+																	</div>
+																</div>
+																<!--end::Input group-->
+																<!--begin::Input group-->
+																<div class="fv-row mb-9">
+																	<label class="fs-6 fw-bold mb-2">Calldata:</label>
+																	<textarea class="form-control" id="calldata4" rows="3" placeholder="Enter calldata (hex)"></textarea>
+																</div>
+																<!--end::Input group-->
+																<div class="separator my-10"></div>
+															</div>
+															<!--end::Modal body-->
+															<!--begin::Modal footer-->
+															<div class="modal-footer flex-center">
+																<button aria-label="Close" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+																<button type="button" class="btn btn-primary" id="contractTxn">
+																	<span class="indicator-label">Submit Transaction</span>
+																	<span class="indicator-progress">Please wait...
+																		<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+																</button>
+															</div>
+															<!--end::Modal footer-->
+															<!--end::Form-->
+														</div>
+													</div>
+												</div>
+												<!--end::Modal - New Product-->
+
 												<!--begin::Row-->
 												<div class="row">
 													<div class="col me-n2 mb-5">
@@ -1268,7 +1344,7 @@ function requestError() {
 													<div class="col mb-5">
 														<button type="button" id="dApp"
 															class="btn btn-outline btn-bg-light btn-color-gray-600 btn-active-light-primary border-dashed border-active px-6 py-7 text-start w-100 min-w-150px"
-															data-bs-toggle="modal" data-bs-target="#kt_modal_1">
+															data-bs-toggle="modal" data-bs-target="#kt_modal_4">
 															<!--begin::Svg Icon | path: icons/duotune/general/gen005.svg-->
 															<span class="svg-icon svg-icon-2x ms-n1">
 																<svg xmlns="http://www.w3.org/2000/svg" width="24"
@@ -2100,7 +2176,7 @@ function requestError() {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
-                <p>The network experiencing an issue processing your request. Please wait a moment and try reloading the page.</p>
+                <p>The network is experiencing an issue processing your request. Please wait a moment and try reloading the page.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
