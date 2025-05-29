@@ -1,7 +1,7 @@
 //walletstate variables
 let rawChainId;
 let wallet;
-let selectAddress;
+let selectAddress = 1;
 let contract;
 
 // Initialize ethers.js provider but keep the web3 variable name for compatibility
@@ -137,9 +137,9 @@ async function connectMetaMask() {
         wallet = await metaWallet;
         wallet.request({ method: 'eth_requestAccounts' }).then(response => {
             const accounts = response;
+            selectAddress = accounts[0];
             console.log(`User's address is ${accounts[0]}`);
             console.log(response)
-            selectAddress = this.selectAddress
 
             // Optionally, have the default account set for web3.js
             web3.eth.defaultAccount = accounts[0]
@@ -184,9 +184,9 @@ async function connectOKXWallet() {
         wallet = window.okxwallet;
         wallet.request({ method: 'eth_requestAccounts' }).then(response => {
             const accounts = response;
+            selectAddress = accounts[0];
             console.log(`User's address is ${accounts[0]}`);
             console.log(response)
-            selectAddress = this.selectAddress
 
             // Optionally, have the default account set for web3.js
             web3.eth.defaultAccount = accounts[0]
@@ -225,8 +225,8 @@ async function connectCoinbase() {
         wallet = await cbwallet;
         wallet.request({ method: 'eth_requestAccounts' }).then(response => {
             const accounts = response;
-            console.log(`User's address is ${accounts[0]}`);
             selectAddress = accounts[0];
+            console.log(`User's address is ${accounts[0]}`);
 
             // Optionally, have the default account set for web3.js
             web3.eth.defaultAccount = accounts[0];
@@ -273,9 +273,9 @@ async function connectPhantomWallet() {
         wallet = window.phantom.ethereum;
         wallet.request({ method: 'eth_requestAccounts' }).then(response => {
             const accounts = response;
+            selectAddress = accounts[0];
             console.log(`User's address is ${accounts[0]}`);
             console.log(response)
-            selectAddress = this.selectAddress
 
             // Optionally, have the default account set for web3.js
             web3.eth.defaultAccount = accounts[0]
@@ -366,6 +366,7 @@ async function connectWallet() {
         try {
             wallet = wallet.request({ method: 'eth_requestAccounts' }).then(response => {
                 const accounts = response;
+                selectAddress = accounts[0];
                 console.log(`User's address is ${accounts[0]}`);
                 console.log(response)
                 selectAddress = this.selectAddress

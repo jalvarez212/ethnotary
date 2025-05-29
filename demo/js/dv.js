@@ -1,3 +1,6 @@
+console.log('dv contract:');
+
+
 async function findContractMethod(tx) {
     // Extract method ID from the transaction input
     const methodId = tx.input.slice(0, 10);
@@ -56,12 +59,10 @@ async function getEventLogs(eventName) {
             toBlock: 'latest'
         });
     } catch (error) {
-
         console.error(`Error fetching ${eventName} logs:`, error);
         throw error;
-
     }
-} 
+}
 
 
 async function getTransactionDetailsFromLogs(eventLogs, container) {
@@ -225,8 +226,6 @@ async function processEvents(eventNames, container) {
 
     } catch (error) {
         console.error('Error in processing events:', error);
-        requestError();
-        
     }
 }
 
@@ -377,7 +376,6 @@ async function processPending(promise, container) {
 
     } catch (error) {
         console.error('Error in processing events:', error);
-        requestError();
     }
 }
 
@@ -433,8 +431,7 @@ async function processNotifications(promise, container) {
         }
     }
     catch (error) {
-        console.error('Error in processing events:', error);
-        requestError();
+        console.error('Error in processing events:', error)
     }
 
 
@@ -611,17 +608,11 @@ function updateBarGraph(gasPrice) {
     }
 }
 
-window.addEventListener('DOMContentLoaded', async () => {
-    // Wait for wallet initialization
-    await window.walletReady;
-    
-    // Now initialize all the DV.js functionality
-    getEthereumPrice();
-    getGasEstimates();
-    getTransactionsLastBlock();
-    getLatestBlock();
-    fetchTokenBalances(localStorage.token_contracts);
-});
+window.DOMContentLoaded = getEthereumPrice();
+window.DOMContentLoaded = getGasEstimates();
+window.DOMContentLoaded = getTransactionsLastBlock();
+window.DOMContentLoaded = getLatestBlock();
+window.DOMContentLoaded = updateNetworkCongestionBar();
 
 window.onload = processPending(getAllTxns(), document.getElementById('alltxns'));
 window.onload = processPending(getPending(), document.getElementById('pending'));
@@ -652,9 +643,10 @@ document.getElementById("refresh").addEventListener('click', function () {
 
 })
 
-
 async function fetchTokenBalances(data) {
-    const abiFunctions = [
+    try {
+        
+            const abiFunctions = [
         {
             "constant": true,
             "inputs": [
@@ -697,6 +689,7 @@ async function fetchTokenBalances(data) {
             "stateMutability": "view",
             "type": "function"
         },
+        
         {
             "constant": false,
             "inputs": [
@@ -734,94 +727,332 @@ async function fetchTokenBalances(data) {
             "payable": false,
             "stateMutability": "view",
             "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "name": "interfaceId",
+                    "type": "bytes4"
+                }
+            ],
+            "name": "supportsInterface",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "name": "owner",
+                    "type": "address"
+                }
+            ],
+            "name": "walletOfOwner",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint256[]"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
         }
     ];
-    document.getElementById('tokenHoldings1').innerHTML = "<option></option>";
-    document.getElementById('tokenHoldings2').innerHTML = "<option>Select Token</option>";
+        
+        document.getElementById('tokenHoldings1').innerHTML = "<option></option>";
+        document.getElementById('tokenHoldings2').innerHTML = "<option>Select Token</option>";
 
-
-
-    let tokens = JSON.parse(data);
-
-    console.log('these are the toks my boyy, ' + data)
-
-    for (const token of tokens) {
-        let tokenContract = new web3.eth.Contract(abiFunctions, token.address);
-        let balance = await tokenContract.methods.balanceOf(localStorage.getItem('contract')).call();
-
-        token.balance = balance.toString();
-
-
-
-        console.log('token balance =' + token.balance)
-        console.log(token)
-
-        if (token.balance !== '0') {
-
-
-            if (token.sym == 'erc721') {
-
-                let tokenId;
-                let optionHtml;
-
-
-                for (let i = 0; i < token.balance; i++) {
-                    tokenId = await tokenContract.methods.tokenOfOwnerByIndex(contractAddress, i).call();
-
-                    console.log(tokenId)
-                    optionHtml = `<option class="${token.type}" data-id="${tokenId.toString()}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">#${tokenId.toString()} ${token.type}</option>`;
-                    document.getElementById('tokenHoldings1').innerHTML += optionHtml;
-                    document.getElementById('tokenHoldings2').innerHTML += optionHtml;
-
+        let tokens = JSON.parse(data);
+        console.log(tokens);
+        
+        for (const token of tokens) {
+            try {
+                console.log('Processing token:', token);
+                let tokenContract = new web3.eth.Contract(abiFunctions, token.address);
+                let balance = await tokenContract.methods.balanceOf(localStorage.getItem('contract')).call();
+                
+                token.balance = balance.toString();
+                console.log('Token balance =', token.balance);
+                
+                if (token.balance !== '0') {
+                    if (token.sym == 'erc721') {
+                        console.log('erc721 token', token);
+                        
+                        let tokenId;
+                        let optionHtml;
+                        
+                        try {
+                            // First check if the contract supports ERC721Enumerable
+                            const supportsEnumeration = await tokenContract.methods.supportsInterface('0x780e9d63').call()
+                                .catch(() => false); // 0x780e9d63 is the interface ID for ERC721Enumerable
+                            
+                            console.log(`ERC721 token ${token.type} supports enumeration: ${supportsEnumeration}`);
+                            
+                            if (supportsEnumeration) {
+                                // Use enumeration approach
+                                for (let i = 0; i < token.balance; i++) {
+                                    try {
+                                        tokenId = await tokenContract.methods.tokenOfOwnerByIndex(localStorage.getItem('contract'), i).call();
+                                        
+                                        console.log(`Token ID at index ${i}: ${tokenId}`);
+                                        optionHtml = `<option class="${token.type}" data-id="${tokenId.toString()}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">#${tokenId.toString()} ${token.type}</option>`;
+                                        document.getElementById('tokenHoldings1').innerHTML += optionHtml;
+                                        document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+                                        console.log('erc721 token added');
+                                    } catch (err) {
+                                        console.error(`Error processing ERC721 token index ${i}:`, err);
+                                    }
+                                }
+                            } else {
+                                // Alternative approach - create a single option showing the balance
+                                try {
+                                    // walletOfOwner returns an array of token IDs
+                                    const tokenIds = await tokenContract.methods.walletOfOwner(localStorage.getItem('contract')).call();
+                                    
+                                    console.log(`Retrieved ${tokenIds.length} token IDs from walletOfOwner:`, tokenIds);
+                                    
+                                    // Loop through each token ID in the array
+                                    if (Array.isArray(tokenIds) && tokenIds.length > 0) {
+                                        for (let j = 0; j < tokenIds.length; j++) {
+                                            const tokenId = tokenIds[j];
+                                            console.log(`Processing token ID ${j}: ${tokenId}`);
+                                            
+                                            optionHtml = `<option class="${token.type}" data-id="${tokenId.toString()}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">#${tokenId.toString()} ${token.type}</option>`;
+                                            document.getElementById('tokenHoldings1').innerHTML += optionHtml;
+                                            document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+                                            console.log(`ERC721 token ${tokenId} added`);
+                                        }
+                                    } else {
+                                        console.log('No token IDs returned from walletOfOwner or invalid format');
+                                    }
+                                } catch (err) {
+                                    console.error('Error calling walletOfOwner:', err);
+                                    
+                                    // Fall back to a generic option
+                                    optionHtml = `<option class="${token.type}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">${token.type} (${token.balance} owned)</option>`;
+                                    document.getElementById('tokenHoldings1').innerHTML += optionHtml;
+                                    document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+                                    console.log('Generic ERC721 token option added as fallback');
+                                }
+                            }
+                        } catch (err) {
+                            console.error('Error checking ERC721 enumeration support:', err);
+                            
+                            // Fallback - create a generic option when we can't determine enumeration
+                            optionHtml = `<option class="${token.type}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">${token.type} (${token.balance} owned)</option>`;
+                            document.getElementById('tokenHoldings1').innerHTML += optionHtml;
+                            document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+                            console.log('Fallback ERC721 token option added');
+                        }
+                    }
+                    
+                    if (token.sym == 'erc20') {
+                        // ... existing ERC20 processing ...
+                    }
                 }
-
-                console.log(token.balance)
-
+            } catch (err) {
+                console.error('Error processing token', token, err);
+                // Continue to the next token instead of terminating the function
             }
-
-            if (token.sym == 'erc20') {
-                console.log("new token: " + JSON.stringify(token))
-
-
-
-
-                let decimals = await tokenContract.methods.decimals().call();
-
-                const balanceBigInt = BigInt(balance);
-                const decimalsBigInt = BigInt(decimals);
-                const factor = BigInt(10) ** decimalsBigInt;
-                const formattedBalance = Number(balanceBigInt) / Number(factor);
-
-                //let formattedBalance = await web3.utils.fromWei(balance, 'ether') * Math.pow(10, 18 - decimals);
-
-                console.log('token balance =' + formattedBalance.toFixed(4))
-                console.log('decimals =' + decimals.toString())
-
-                // Constructing the option element to append to the dropdown
-
-                const optionHtml = `<option class="${token.type}" value="${formattedBalance}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}" data-dec="${decimals.toString()}">${formattedBalance.toFixed(4)} ${token.type}</option>`;
-                document.getElementById('tokenHoldings1').innerHTML += optionHtml;
-                document.getElementById('tokenHoldings2').innerHTML += optionHtml;
-                //document.querySelectorAll(`.clickable`).addEventListener('click', function(){console.log('hellollloolololoo')});
-
-
-            }
-
-
-
-
-
-
-
-
         }
-
-
+        
+        console.log('Finished processing tokens:', tokens);
+        
+        // Convert HTMLCollection to Array before using forEach
+        Array.from(document.getElementsByClassName('clickable')).forEach(element => {
+            element.addEventListener('click', function() { console.log('Click event triggered'); });
+        });
+    } catch (err) {
+        console.error('Error in fetchTokenBalances', err);
     }
-
-    console.log(tokens);
-    document.getElementsByClassName(`clickable`).forEach(element => {
-        element.addEventListener('click', function () { console.log('hellollloolololoo') });
-    });
-
 }
+// async function fetchTokenBalances(data) {
+//     const abiFunctions = [
+//         {
+//             "constant": true,
+//             "inputs": [
+//                 {
+//                     "name": "owner",
+//                     "type": "address"
+//                 }
+//             ],
+//             "name": "balanceOf",
+//             "outputs": [
+//                 {
+//                     "name": "",
+//                     "type": "uint256"
+//                 }
+//             ],
+//             "payable": false,
+//             "stateMutability": "view",
+//             "type": "function"
+//         },
+//         {
+//             "constant": true,
+//             "inputs": [
+//                 {
+//                     "name": "owner",
+//                     "type": "address"
+//                 },
+//                 {
+//                     "name": "index",
+//                     "type": "uint256"
+//                 }
+//             ],
+//             "name": "tokenOfOwnerByIndex",
+//             "outputs": [
+//                 {
+//                     "name": "",
+//                     "type": "uint256"
+//                 }
+//             ],
+//             "payable": false,
+//             "stateMutability": "view",
+//             "type": "function"
+//         },
+//         {
+//             "constant": false,
+//             "inputs": [
+//                 {
+//                     "name": "to",
+//                     "type": "address"
+//                 },
+//                 {
+//                     "name": "value",
+//                     "type": "uint256"
+//                 }
+//             ],
+//             "name": "transfer",
+//             "outputs": [
+//                 {
+//                     "name": "",
+//                     "type": "bool"
+//                 }
+//             ],
+//             "payable": false,
+//             "stateMutability": "nonpayable",
+//             "type": "function"
+//         },
+
+//         {
+//             "constant": true,
+//             "inputs": [],
+//             "name": "decimals",
+//             "outputs": [
+//                 {
+//                     "name": "",
+//                     "type": "uint8"
+//                 }
+//             ],
+//             "payable": false,
+//             "stateMutability": "view",
+//             "type": "function"
+//         }
+//     ];
+//     document.getElementById('tokenHoldings1').innerHTML = "<option></option>";
+//     document.getElementById('tokenHoldings2').innerHTML = "<option>Select Token</option>";
+
+
+
+//     let tokens = JSON.parse(data);
+
+//     console.log(tokens)
+
+//     console.log('these are the toks my boyy, ' + data)
+
+//     for (const token of tokens) {
+
+//         console.log('lopp running dawg: ' + token)
+
+//         console.log('this is the token', token)
+//         let tokenContract = new web3.eth.Contract(abiFunctions, token.address);
+//         let balance = await tokenContract.methods.balanceOf(localStorage.getItem('contract')).call();
+
+//         token.balance = balance.toString();
+
+
+
+//         console.log('token balance =' + token.balance)
+//         console.log(token)
+
+//         if (token.balance !== '0') {
+
+
+//             if (token.sym == 'erc721') {
+
+//                 console.log('erc721 token', token)
+
+//                 let tokenId;
+//                 let optionHtml;
+
+
+//                 for (let i = 0; i < token.balance; i++) {
+//                     tokenId = await tokenContract.methods.tokenOfOwnerByIndex(localStorage.getItem('contract'), i).call();
+
+//                     console.log(tokenId)
+//                     optionHtml = `<option class="${token.type}" data-id="${tokenId.toString()}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}">#${tokenId.toString()} ${token.type}</option>`;
+//                     document.getElementById('tokenHoldings1').innerHTML += optionHtml;
+//                     document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+
+//                 }
+
+//                 console.log(token.balance)
+
+//             }
+
+//             if (token.sym == 'erc20') {
+//                 console.log("new token: " + JSON.stringify(token))
+
+
+
+
+//                 let decimals = await tokenContract.methods.decimals().call();
+
+//                 const balanceBigInt = BigInt(balance);
+//                 const decimalsBigInt = BigInt(decimals);
+//                 const factor = BigInt(10) ** decimalsBigInt;
+//                 const formattedBalance = Number(balanceBigInt) / Number(factor);
+
+//                 //let formattedBalance = await web3.utils.fromWei(balance, 'ether') * Math.pow(10, 18 - decimals);
+
+//                 console.log('token balance =' + formattedBalance.toFixed(4))
+//                 console.log('decimals =' + decimals.toString())
+
+//                 // Constructing the option element to append to the dropdown
+
+//                 const optionHtml = `<option class="${token.type}" value="${formattedBalance}" data-token="${token.type}" data-type="${token.sym}" data-add="${token.address}" data-dec="${decimals.toString()}">${formattedBalance.toFixed(4)} ${token.type}</option>`;
+//                 document.getElementById('tokenHoldings1').innerHTML += optionHtml;
+//                 document.getElementById('tokenHoldings2').innerHTML += optionHtml;
+//                 //document.querySelectorAll(`.clickable`).addEventListener('click', function(){console.log('hellollloolololoo')});
+
+
+//             }
+
+
+
+
+
+
+
+
+//         }
+
+
+//     }
+
+//     console.log(tokens);
+//     document.getElementsByClassName(`clickable`).forEach(element => {
+//         element.addEventListener('click', function () { console.log('hellollloolololoo') });
+//     });
+
+// }
+fetchTokenBalances(localStorage.token_contracts);
