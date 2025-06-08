@@ -3,31 +3,469 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing Page</title>
+    <title>Ethnotary | Secure Multi-Signature Web3 Wallet</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+    <!--end::Fonts-->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.9.1/dist/gsap.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .hero-section {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(to right, #007bff, #6610f2);
-            color: white;
-            text-align: center;
+        :root {
+            --primary: #3a86ff;
+            --secondary: #8338ec;
+            --accent: #ff006e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #38b000;
         }
-        .container { max-width: 900px; }
-        .btn-primary { background-color: #ff5722; border: none; }
+        
+        body { 
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark);
+        }
+        
+        .hero-section {
+            min-height: 100vh;
+            background: linear-gradient(135deg, rgba(58,134,255,0.05) 0%, rgba(131,56,236,0.1) 100%);
+            position: relative;
+            overflow: hidden;
+            padding: 120px 0 80px;
+        }
+        
+        #hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        #hero-background canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border: none;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2a70e0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(58,134,255,0.4);
+        }
+        
+        .btn-outline {
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            padding: 10px 22px;
+            font-weight: 600;
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .hero-headline {
+            font-weight: 800;
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: rgba(33, 37, 41, 0.8);
+            margin-bottom: 32px;
+            max-width: 600px;
+        }
+        
+        .highlight {
+            color: var(--accent);
+        }
+        
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-headline {
+                font-size: 2.5rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <section class="hero-section">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
-            <h1 class="display-4">Welcome to Our Platform</h1>
-            <p class="lead">We offer innovative solutions to help your business grow. Join us today!</p>
-            <a href="#" class="btn btn-primary btn-lg">Get Started</a>
+            <a class="navbar-brand" href="#">
+                <img src="../assets/media/logos/en_logo.png" height="36" alt="Ethnotary" class="me-2">
+                Ethnotary
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../documentation/index.html">Docs</a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-primary" href="../demo/index.html">Try Demo</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section d-flex align-items-center" id="home">
+        <div id="hero-background"></div>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <h1 class="hero-headline">Security <span class="highlight">&</span> Usability</h1>
+                    <p class="hero-subtitle">Ethnotary is a decentralized multi-signature wallet that gives you complete control over your digital assets without sacrificing convenience.</p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="../demo/index.html" class="btn btn-primary btn-lg">Try Demo <i class="fas fa-arrow-right ms-2"></i></a>
+                        <a href="https://github.com/jalvarez212/ethnotary" class="btn btn-outline btn-lg">View on GitHub <i class="fab fa-github ms-2"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-5 d-none d-lg-block text-center">
+                    <img src="../assets/media/illustrations/wallet-hero.svg" alt="Ethnotary Wallet Interface" class="img-fluid mt-5" style="max-height: 480px;">
+                </div>
+            </div>
         </div>
     </section>
+
+    <!-- Features Section -->    
+    <section class="py-5" id="features">
+        <div class="container py-5">
+            <div class="row text-center mb-5">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="fs-1 fw-bold mb-3">Why ethnotary?</h2>
+                    <p class="lead text-muted">No more choosing between security and usability</p>
+                </div>
+            </div>
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-5 order-lg-2">
+                    <div id="token-visualization" style="height: 350px; position: relative;"></div>
+                </div>
+                <div class="col-lg-7 order-lg-1">
+                    <div class="p-lg-5 pe-lg-0">
+                        <h3 class="mb-4">Secure & Usable Token Management</h3>
+                        <p class="lead mb-4">Ethnotary securely manages your tokens across multiple EVM-compatible chains with a simple, unified interface.</p>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3"><i class="fas fa-check-circle text-success"></i></div>
+                            <div>ERC20, ERC721, and ERC1155 token support</div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3"><i class="fas fa-check-circle text-success"></i></div>
+                            <div>Detailed metadata display for NFTs and collectibles</div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3"><i class="fas fa-check-circle text-success"></i></div>
+                            <div>Secure transfers with multi-signature protection</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4">
+                <!-- Feature 1 -->                
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4 p-xl-5">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3 class="h4 mb-3">Multi-Signature Security</h3>
+                            <p class="text-muted mb-4">Secure your tokens with multi-wallet approval flows. Protect against single points of failure with distributed signing authority.</p>
+                            <a href="#how-it-works" class="fw-bold text-decoration-none">
+                                Learn more <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Feature 2 -->                
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4 p-xl-5">
+                            <div class="feature-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <h3 class="h4 mb-3">Local-First Architecture</h3>
+                            <p class="text-muted mb-4">Run entirely in your browser with no centralized backend. Access your wallet as long as you have an internet connection.</p>
+                            <a href="#how-it-works" class="fw-bold text-decoration-none">
+                                Learn more <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Feature 3 -->                
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4 p-xl-5">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3 class="h4 mb-3">DeFi Accessibility</h3>
+                            <p class="text-muted mb-4">Unlock the world of decentralized finance with access to bots, lending, staking, and yield-generating opportunities across the ecosystem.</p>
+                            <a href="../documentation/index.html" class="fw-bold text-decoration-none">
+                                Explore DeFi capabilities <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- How It Works Section -->
+    <section class="py-5" id="how-it-works">
+        <div class="container py-5">
+            <div class="row text-center mb-5">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="fs-1 fw-bold mb-3">How Ethnotary Works</h2>
+                    <p class="lead text-muted">A simple yet powerful approach to crypto security</p>
+                </div>
+            </div>
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div id="blockchain-visualization" style="height: 400px; position: relative; border-radius: 8px; background: linear-gradient(135deg, rgba(58,134,255,0.05) 0%, rgba(131,56,236,0.1) 100%); overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);"></div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="mb-4">
+                        <div class="d-flex">
+                            <div class="me-4">
+                                <div class="rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">1</div>
+                            </div>
+                            <div>
+                                <h3 class="h4">Customizable Multi-Signature System</h3>
+                                <p class="text-muted">Ethnotary is built on smart contracts that require multiple wallet approvals before executing transactions, significantly enhancing security.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="d-flex">
+                            <div class="me-4">
+                                <div class="rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">2</div>
+                            </div>
+                            <div>
+                                <h3 class="h4">Local-First Implementation</h3>
+                                <p class="text-muted">The interface runs in your browser with no centralized backend. Your private keys never leave your device.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex">
+                            <div class="me-4">
+                                <div class="rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">3</div>
+                            </div>
+                            <div>
+                                <h3 class="h4">Blockchain as Backend</h3>
+                                <p class="text-muted">Interacts directly with blockchain networks to read and write data securely, with no intermediary services.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col-12 text-center">
+                    <a href="../documentation/index.html" class="btn btn-outline me-3">Read the Documentation</a>
+                    <a href="../demo/index.html" class="btn btn-primary">Try Ethnotary</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Values Section -->
+    <section class="py-5 bg-light" id="about">
+        <div class="container py-5">
+            <div class="row text-center mb-5">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="fs-1 fw-bold mb-3">Our Values</h2>
+                    <p class="lead text-muted">The principles that guide our work</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="mb-3 text-primary">
+                                <i class="fas fa-eye fa-2x"></i>
+                            </div>
+                            <h3 class="h5 mb-3">Transparency</h3>
+                            <p class="text-muted mb-0">We believe transparency helps keep our communities free, open, and fair, providing the foundation for truthful participation.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="mb-3 text-primary">
+                                <i class="fas fa-network-wired fa-2x"></i>
+                            </div>
+                            <h3 class="h5 mb-3">Decentralization</h3>
+                            <p class="text-muted mb-0">We believe distributed systems offer robust availability and protection from censorship across geographic and political borders.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="mb-3 text-primary">
+                                <i class="fas fa-lock fa-2x"></i>
+                            </div>
+                            <h3 class="h5 mb-3">Security</h3>
+                            <p class="text-muted mb-0">Security is our top concern. We're committed to keeping users safe in the often ruthless world of crypto.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="mb-3 text-primary">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                            <h3 class="h5 mb-3">Collaboration</h3>
+                            <p class="text-muted mb-0">We believe in the power of communities working together while preserving individual autonomy and control.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5" id="cta">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-8">
+                    <div class="card border-0 shadow" style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                        <div class="card-body p-5 text-center text-white">
+                            <h2 class="fs-1 fw-bold mb-4">Ready to Take Control of Your Digital Assets?</h2>
+                            <p class="lead mb-4">Secure your tokens with Ethnotary's decentralized multi-signature wallet. No centralized services, no compromise.</p>
+                            <div class="d-flex justify-content-center flex-wrap gap-3">
+                                <a href="../demo/index.html" class="btn btn-light btn-lg px-4">Launch App</a>
+                                <a href="../documentation/index.html" class="btn btn-outline-light btn-lg px-4">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="text-uppercase mb-4">Ethnotary</h5>
+                    <p class="mb-4">A secure, decentralized multi-signature wallet that bridges the gap between security and usability in the crypto ecosystem.</p>
+                    <div class="d-flex gap-3">
+                        <a href="https://twitter.com/ethnotary" class="text-white" target="_blank">
+                            <i class="fab fa-twitter fa-lg"></i>
+                        </a>
+                        <a href="https://github.com/ethnotary" class="text-white" target="_blank">
+                            <i class="fab fa-github fa-lg"></i>
+                        </a>
+                        <a href="https://discord.gg/ethnotary" class="text-white" target="_blank">
+                            <i class="fab fa-discord fa-lg"></i>
+                        </a>
+                        <a href="https://t.me/ethnotarycommunity" class="text-white" target="_blank">
+                            <i class="fab fa-telegram fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase mb-4">Product</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="../demo/index.html" class="text-white text-decoration-none">App</a></li>
+                        <li class="mb-2"><a href="#features" class="text-white text-decoration-none">Features</a></li>
+                        <li class="mb-2"><a href="#how-it-works" class="text-white text-decoration-none">How It Works</a></li>
+                        <li class="mb-2"><a href="../documentation/roadmap.html" class="text-white text-decoration-none">Roadmap</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase mb-4">Resources</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="../documentation/index.html" class="text-white text-decoration-none">Documentation</a></li>
+                        <li class="mb-2"><a href="../documentation/tutorials.html" class="text-white text-decoration-none">Tutorials</a></li>
+                        <li class="mb-2"><a href="../documentation/faq.html" class="text-white text-decoration-none">FAQs</a></li>
+                        <li class="mb-2"><a href="https://github.com/ethnotary" class="text-white text-decoration-none">GitHub</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <h5 class="text-uppercase mb-4">Stay Updated</h5>
+                    <p class="mb-3">Subscribe to our newsletter for updates and news.</p>
+                    <form>
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Your email" aria-label="Email" aria-describedby="subscribe-button">
+                            <button class="btn btn-primary" type="submit" id="subscribe-button">Subscribe</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <p class="mb-0">&copy; 2025 Ethnotary. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="legal/privacy.html" class="text-white me-3">Privacy Policy</a>
+                    <a href="legal/terms.html" class="text-white">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/hero-background.js"></script>
+    <script src="js/token-visualization.js"></script>
+    <script src="js/blockchain-visualization.js"></script>
 </body>
 </html>
