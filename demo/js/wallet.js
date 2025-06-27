@@ -69,20 +69,13 @@ function detectNetworkChange(wallet) {
 
 
 const ethers = window.ethers;
-const MMSDK = new MetaMaskSDK.MetaMaskSDK({
-    dappMetadata: {
-        name: "ethnotary",
-        url: "https://ethnotary.io/",
-    },
-    infuraAPIKey: ENV.RPC_NODE_KEY,
 
-    // Other options
-})
-const coinbaseWallet = new CoinbaseWalletSDK({
+// Initialize Coinbase Wallet SDK
+const coinbaseWallet = typeof CoinbaseWalletSDK !== 'undefined' ? new CoinbaseWalletSDK({
     appName: 'ethnotary',
     appLogoUrl: 'https://ethnotary.io/',
     darkMode: false
-});
+}) : null;
 
 /**
  * Listens for key wallet/provider events and handles them.
@@ -125,59 +118,72 @@ function watchWalletChanges(wallet) {
 
 //1) MetaMask
 async function connectMetaMask() {
-    if (typeof window.ethereum === 'undefined') {
-        showModal();
-        return;
-    }
-
     try {
+        // First dynamically load the MetaMask SDK
+        console.log('Loading MetaMask SDK...');
+        await loadMetaMaskSDK();
+        
+        if (!window.MetaMaskSDK) {
+            throw new Error('Failed to load MetaMask SDK');
+        }
+        
+        // Initialize the SDK
+        const MMSDK = new MetaMaskSDK.MetaMaskSDK({
+            dappMetadata: {
+                name: "EthNotary",
+                url: window.location.href,
+            },
+            extensionOnly: true,
+            useDeeplink: false,
+            logging: {
+                sdk: false,
+            }
+        });
+        
         // 1) Connect to wallet
-        const accounts = await MMSDK.connect()
+        const accounts = await MMSDK.connect();
         let metaWallet = await MMSDK.getProvider();
         wallet = await metaWallet;
-        wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-            const accounts = response;
-            selectAddress = accounts[0];
-            console.log(`User's address is ${accounts[0]}`);
-            console.log(response)
-
-            // Optionally, have the default account set for web3.js
-            web3.eth.defaultAccount = accounts[0]
-            localStorage.setItem('connectedWallet', accounts[0]);
-
-        })
+        
+        const response = await wallet.request({ method: 'eth_requestAccounts' });
+        const walletAccounts = response;
+        selectAddress = walletAccounts[0];
+        console.log(`User's address is ${walletAccounts[0]}`);
+        
+        // Set default account for web3.js
+        web3.eth.defaultAccount = walletAccounts[0];
+        localStorage.setItem('connectedWallet', walletAccounts[0]);
+        
         // 2) Get chain ID and update Web3
         const chainId = await wallet.request({ method: 'eth_chainId' });
         const matchedNetwork = chainIdLookup[chainId];
         if (matchedNetwork?.rpcUrl) {
-            updateWeb3Provider(matchedNetwork.rpcUrl); // or new Web3(provider)
+            updateWeb3Provider(matchedNetwork.rpcUrl);
             console.log(`Connected to network: ${matchedNetwork.name}`);
-
         } else {
             console.warn("Unsupported or unknown network:", chainId);
             // Optionally fall back to a default, or show a modal
         }
 
+        // Set up wallet event listeners
         watchWalletChanges(wallet);
-
 
         // 3) Save everything to localStorage
         localStorage.setItem('lastWallet', 'Metamask');
         localStorage.setItem('lastChain', chainId);
         hideWallets();
+        
+        return { success: true, address: walletAccounts[0] };
     } catch (error) {
-        console.error('User denied account access or error occurred:', error);
+        console.error('MetaMask connection error:', error);
+       
+        
     }
-
-
 }
 // 2) OKX
 
 async function connectOKXWallet() {
-    if (typeof window.ethereum === 'undefined') {
-        showModal();
-        return;
-    }
+
 
     try {
         // 1) Connect to wallet
@@ -214,6 +220,13 @@ async function connectOKXWallet() {
         hideModal();
     } catch (error) {
         console.error('User denied account access or error occurred:', error);
+        
+        // Check if the error is due to wallet not being installed
+        if (!window.okxwallet) {
+            // Open a new tab directing users to download OKX wallet only if it's not installed
+            window.open('https://web3.okx.com/', '_blank');
+        }
+        // If user denies access, do nothing (falls through to this point)
     }
 }
 // Function to connect to the user's Ethereum wallet
@@ -221,52 +234,58 @@ async function connectCoinbase() {
 
     try {
         const cbwallet = await coinbaseWallet.makeWeb3Provider('https://mainnet.infura.io/v3/' + ENV.RPC_NODE_KEY, '1');
+        
+        if (!cbwallet) {
+            throw new Error('Failed to initialize Coinbase provider');
+        }
 
-        wallet = await cbwallet;
-        wallet.request({ method: 'eth_requestAccounts' }).then(response => {
-            const accounts = response;
-            selectAddress = accounts[0];
-            console.log(`User's address is ${accounts[0]}`);
+        wallet = cbwallet;
+        const response = await wallet.request({ method: 'eth_requestAccounts' });
+        
+        if (!response || response.length === 0) {
+            throw new Error('No accounts returned from Coinbase');
+        }
+        
+        const accounts = response;
+        selectAddress = accounts[0];
+        console.log(`User's address is ${accounts[0]}`);
 
-            // Optionally, have the default account set for web3.js
-            web3.eth.defaultAccount = accounts[0];
-            localStorage.setItem('connectedWallet', selectAddress);
-            localStorage.setItem('lastWallet', 'Coinbase');
+        // Set default account for web3.js
+        web3.eth.defaultAccount = accounts[0];
+        localStorage.setItem('connectedWallet', selectAddress);
+        localStorage.setItem('lastWallet', 'Coinbase');
 
-
-        })
+        // Get and normalize chain ID
         rawChainId = await normalizeToHex(wallet.getChainId());
-
         const chainId = await wallet.request({ method: 'eth_chainId' });
+        
+        // Update provider based on network
         const matchedNetwork = chainIdLookup[chainId];
         if (matchedNetwork?.rpcUrl) {
-            updateWeb3Provider(matchedNetwork.rpcUrl); // or new Web3(provider)
+            updateWeb3Provider(matchedNetwork.rpcUrl);
             console.log(`Connected to network: ${matchedNetwork.name}`);
         } else {
             console.warn("Unsupported or unknown network:", chainId);
-            // Optionally fall back to a default, or show a modal
         }
+        
+        // Set up wallet event listeners
         watchWalletChanges(wallet);
+        
+        // Save chain ID to localStorage
         localStorage.setItem('lastChain', rawChainId);
         console.log("Detected Chain ID:", rawChainId);
 
+        // Hide wallet selection UI
         hideWallets();
-
-
+        
+        return { success: true, address: accounts[0] };
     } catch (error) {
-        console.error('User denied account access or error occurred:', error);
-
-
+        console.error('Coinbase connection error:', error);
     }
-
 }
 
 // 4) Phantom
 async function connectPhantomWallet() {
-    if (typeof window.ethereum === 'undefined') {
-        showModal();
-        return;
-    }
 
     try {
         // 1) Connect to wallet
@@ -304,6 +323,13 @@ async function connectPhantomWallet() {
         hideWallets();
     } catch (error) {
         console.error('User denied account access or error occurred:', error);
+        
+        // Check if the error is due to wallet not being installed
+        if (!window.phantom?.ethereum) {
+            // Open a new tab directing users to download Phantom wallet only if it's not installed
+            window.open('https://phantom.com/', '_blank');
+        }
+        // If user denies access, do nothing (falls through to this point)
     }
 }
 
@@ -312,8 +338,7 @@ async function connectPhantomWallet() {
 // 5) Binance
 
 async function connectBinance() {
-
-    if (typeof window.trustwallet !== 'undefined') {
+    
 
         try {
             // 1) Connect to wallet
@@ -351,10 +376,17 @@ async function connectBinance() {
             hideWallets();
         } catch (error) {
             console.error('User denied account access or error occurred:', error);
+            
+            // Check if the error is due to wallet not being installed
+            if (!window.trustwallet) {
+                // Open a new tab directing users to download Binance wallet only if it's not installed
+                window.open('https://www.binance.com/en/binancewallet', '_blank');
+            }
+            // If user denies access, do nothing (falls through to this point)
         }
 
 
-    }
+    
 
 
 
@@ -362,7 +394,6 @@ async function connectBinance() {
 }
 
 async function connectWallet() {
-    if (typeof window.ethereum !== 'undefined') {
         try {
             wallet = wallet.request({ method: 'eth_requestAccounts' }).then(response => {
                 const accounts = response;
@@ -403,10 +434,16 @@ async function connectWallet() {
             console.log("Detected Chain ID:", rawChainId);
         } catch (error) {
             console.error('User denied account access or there was an issue:', error);
+            
+            // Show a more informative message for the generic wallet connection
+            // Since this is a catch-all function, we can provide general wallet information
+            if (typeof window.ethereum === 'undefined') {
+                // No wallet detected at all - direct to Ethereum's wallet finder page
+                window.open('https://ethereum.org/en/wallets/find-wallet/', '_blank');
+            }
+            // If user denies access or other error, just keep the error in console
         }
-    } else {
-        console.error('User denied account access or error occurred:', error);
-    }
+ 
 }
 
 
@@ -546,16 +583,16 @@ checkWalletConnectionAndNetwork().then(function () {
 });
 
 // Add a backup check in case the async initialization is missed
-window.addEventListener('DOMContentLoaded', function () {
-    console.log("DOM loaded - checking contract initialization");
-    // Wait a bit to ensure the contract initialization has had time to run
-    setTimeout(function () {
-        if (!contract || !contract.methods) {
-            console.error("Contract not properly initialized on DOMContentLoaded");
-            handleNetworkOrWalletIssue();
-        }
-    }, 2000);
-});
+// window.addEventListener('DOMContentLoaded', function () {
+//     console.log("DOM loaded - checking contract initialization");
+//     // Wait a bit to ensure the contract initialization has had time to run
+//     setTimeout(function () {
+//         if (!contract || !contract.methods) {
+//             console.error("Contract not properly initialized on DOMContentLoaded");
+//             handleNetworkOrWalletIssue();
+//         }
+//     }, 2000);
+// });
 
 // Function to handle wrong network errors
 function wrongNetwork() {

