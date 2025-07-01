@@ -1,6 +1,5 @@
 let active_tokens = [];
 const providerURL = web3.currentProvider.clientUrl;
-let gas;
 
 
 const token_card = `
@@ -1326,3 +1325,23 @@ async function getTokenURIAndMetadata(contract, tokenId) {
         return [null, null];
     }
 }
+
+// Execute check_balance and display_tokens when the page loads
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('NFT page loaded, initializing token display...');
+    try {
+        // First run check_balance (using contract address from localStorage)
+        if (localStorage.contract) {
+            await check_balance(localStorage.contract, 'all');
+            console.log('Balance check completed');
+        } else {
+            console.warn('No contract address found in localStorage');
+        }
+        
+        // Then display tokens
+        await display_tokens();
+        console.log('Token display completed');
+    } catch (error) {
+        console.error('Error initializing NFT display:', error);
+    }
+});

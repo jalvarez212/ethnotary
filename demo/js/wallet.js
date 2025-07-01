@@ -512,15 +512,88 @@ async function isWalletConnected() {
     return false;
 }
 
-// Helper function to decide whether to show wrong network modal or wallet connect modal
+// Helper function to decide whether to show wrong network modal or detect the correct network for the contract
 async function handleNetworkOrWalletIssue() {
-    if (await isWalletConnected()) {
-        // Wallet is connected but wrong network
-        console.log("Wallet is connected, showing wrong network modal");
-        wrongNetwork();
-    } else {
-        // Wallet is not connected, show connect wallet modal
-        console.log("Wallet is not connected, showing wallet connect modal");
+    // Check if web3 is available in the browser
+    if (typeof Web3 === 'undefined') {
+        console.log("Web3 is not available, showing wallet connect modal");
+        showModal();
+        return;
+    }
+    
+    try {
+        // Create a new Web3 instance
+        const web3Instance = new Web3();
+        
+        // Get contract address from localStorage
+        const contractAddress = localStorage.contract;
+        if (!contractAddress) {
+            console.error("Contract address not found in localStorage");
+            showModal();
+            return;
+        }
+        
+        console.log("Detecting network for contract:", contractAddress);
+        
+        // Try connecting to each network one by one
+        const networkKeys = Object.keys(networks);
+        let contractNetwork = null;
+        
+        for (const networkName of networkKeys) {
+            const network = networks[networkName];
+            console.log(`Trying network ${networkName}...`);
+            
+            // Set the provider for this network
+            web3Instance.setProvider(new Web3.providers.HttpProvider(network.rpcUrl));
+            
+            // Get the contract instance
+            const contractInstance = new web3Instance.eth.Contract(contractABI, contractAddress);
+            
+            try {
+                // Try to call a simple view method to check if contract exists on this network
+                // We'll use getOwners() which should be available on the multisig contract
+                await contractInstance.methods.getOwners().call();
+                
+                // If we reach here, the contract exists on this network
+                console.log(`Contract found on network: ${networkName}`);
+                contractNetwork = networkName;
+                
+                // Update the provider to use this network
+                updateWeb3Provider(network.rpcUrl);
+                
+                // Break the loop since we found the network
+                break;
+            } catch (error) {
+                console.log(`Contract not found on ${networkName}:`, error.message);
+                // Continue to the next network
+            }
+        }
+        
+        // After checking all networks, decide what to show
+        if (contractNetwork) {
+            // We found the network, check if user's wallet is connected to this network
+            if (wallet) {
+                const chainId = await wallet.request({ method: 'eth_chainId' });
+                const matchedNetwork = chainIdLookup[chainId];
+                
+                if (matchedNetwork && matchedNetwork.name === contractNetwork) {
+                    console.log("User is connected to the correct network");
+                    // Everything is fine, don't show any modal
+                    return;
+                } else {
+                    console.log("User is connected to the wrong network, showing wrong network modal");
+                    wrongNetwork();
+                    return;
+                }
+            }
+        }
+        
+        // If we get here, either the contract wasn't found on any network or user's wallet isn't connected
+        console.log("Contract not found on any network or wallet not connected, showing wallet connect modal");
+        showModal();
+        
+    } catch (error) {
+        console.error("Error detecting network:", error);
         showModal();
     }
 }
@@ -597,121 +670,150 @@ checkWalletConnectionAndNetwork().then(function () {
 // Function to handle wrong network errors
 function wrongNetwork() {
     console.error("Error: You are connected to the wrong network or the contract is not deployed on this network.");
+    
+    // Show warning via modal or alert
+    showNetworkWarning();
+}
 
-    // Only show the modal if it's not already visible
+// Helper function to show network warning via modal or fallback to alert
+function showNetworkWarning() {
     const modal = document.getElementById('wrongNetworkModal');
-    if (modal) {
-        // Make sure Bootstrap is available
-        if (typeof bootstrap !== 'undefined') {
-            // Initialize the modal
-            const wrongNetworkModal = new bootstrap.Modal(modal);
-
-            // Show the modal
-            wrongNetworkModal.show();
-
-            // Add event listeners to the network options
-            const networkOptions = document.querySelectorAll('.network-option');
-            networkOptions.forEach(option => {
-                // Remove any existing event listeners to prevent duplicates
-                const newOption = option.cloneNode(true);
-                option.parentNode.replaceChild(newOption, option);
-
-                // Add click handler to each network option
-                newOption.addEventListener('click', async (event) => {
-                    try {
-                        const chainId = event.currentTarget.getAttribute('data-chain-id');
-                        const networkName = event.currentTarget.textContent.trim();
-
-                        console.log(`Attempting to switch to ${networkName} (Chain ID: ${chainId})`);
-                        
-                        // Save the selected chain ID to localStorage before doing anything else
-                        localStorage.setItem('lastChain', chainId);
-                        console.log(`Saved chain ID ${chainId} to localStorage`);
-
-                        // Hide the modal
-                        wrongNetworkModal.hide();
-
-                        // Show loading indicator
-                        const loadingMessage = document.createElement('div');
-                        loadingMessage.style.position = 'fixed';
-                        loadingMessage.style.top = '50%';
-                        loadingMessage.style.left = '50%';
-                        loadingMessage.style.transform = 'translate(-50%, -50%)';
-                        loadingMessage.style.padding = '20px';
-                        loadingMessage.style.background = 'rgba(0, 0, 0, 0.7)';
-                        loadingMessage.style.color = 'white';
-                        loadingMessage.style.borderRadius = '5px';
-                        loadingMessage.style.zIndex = '9999';
-                        loadingMessage.textContent = `Switching to ${networkName}...`;
-                        document.body.appendChild(loadingMessage);
-
-                        // Try to switch to the selected network
-                        if (window.ethereum) {
-                            try {
-                                // Request network switch
-                                await window.ethereum.request({
-                                    method: 'wallet_switchEthereumChain',
-                                    params: [{ chainId: chainId }]
-                                });
-
-                                // Success - reload the page
-                                console.log(`Successfully switched to ${networkName}`);
-                                setTimeout(() => {
-                                    window.location.reload();
-                                }, 1000);
-                            } catch (switchError) {
-                                // This error code indicates that the chain has not been added to MetaMask
-                                if (switchError.code === 4902) {
-                                    try {
-                                        // Get network details for adding
-                                        const networkDetails = getNetworkDetailsForChainId(chainId);
-
-                                        if (networkDetails) {
-                                            // Add the network
-                                            await window.ethereum.request({
-                                                method: 'wallet_addEthereumChain',
-                                                params: [networkDetails]
-                                            });
-
-                                            // Success - reload the page
-                                            console.log(`Successfully added and switched to ${networkName}`);
-                                            setTimeout(() => {
-                                                window.location.reload();
-                                            }, 1000);
-                                        } else {
-                                            throw new Error(`Network details not found for chain ID ${chainId}`);
-                                        }
-                                    } catch (addError) {
-                                        console.error(`Error adding the network: ${addError.message}`);
-                                        document.body.removeChild(loadingMessage);
-                                        alert(`Error adding ${networkName}: ${addError.message}`);
-                                    }
-                                } else {
-                                    console.error(`Error switching networks: ${switchError.message}`);
-                                    document.body.removeChild(loadingMessage);
-                                    alert(`Error switching to ${networkName}: ${switchError.message}`);
-                                }
-                            }
-                        } else {
-                            document.body.removeChild(loadingMessage);
-                            alert('No Ethereum wallet found. Please install MetaMask or another compatible wallet.');
-                        }
-                    } catch (error) {
-                        console.error('Error in network selection:', error);
-                        if (document.body.contains(loadingMessage)) {
-                            document.body.removeChild(loadingMessage);
-                        }
-                        alert(`An error occurred: ${error.message}`);
-                    }
-                });
-            });
-        } else {
-            // Fallback if Bootstrap is not available
-            alert("You are connected to the wrong network. Please switch to a supported network in your wallet.");
-        }
-    } else {
-        // Modal element not found - fallback to alert
+    
+    // If modal element doesn't exist or Bootstrap is unavailable, show alert instead
+    if (!modal || typeof bootstrap === 'undefined') {
         alert("You are connected to the wrong network. Please switch to a supported network in your wallet.");
+        return;
+    }
+    
+    // Initialize and show the modal
+    const wrongNetworkModal = new bootstrap.Modal(modal);
+    wrongNetworkModal.show();
+    
+    // Set up network switching options
+    setupNetworkOptions(wrongNetworkModal);
+}
+
+// Set up click handlers for network options
+function setupNetworkOptions(wrongNetworkModal) {
+    const networkOptions = document.querySelectorAll('.network-option');
+    
+    networkOptions.forEach(option => {
+        // Remove any existing event listeners to prevent duplicates
+        const newOption = option.cloneNode(true);
+        option.parentNode.replaceChild(newOption, option);
+        
+        // Add click handler
+        newOption.addEventListener('click', async (event) => {
+            const chainId = event.currentTarget.getAttribute('data-chain-id');
+            const networkName = event.currentTarget.textContent.trim();
+            
+            // Save selection and close modal
+            localStorage.setItem('lastChain', chainId);
+            wrongNetworkModal.hide();
+            
+            // Show loading indicator and attempt network switch
+            const loadingMessage = showLoadingMessage(networkName);
+            
+            try {
+                await switchToNetwork(chainId, networkName, loadingMessage);
+            } catch (error) {
+                handleSwitchError(error, networkName, loadingMessage);
+            }
+        });
+    });
+}
+
+// Show loading message while switching networks
+function showLoadingMessage(networkName) {
+    const loadingMessage = document.createElement('div');
+    
+    // Style the loading message
+    Object.assign(loadingMessage.style, {
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        padding: '20px',
+        background: 'rgba(0, 0, 0, 0.7)',
+        color: 'white',
+        borderRadius: '5px',
+        zIndex: '9999'
+    });
+    
+    loadingMessage.textContent = `Switching to ${networkName}...`;
+    document.body.appendChild(loadingMessage);
+    
+    return loadingMessage;
+}
+
+// Attempt to switch to the selected network
+async function switchToNetwork(chainId, networkName, loadingMessage) {
+    // Check if ethereum provider exists
+    if (!window.ethereum) {
+        removeLoadingMessage(loadingMessage);
+        throw new Error('No Ethereum wallet found. Please install MetaMask or another compatible wallet.');
+    }
+    
+    try {
+        // Try to switch to network
+        await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId }]
+        });
+        
+        // Success - reload page after a short delay
+        console.log(`Successfully switched to ${networkName}`);
+        setTimeout(() => window.location.reload(), 1000);
+        
+    } catch (error) {
+        // If network needs to be added first
+        if (error.code === 4902) {
+            await addNetwork(chainId, networkName);
+        } else {
+            removeLoadingMessage(loadingMessage);
+            throw error;
+        }
+    }
+}
+
+// Add a network that's not already in the wallet
+async function addNetwork(chainId, networkName) {
+    const networkDetails = getNetworkDetailsForChainId(chainId);
+    
+    if (!networkDetails) {
+        throw new Error(`Network details not found for chain ID ${chainId}`);
+    }
+    
+    // Add the network to wallet
+    await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [networkDetails]
+    });
+    
+    // Success - reload page after a short delay
+    console.log(`Successfully added and switched to ${networkName}`);
+    setTimeout(() => window.location.reload(), 1000);
+}
+
+// Handle errors during network switching
+function handleSwitchError(error, networkName, loadingMessage) {
+    console.error('Network switching error:', error);
+    removeLoadingMessage(loadingMessage);
+    
+    // Show appropriate error message
+    if (error.message.includes('No Ethereum wallet found')) {
+        alert(error.message);
+    } else if (error.message.includes('Network details not found')) {
+        alert(error.message);
+    } else {
+        alert(`Error switching to ${networkName}: ${error.message}`);
+    }
+}
+
+// Helper to safely remove loading message
+function removeLoadingMessage(loadingMessage) {
+    if (document.body.contains(loadingMessage)) {
+        document.body.removeChild(loadingMessage);
     }
 }
 
