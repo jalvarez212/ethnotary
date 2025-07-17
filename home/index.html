@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!--begin::Fonts-->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700;800&display=swap" />
     <!--end::Fonts-->
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.9.1/dist/gsap.min.js"></script>
@@ -21,8 +21,20 @@
             --success: #38b000;
         }
         
+        .full-page-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            will-change: transform; /* Optimize performance */
+            overflow: hidden;
+        }
+        
         body { 
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Bricolage Grotesque', sans-serif;
             color: var(--dark);
         }
         
@@ -159,9 +171,11 @@
         </div>
     </nav>
 
+    <!-- Full Page Background -->
+    <div id="hero-background" class="full-page-background"></div>
+    
     <!-- Hero Section -->
     <section class="hero-section d-flex align-items-center" id="home">
-        <div id="hero-background"></div>
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-7">
@@ -225,80 +239,457 @@
         </div>
     </section>
 
-    <!-- Features Section -->    
-    <section class="py-5" id="features">
+    <!-- Features Section - Bento Grid -->    
+    <section class="hero-section d-flex align-items-center" id="home">
         <div class="container py-5">
-            <div class="row text-center mb-5">
-                <div class="col-lg-8 mx-auto">
-                    <h2 class="fs-1 fw-bold mb-3">Why ethnotary?</h2>
-                    <p class="lead text-muted">No more choosing between security and usability</p>
-                </div>
+            <div class="text-center mb-5 reveal-up">
+                <h2 class="fs-1 fw-bold mb-3 gradient-text">Why ethnotary?</h2>
+                <p class="lead text-muted">No more choosing between security and usability</p>
             </div>
-            <div class="row align-items-center mb-5">
-                <div class="col-lg-5 order-lg-2">
-                    <div id="token-visualization" style="height: 350px; position: relative;"></div>
-                </div>
-                <div class="col-lg-7 order-lg-1">
-                    <div class="p-lg-5 pe-lg-0">
-                        <h3 class="mb-4">Secure & Usable Token Management</h3>
-                        <p class="lead mb-4">Ethnotary securely manages your tokens across multiple EVM-compatible chains with a simple, unified interface.</p>
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="me-3"><i class="fas fa-check-circle text-success"></i></div>
-                            <div>ERC20, ERC721, and ERC1155 token support</div>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="me-3"><i class="fas fa-check-circle text-success"></i></div>
-                            <div>Detailed metadata display for NFTs and collectibles</div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <div class="me-3"><i class="fas fa-check-circle text-success"></i></div>
-                            <div>Secure transfers with multi-signature protection</div>
+            
+            <style>
+                /* Modern Bento Grid Styles */
+                .bento-grid {
+                    display: grid;
+                    grid-template-columns: repeat(12, 1fr);
+                    grid-auto-rows: minmax(100px, auto);
+                    gap: 1.5rem;
+                    width: 100%;
+                }
+                
+                .bento-item {
+                    position: relative;
+                    border-radius: 16px;
+                    overflow: hidden;
+                    transition: all 0.4s ease;
+                    background-color: var(--bs-white);
+                    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    backdrop-filter: blur(10px);
+                    transform: translateY(20px);
+                    opacity: 0;
+                    animation: fadeUp 0.8s forwards;
+                    animation-delay: calc(var(--animation-order) * 100ms);
+                }
+                
+                .bento-item:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+                }
+                
+                .bento-content {
+                    padding: 2rem;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    z-index: 2;
+                    position: relative;
+                }
+                
+                .bento-large {
+                    grid-column: span 8;
+                    grid-row: span 2;
+                }
+                
+                .bento-medium {
+                    grid-column: span 4;
+                    grid-row: span 2;
+                }
+                
+                .bento-small {
+                    grid-column: span 4;
+                    grid-row: span 1;
+                }
+                
+                .bento-highlight {
+                    background: linear-gradient(135deg, #6366f1, #7c3aed);
+                    color: white;
+                }
+                
+                .bento-highlight a, .bento-highlight p, .bento-highlight h3 {
+                    color: white !important;
+                }
+                
+                .bento-highlight .feature-icon i {
+                    color: rgba(255, 255, 255, 0.9);
+                    background: rgba(255, 255, 255, 0.2);
+                }
+                
+                .feature-icon {
+                    margin-bottom: 1rem;
+                    width: 50px;
+                    height: 50px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                }
+                
+                .feature-icon i {
+                    font-size: 1.5rem;
+                    background: linear-gradient(135deg, #6366f1, #7c3aed);
+                    -webkit-background-clip: text;
+                    background-clip: text; /* Added standard property */
+                    -webkit-text-fill-color: transparent;
+                    padding: 10px;
+                    border-radius: 50%;
+                    background-color: rgba(99, 102, 241, 0.1);
+                }
+                
+                .gradient-text {
+                    background: linear-gradient(135deg, #2563eb, #7c3aed);
+                    -webkit-background-clip: text;
+                    background-clip: text; /* Added standard property */
+                    -webkit-text-fill-color: transparent;
+                }
+                
+                .feature-list li {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 0.75rem;
+                    font-weight: 500;
+                }
+                
+                .feature-list li i {
+                    margin-right: 0.75rem;
+                    color: #10b981;
+                }
+                
+                .bento-visual {
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+                    border-radius: 12px;
+                    overflow: hidden;
+                    position: relative;
+                }
+                
+                #token-visualization {
+                    height: 100%;
+                    width: 100%;
+                    border-radius: 12px;
+                    min-height: 280px;
+                }
+                
+                .bento-action {
+                    margin-top: auto;
+                    padding-top: 1.5rem;
+                }
+                
+                .bento-link {
+                    display: inline-flex;
+                    align-items: center;
+                    font-weight: 600;
+                    color: #4f46e5;
+                }
+                
+                /* Modern Bento Styles */
+                .modern-bento {
+                    position: relative;
+                    overflow: hidden;
+                    transition: transform 0.4s ease-out, box-shadow 0.4s ease;
+                    border: none;
+                    background: rgba(255, 255, 255, 0.8);
+                    backdrop-filter: blur(10px);
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+                }
+                
+                .modern-bento:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+                }
+                
+                .bento-background-animation {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: linear-gradient(120deg, rgba(58,134,255,0.05), rgba(131,56,236,0.08));
+                    z-index: 0;
+                    overflow: hidden;
+                }
+                
+                .bento-background-animation:after {
+                    content: '';
+                    position: absolute;
+                    top: -50%;
+                    left: -50%;
+                    width: 200%;
+                    height: 200%;
+                    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 50%);
+                    opacity: 0;
+                    animation: pulse 10s infinite ease-in-out;
+                }
+                
+                @keyframes pulse {
+                    0% { transform: scale(0.8); opacity: 0; }
+                    50% { opacity: 0.5; }
+                    100% { transform: scale(1.2); opacity: 0; }
+                }
+                
+                .bento-content {
+                    position: relative;
+                    z-index: 1;
+                }
+                
+                .animated-title {
+                    background: linear-gradient(90deg, var(--primary), var(--secondary));
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    background-size: 200%;
+                    animation: gradientFlow 5s infinite linear;
+                }
+                
+                @keyframes gradientFlow {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+                
+                .fade-in-up {
+                    animation: fadeInUp 0.8s both;
+                    animation-delay: calc(0.2s + (var(--animation-order) * 0.1s));
+                }
+                
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                
+                .animated-features {
+                    margin-top: 1.5rem;
+                }
+                
+                .feature-item {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 1rem;
+                    transform: translateX(-20px);
+                    opacity: 0;
+                    animation: slideInFeature 0.5s forwards;
+                }
+                
+                .feature-item:nth-child(1) { animation-delay: 0.3s; }
+                .feature-item:nth-child(2) { animation-delay: 0.5s; }
+                .feature-item:nth-child(3) { animation-delay: 0.7s; }
+                
+                @keyframes slideInFeature {
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                
+                .check-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 24px;
+                    height: 24px;
+                    margin-right: 10px;
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                .check-container i {
+                    color: var(--success);
+                    font-size: 1.1rem;
+                    transform: scale(0);
+                    animation: popIn 0.4s forwards;
+                    animation-delay: calc(0.3s + (var(--animation-order) * 0.2s));
+                }
+                
+                @keyframes popIn {
+                    0% { transform: scale(0); }
+                    70% { transform: scale(1.2); }
+                    100% { transform: scale(1); }
+                }
+                
+                .token-icons {
+                    display: flex;
+                    margin-top: 2rem;
+                    gap: 1rem;
+                }
+                
+                .token-icon {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg, var(--primary), var(--secondary));
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    box-shadow: 0 4px 10px rgba(58, 134, 255, 0.3);
+                    transform: translateY(20px);
+                    opacity: 0;
+                    animation: floatIcon 0.6s forwards;
+                }
+                
+                .token-icon:nth-child(1) { animation-delay: 0.8s; }
+                .token-icon:nth-child(2) { animation-delay: 0.9s; }
+                .token-icon:nth-child(3) { animation-delay: 1s; }
+                
+                @keyframes floatIcon {
+                    to {
+                        transform: translateY(0);
+                        opacity: 1;
+                    }
+                }
+                
+                .bento-link {
+                    text-decoration: none;
+                    transition: transform 0.2s ease;
+                }
+                
+                .bento-link:hover {
+                    transform: translateX(3px);
+                }
+                
+                .bento-link i {
+                    margin-left: 0.5rem;
+                    transition: transform 0.2s ease;
+                }
+                
+                .bento-link:hover i {
+                    transform: translateX(2px);
+                }
+                
+                /* Glass effect for cards */
+                .glass-effect {
+                    background: rgba(255, 255, 255, 0.7);
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                }
+                
+                /* Animations */
+                @keyframes fadeUp {
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                
+                .reveal-up {
+                    opacity: 0;
+                    transform: translateY(20px);
+                    animation: fadeUp 0.8s forwards;
+                    animation-delay: 0.1s;
+                }
+                
+                @media (max-width: 992px) {
+                    .bento-large, .bento-medium, .bento-small {
+                        grid-column: span 12;
+                    }
+                    
+                    .bento-grid {
+                        grid-auto-rows: auto;
+                    }
+                    
+                    .bento-large, .bento-medium {
+                        grid-row: span 1;
+                    }
+                }
+            </style>
+            
+            <div class="bento-grid">
+                <!-- Main Feature with Token Visualization -->
+                <div class="bento-item bento-large modern-bento" style="--animation-order: 1">
+                    <div class="bento-background-animation"></div>
+                    <div class="bento-content">
+                        <h3 class="fs-2 fw-bold mb-3 animated-title">Secure & Usable Token Management</h3>
+                        <p class="lead mb-4 fade-in-up">Ethnotary securely manages your tokens across multiple EVM-compatible chains with a simple, unified interface.</p>
+                        
+                        <ul class="feature-list list-unstyled animated-features">
+                            <li class="feature-item"><div class="check-container"><i class="fas fa-check-circle"></i></div> Secure transfers with multi-signature protection</li>
+                            <li class="feature-item"><div class="check-container"><i class="fas fa-check-circle"></i></div> ERC20, ERC721, and ERC1155 token support</li>
+                            <li class="feature-item"><div class="check-container"><i class="fas fa-check-circle"></i></div> Detailed metadata display for NFTs and collectibles</li>
+                        </ul>
+                        
+                        <div class="token-icons fade-in-up">
+                            <div class="token-icon"><i class="fab fa-ethereum"></i></div>
+                            <div class="token-icon"><i class="fas fa-cube"></i></div>
+                            <div class="token-icon"><i class="fas fa-link"></i></div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row g-4">
-                <!-- Feature 1 -->                
-                <div class="col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body p-4 p-xl-5">
-                            <div class="feature-icon">
-                                <i class="fas fa-shield-alt"></i>
-                            </div>
-                            <h3 class="h4 mb-3">Multi-Signature Security</h3>
-                            <p class="text-muted mb-4">Secure your tokens with multi-wallet approval flows. Protect against single points of failure with distributed signing authority.</p>
-                            <a href="#how-it-works" class="fw-bold text-decoration-none">
-                                Learn more <i class="fas fa-arrow-right ms-1"></i>
+                
+                <!-- Token Visualization -->
+                <div class="bento-item bento-medium" style="--animation-order: 2">
+                    <div class="bento-content p-0">
+                        <div class="bento-visual" style="display: flex; align-items: center; justify-content: center;">
+                            <img src="../assets/media/ct_media.png" alt="Ethnotary Token Visualization" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 12px;">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feature 1: Multi-Signature Security -->
+                <div class="bento-item bento-small" style="--animation-order: 3">
+                    <div class="bento-content">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="h4 mb-2">Multi-Signature Security</h3>
+                        <p class="text-muted">Secure your tokens with distributed signing authority.</p>
+                        <div class="bento-action">
+                            <a href="#how-it-works" class="bento-link">
+                                Learn more <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
                     </div>
                 </div>
-                <!-- Feature 2 -->                
-                <div class="col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body p-4 p-xl-5">
-                            <div class="feature-icon">
-                                <i class="fas fa-globe"></i>
-                            </div>
-                            <h3 class="h4 mb-3">Local-First Architecture</h3>
-                            <p class="text-muted mb-4">Run entirely in your browser with no centralized backend. Access your wallet as long as you have an internet connection.</p>
-                            <a href="#how-it-works" class="fw-bold text-decoration-none">
-                                Learn more <i class="fas fa-arrow-right ms-1"></i>
+                
+                <!-- Feature 2: Local-First Architecture -->
+                <div class="bento-item bento-small" style="--animation-order: 4">
+                    <div class="bento-content">
+                        <div class="feature-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3 class="h4 mb-2">Local-First Architecture</h3>
+                        <p class="text-muted">Run entirely in your browser with no centralized backend.</p>
+                        <div class="bento-action">
+                            <a href="#how-it-works" class="bento-link">
+                                Learn more <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
                     </div>
                 </div>
-                <!-- Feature 3 -->                
-                <div class="col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body p-4 p-xl-5">
-                            <div class="feature-icon">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <h3 class="h4 mb-3">DeFi Accessibility</h3>
-                            <p class="text-muted mb-4">Unlock the world of decentralized finance with access to bots, lending, staking, and yield-generating opportunities across the ecosystem.</p>
-                            <a href="../documentation/index.html" class="fw-bold text-decoration-none">
-                                Explore DeFi capabilities <i class="fas fa-arrow-right ms-1"></i>
+                
+                <!-- Feature 3: DeFi Accessibility (Highlighted) -->
+                <div class="bento-item bento-small bento-highlight" style="--animation-order: 5">
+                    <div class="bento-content">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="h4 mb-2">DeFi Accessibility</h3>
+                        <p>Unlock lending, staking, and yield-generating opportunities.</p>
+                        <div class="bento-action">
+                            <a href="../documentation/index.html" class="bento-link">
+                                Explore DeFi <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feature 4: Cross-chain Compatibility -->
+                <div class="bento-item bento-small" style="--animation-order: 6">
+                    <div class="bento-content">
+                        <div class="feature-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <h3 class="h4 mb-2">Cross-chain Ready</h3>
+                        <p class="text-muted">Seamlessly manage assets across multiple blockchains.</p>
+                        <div class="bento-action">
+                            <a href="#how-it-works" class="bento-link">
+                                See networks <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
                     </div>
@@ -306,6 +697,28 @@
             </div>
         </div>
     </section>
+    
+    <!-- Animation Script -->
+    <script>
+        // Initialize intersection observer for animation elements
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            // Observe all bento items
+            document.querySelectorAll('.bento-item, .reveal-up').forEach(item => {
+                item.style.animationPlayState = 'paused';
+                observer.observe(item);
+            });
+        });
+    </script>
 
 
     <!-- How It Works Section -->
@@ -450,6 +863,7 @@
             </div>
         </div>
     </section>
+
 
     <!-- Footer -->
     <footer class="bg-dark text-white py-5">

@@ -1,4 +1,4 @@
-// Three.js WebGL background for hero section
+// Three.js WebGL background for full page
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Three.js scene only if WebGL is supported
     if (!document.getElementById('hero-background')) return;
@@ -21,7 +21,8 @@ document.addEventListener('DOMContentLoaded', function() {
         alpha: true,
         antialias: true 
     });
-    renderer.setPixelRatio(window.devicePixelRatio);
+    // Use a lower pixel ratio for better performance on full-page background
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
@@ -134,19 +135,36 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start animation loop
     animate();
     
-    // Add mouse interaction
+    // Add mouse and scroll interaction for full-page effect
     let mouseX = 0;
     let mouseY = 0;
+    let scrollY = 0;
     
+    // Track mouse movement for parallax effect
     document.addEventListener('mousemove', (event) => {
         mouseX = (event.clientX / window.innerWidth) * 2 - 1;
         mouseY = (event.clientY / window.innerHeight) * 2 - 1;
         
         // Subtle camera movement based on mouse position
-        gsap.to(camera.position, 2, {
-            x: mouseX * 3,
-            y: -mouseY * 3,
-            ease: "power1.easeOut"
-        });
+        if (typeof gsap !== 'undefined') {
+            gsap.to(camera.position, 2, {
+                x: mouseX * 3,
+                y: -mouseY * 3,
+                ease: "power1.easeOut"
+            });
+        } else {
+            // Fallback if GSAP is not available
+            camera.position.x += (mouseX * 3 - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY * 3 - camera.position.y) * 0.05;
+        }
+    });
+    
+    // Add subtle effect when scrolling
+    window.addEventListener('scroll', () => {
+        scrollY = window.scrollY;
+        
+        // Adjust particle system based on scroll position
+        particleSystem.rotation.x = scrollY * 0.0001;
+        lines.rotation.x = scrollY * 0.0001;
     });
 });

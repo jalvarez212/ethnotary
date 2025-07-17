@@ -15,7 +15,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
 	<link rel="canonical" href="https://preview.keenthemes.com/start" />
-	<script src="../../key.js?cachebuster=1"></script>
+	<script src="../../keys.js?cachebuster=1"></script>
 
 	<link rel="shortcut icon" href="../../assets/media/logos/en_logo.png" />
 	<!--begin::Fonts-->
@@ -748,11 +748,10 @@ document.addEventListener('DOMContentLoaded', function() {
 							<!--begin::Nav-->
 							<ul class="nav flex-column">
 								<!--begin::Item-->
-								<li class="nav-item mb-1" title="Collections Coming Soon!" data-bs-toggle="tooltip"
+								<li class="nav-item mb-1" title="Token Collections" data-bs-toggle="tooltip"
 									data-bs-dismiss="click" data-bs-placement="right">
-									<a href=""
-										class="nav-link h-40px w-40px h-lg-50px w-lg-50px btn btn-custom btn-icon btn-color-white active"
-										data-bs-toggle="tab" data-bs-target="#kt_aside_tab_1" role="tab">
+									<a href="./nft.html"
+									class="nav-link h-40px w-40px h-lg-50px w-lg-50px btn btn-custom btn-icon btn-color-white active">
 										<!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
 										<span class="svg-icon svg-icon-2 svg-icon-toggle-1">
 											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -1090,10 +1089,10 @@ document.addEventListener('DOMContentLoaded', function() {
 							<!--end::Info-->
 							<!--begin::Nav-->
 							<div class="d-flex align-items-center flex-nowrap text-nowrap overflow-auto py-1">
-								<a href="../demo" class="btn btn-active-accent fw-bolder">Home</a>
+								<a href="../index.html" class="btn btn-active-accent fw-bolder">Home</a>
 								<a href="../../views/wizard.html"
 									class="btn btn-active-accent fw-bolder ms-3">Wizard</a>
-								<a href="./views/accountsettings.html"
+								<a href="./accountsettings.html"
 									class="btn btn-active-accent fw-bolder ms-3">Settings</a>
 								<a href="#" class="btn btn-active-accent fw-bolder ms-3">Docs</a>
 							</div>
@@ -1328,7 +1327,7 @@ function requestError() {
 		//homeLink.href = "../index.html"
 
 		let logo = document.querySelectorAll('[id="logo"]').forEach(
-		element => {element.href = "../demo"});
+		element => {element.href = "../index.html"+ localStorage.contract});
 
 		async function getAllTxns() {
 			let count = await contract.methods.transactionCount().call().then(function (result) {
@@ -1372,7 +1371,7 @@ function requestError() {
 
 
 					notElement.innerHTML = `
-	<a href="./views/txn.html?${tx.id}" class="menu-link px-4 py-3">
+	<a href="./txn.html?${tx.id}" class="menu-link px-4 py-3">
 		<div class="symbol symbol-35px">
 			<span class="symbol-label bg-light-warning">
 				<!--begin::Svg Icon | path: icons/duotune/communication/com004.svg-->

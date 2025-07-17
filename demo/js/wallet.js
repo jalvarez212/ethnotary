@@ -411,7 +411,7 @@ async function connectWallet() {
             console.log('Connected account:', accounts[0]);
 
             // Store the connected account in localStorage
-            localStorage.setItem('connectedAccount', accounts[0]);
+            //localStorage.setItem('connectedAccount', accounts[0]);
 
             const chainId = await wallet.request({ method: 'eth_chainId' });
             const matchedNetwork = chainIdLookup[chainId];
@@ -512,9 +512,9 @@ async function isWalletConnected() {
     return false;
 }
 
-// Helper function to decide whether to show wrong network modal or detect the correct network for the contract
+// Helper function to decide whether to show wallet connect modal or switch to correct network
 async function handleNetworkOrWalletIssue() {
-    // Check if web3 is available in the browser
+    // Check if Web3 is available
     if (typeof Web3 === 'undefined') {
         console.log("Web3 is not available, showing wallet connect modal");
         showModal();
@@ -522,10 +522,7 @@ async function handleNetworkOrWalletIssue() {
     }
     
     try {
-        // Create a new Web3 instance
-        const web3Instance = new Web3();
-        
-        // Get contract address from localStorage
+        // Get contract address
         const contractAddress = localStorage.contract;
         if (!contractAddress) {
             console.error("Contract address not found in localStorage");
@@ -533,68 +530,132 @@ async function handleNetworkOrWalletIssue() {
             return;
         }
         
-        console.log("Detecting network for contract:", contractAddress);
+        // Find which network the contract is deployed on
+        const contractNetwork = await findContractNetwork(contractAddress);
         
-        // Try connecting to each network one by one
-        const networkKeys = Object.keys(networks);
-        let contractNetwork = null;
-        
-        for (const networkName of networkKeys) {
-            const network = networks[networkName];
-            console.log(`Trying network ${networkName}...`);
-            
-            // Set the provider for this network
-            web3Instance.setProvider(new Web3.providers.HttpProvider(network.rpcUrl));
-            
-            // Get the contract instance
-            const contractInstance = new web3Instance.eth.Contract(contractABI, contractAddress);
-            
-            try {
-                // Try to call a simple view method to check if contract exists on this network
-                // We'll use getOwners() which should be available on the multisig contract
-                await contractInstance.methods.getOwners().call();
-                
-                // If we reach here, the contract exists on this network
-                console.log(`Contract found on network: ${networkName}`);
-                contractNetwork = networkName;
-                
-                // Update the provider to use this network
-                updateWeb3Provider(network.rpcUrl);
-                
-                // Break the loop since we found the network
-                break;
-            } catch (error) {
-                console.log(`Contract not found on ${networkName}:`, error.message);
-                // Continue to the next network
-            }
+        // If contract not found on any network
+        if (!contractNetwork) {
+            console.log("Contract not found on any network, showing wallet connect modal");
+            showModal();
+            return;
         }
         
-        // After checking all networks, decide what to show
-        if (contractNetwork) {
-            // We found the network, check if user's wallet is connected to this network
-            if (wallet) {
-                const chainId = await wallet.request({ method: 'eth_chainId' });
-                const matchedNetwork = chainIdLookup[chainId];
-                
-                if (matchedNetwork && matchedNetwork.name === contractNetwork) {
-                    console.log("User is connected to the correct network");
-                    // Everything is fine, don't show any modal
-                    return;
-                } else {
-                    console.log("User is connected to the wrong network, showing wrong network modal");
-                    wrongNetwork();
-                    return;
-                }
-            }
+        // If wallet isn't connected, show connect modal
+        if (!wallet) {
+            console.log("Wallet not connected, showing wallet connect modal");
+            showModal();
+            return;
         }
         
-        // If we get here, either the contract wasn't found on any network or user's wallet isn't connected
-        console.log("Contract not found on any network or wallet not connected, showing wallet connect modal");
-        showModal();
+        // Check if user is on the correct network
+        const isOnCorrectNetwork = await checkIfOnCorrectNetwork(contractNetwork);
+        
+        // If already on correct network, we're done
+        if (isOnCorrectNetwork) {
+            console.log("User is connected to the correct network");
+            return;
+        }
+        
+        // User is on wrong network - attempt to switch networks
+        await switchToContractNetwork(contractNetwork);
         
     } catch (error) {
-        console.error("Error detecting network:", error);
+        console.error("Error in handleNetworkOrWalletIssue:", error);
         showModal();
+    }
+}
+
+// Find which network the contract is deployed on
+async function findContractNetwork(contractAddress) {
+    const web3Instance = new Web3();
+    console.log("Detecting network for contract:", contractAddress);
+    
+    // Try each network one by one
+    for (const networkName of Object.keys(networks)) {
+        const network = networks[networkName];
+        console.log(`Trying network ${networkName}...`);
+        
+        // Set up provider and contract instance for this network
+        web3Instance.setProvider(new Web3.providers.HttpProvider(network.rpcUrl));
+        const contractInstance = new web3Instance.eth.Contract(contractABI, contractAddress);
+        
+        try {
+            // Check if contract exists by calling a view method
+            await contractInstance.methods.getOwners().call();
+            
+            // Contract found - update provider and return network name
+            console.log(`Contract found on network: ${networkName}`);
+            updateWeb3Provider(network.rpcUrl);
+            return networkName;
+            
+        } catch (error) {
+            console.log(`Contract not found on ${networkName}`);
+            // Continue to next network
+        }
+    }
+    
+    // Contract not found on any network
+    return null;
+}
+
+// Check if user's wallet is connected to the specified network
+async function checkIfOnCorrectNetwork(contractNetwork) {
+    try {
+        const chainId = await wallet.request({ method: 'eth_chainId' });
+        const userNetwork = chainIdLookup[chainId];
+        
+        return userNetwork && userNetwork.name === contractNetwork;
+    } catch (error) {
+        console.error("Error checking network:", error);
+        return false;
+    }
+}
+
+// Switch to the network where the contract is deployed
+async function switchToContractNetwork(contractNetwork) {
+    const targetNetwork = networks[contractNetwork];
+    if (!targetNetwork || !targetNetwork.chainId) {
+        console.error(`Network configuration for ${contractNetwork} not found`);
+        return;
+    }
+    
+    console.log(`Attempting to switch to ${contractNetwork}`);
+    
+    try {
+        // Request network switch
+        await wallet.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: targetNetwork.chainId }]
+        });
+        console.log(`Successfully requested switch to ${contractNetwork}`);
+        
+    } catch (switchError) {
+        // If network hasn't been added to wallet yet
+        if (switchError.code === 4902) {
+            await addNetworkToWallet(targetNetwork.chainId, contractNetwork);
+        } else {
+            console.error("Network switch failed:", switchError);
+        }
+    }
+}
+
+// Add a network to the user's wallet
+async function addNetworkToWallet(chainId, networkName) {
+    try {
+        const networkDetails = getNetworkDetailsForChainId(chainId);
+        if (!networkDetails) {
+            console.error(`Network details not found for ${networkName}`);
+            return;
+        }
+        
+        await wallet.request({
+            method: 'wallet_addEthereumChain',
+            params: [networkDetails]
+        });
+        console.log(`Successfully added network ${networkName}`);
+        
+    } catch (error) {
+        console.error("Error adding network:", error);
     }
 }
 

@@ -598,16 +598,6 @@ function get_ethnotary() {
     }
 }
 
-function parse_tokens(string_tokens) {
-    try {
-        let parsed_tokens = JSON.parse(string_tokens)
-        return parsed_tokens
-    }
-
-    catch {
-        console.error('Error parsing string to JSON')
-    }
-}
 
 
 function get_tokens() {
@@ -623,413 +613,425 @@ function get_tokens() {
 
 
 async function check_balance(token_address, token_type) {
-
-    let parsed_tokens = parse_tokens(get_tokens());
-
+    // Clear active_tokens array to prevent duplication
+    console.log('Clearing active_tokens before checking balances');
+    active_tokens = [];
+    
+    let parsed_tokens = JSON.parse(get_tokens());
+    console.log(`Processing ${parsed_tokens.length} tokens`);
+    
     for (let i = 0; i < parsed_tokens.length; i++) {
-
-        console.log(parsed_tokens[i].address);
-
-
         const tokenContract = new web3.eth.Contract(erc20, parsed_tokens[i].address);
         let balance = tokenContract.methods.balanceOf(localStorage.getItem('contract')).call().then(function (balance) {
             parsed_tokens[i].balance = balance;
-            console.log(parsed_tokens[i].balance)
+            console.log(`Token address: ${parsed_tokens[i].address}`);
+            console.log(`Balance: ${parsed_tokens[i].balance}`);
+            
             if (parsed_tokens[i].balance > 0) {
-            active_tokens.push(parsed_tokens[i]);
+                active_tokens.push(parsed_tokens[i]);
+                console.log(`Added token to active_tokens, now have ${active_tokens.length} active tokens`);
             }
         });
-
-
-
-
     }
 }
 
 
 async function display_tokens() {
+    console.log('tokentokentokentoken');
+    console.log('display_tokens() called with data:', JSON.stringify(localStorage.token_contracts));
+
     try {
+        // Get the container
         const container = document.getElementById('kt_content');
+        
+        if (!container) {
+            console.error('Container kt_content not found');
+            return;
+        }
+        
+        // Clear ALL previous content
+        container.innerHTML = '';
+        
+        // Double-check for any potential card containers that might have been added elsewhere
+        const existingCardRows = document.querySelectorAll('.row.g-6.g-xl-9.justify-content-center');
+        existingCardRows.forEach(row => row.remove());
+        
+        console.log('Cleared container contents');
+        
+        // Create a container with center alignment
+        const centerContainer = document.createElement('div');
+        centerContainer.className = 'container-xxl';
+        container.appendChild(centerContainer);
 
-        // Clear the content first
-        if (container) {
-            container.innerHTML = '';
+        // Create a row for the cards with center alignment
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'row g-6 g-xl-9 justify-content-center';
+        centerContainer.appendChild(rowDiv);
 
-            // Create a container with center alignment
-            const centerContainer = document.createElement('div');
-            centerContainer.className = 'container-xxl';
-            container.appendChild(centerContainer);
+        // Create header section with title, count and filters
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'col-12 mb-5';
 
-            // Create a row for the cards with center alignment
-            const rowDiv = document.createElement('div');
-            rowDiv.className = 'row g-6 g-xl-9 justify-content-center';
-            centerContainer.appendChild(rowDiv);
-
-            // Create header section with title, count and filters
-            const headerDiv = document.createElement('div');
-            headerDiv.className = 'col-12 mb-5';
-
-            // Count the number of each token type
-            const erc20Count = active_tokens.filter(t => t.sym && t.sym.toLowerCase() === 'erc20').length;
+        // Count the number of each token type
+        const erc20Count = active_tokens.filter(t => t.sym && t.sym.toLowerCase() === 'erc20').length;
+        
+        // Calculate ERC721 count by summing up balances
+        const erc721Count = active_tokens
+            .filter(t => t.sym && t.sym.toLowerCase() === 'erc721')
+            .reduce((total, token) => total + (parseInt(token.balance) || 1), 0);
             
-            // Calculate ERC721 count by summing up balances
-            const erc721Count = active_tokens
-                .filter(t => t.sym && t.sym.toLowerCase() === 'erc721')
-                .reduce((total, token) => total + (parseInt(token.balance) || 1), 0);
-                
-            const totalCount = erc20Count + erc721Count;
+        const totalCount = erc20Count + erc721Count;
 
-            headerDiv.innerHTML = `
-                <div class="d-flex flex-wrap flex-stack mb-6">
-                    <!--begin::Title-->
-                    <h3 class="text-dark fw-bolder my-2">
-                        <span class="fs-6 text-gray-500 fw-semibold ms-1">(${totalCount} Tokens)</span>
-                    </h3>
-                    <!--end::Title-->
-                    
-                    <!--begin::Controls-->
-                    <div class="d-flex align-items-center my-2">
-                        <!--begin::Status-->
-                        <div class="me-5">
-                            <select name="token-type" class="form-select form-select-sm token-type-select">
-                                <option value="all">All Tokens (${totalCount})</option>
-                                <option value="erc20">ERC20 (${erc20Count})</option>
-                                <option value="erc721">ERC721 (${erc721Count})</option>
-                            </select>
-                        </div>
-                        <!--end::Status-->
-                        
-                        <!--begin::Search-->
-                        <div class="d-flex align-items-center position-relative">
-                            <span class="svg-icon svg-icon-3 position-absolute ms-3">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="currentColor"></rect>
-                                    <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="currentColor"></path>
-                                </svg>
-                            </span>
-                            <input type="text" class="form-control form-control-sm form-control-solid ps-10 token-search" placeholder="Search Token">
-                        </div>
-                        <!--end::Search-->
+        headerDiv.innerHTML = `
+            <div class="d-flex flex-wrap flex-stack mb-6">
+                <!--begin::Title-->
+                <h3 class="text-dark fw-bolder my-2">
+                    <span class="fs-6 text-gray-500 fw-semibold ms-1">(${totalCount} Tokens)</span>
+                </h3>
+                <!--end::Title-->
+                
+                <!--begin::Controls-->
+                <div class="d-flex align-items-center my-2">
+                    <!--begin::Status-->
+                    <div class="me-5">
+                        <select name="token-type" class="form-select form-select-sm token-type-select">
+                            <option value="all">All Tokens (${totalCount})</option>
+                            <option value="erc20">ERC20 (${erc20Count})</option>
+                            <option value="erc721">ERC721 (${erc721Count})</option>
+                        </select>
                     </div>
-                    <!--end::Controls-->
-                </div>
-            `;
-            rowDiv.appendChild(headerDiv);
-
-            // Loop through active_tokens and create cards
-            for (let i = 0; i < active_tokens.length; i++) {
-                const token = await getTokenMetadata(active_tokens[i]);
-                const isERC721 = token.type === 'ERC-721';
-                
-                // For ERC721 tokens with multiple tokenIds, create a card for each tokenId
-                if (isERC721 && token.balance > 1 && token.tokenIds && token.tokenIds.length > 0) {
-                    // Create a card for each token ID
-                    for (let j = 0; j < token.tokenIds.length; j++) {
-                        const tokenId = token.tokenIds[j];
-                        await createTokenCard(token, rowDiv, tokenId);
-                    }
-                } else {
-                    // Create a single card for this token
-                    await createTokenCard(token, rowDiv);
-                }
-            }
-            
-            // Function to create a token card
-            async function createTokenCard(token, parentElement, specificTokenId = null) {
-                // Create column for card
-                const colDiv = document.createElement('div');
-                colDiv.className = 'col-md-6 col-lg-4 col-xl-4'; // Exactly 3 per row
-                parentElement.appendChild(colDiv);
-
-                // Create card from template
-                const cardHtml = token_card;
-                colDiv.innerHTML = cardHtml;
-
-                // Get the card element
-                const card = colDiv.firstElementChild;
-
-                if (card) {
-                    const isERC721 = token.type === 'ERC-721';
-
-                    // Update token name and type badge color
-                    const nameElement = card.querySelector('.token-name');
-                    if (nameElement) {
-                        nameElement.textContent = token.name || 'Unknown Token';
-                    }
-
-                    // Update token type and ribbon color
-                    const typeElement = card.querySelector('.token-type');
-                    const ribbonElement = card.querySelector('.token-type-ribbon');
-                    if (typeElement && token.type) {
-                        typeElement.textContent = token.type;
-
-                        // Change ribbon color based on token type
-                        if (ribbonElement) {
-                            if (isERC721) {
-                                ribbonElement.classList.remove('bg-primary');
-                                ribbonElement.classList.add('bg-success');
-                            }
-                        }
-                    }
-
-                    // Update image if available
-                    const imgElement = card.querySelector('.token-image');
-                    if (imgElement) {
-                        if (token.image) {
-                            imgElement.src = await normalizeTokenURI(token.image);
-                            imgElement.alt = token.name || 'Token';
-                        } else {
-                            // Default placeholder illustration for tokens without images
-                            imgElement.src = './media/illustrations/sigma-1/5.png';
-                            imgElement.alt = 'Token Placeholder';
-                        }
-                    }
-
-                    // Update token address with truncated version and full version in tooltip
-                    const addressElement = card.querySelector('.token-address');
-                    if (addressElement && token.address) {
-                        const fullAddress = token.address;
-                        const truncatedAddress = fullAddress.substring(0, 6) + '...' + fullAddress.substring(fullAddress.length - 4);
-                        addressElement.textContent = truncatedAddress;
-                        addressElement.setAttribute('title', fullAddress);
-
-                        // Set up copy button
-                        const copyBtn = card.querySelector('.copy-address-btn');
-                        if (copyBtn) {
-                            copyBtn.setAttribute('data-address', fullAddress);
-                            copyBtn.addEventListener('click', function () {
-                                navigator.clipboard.writeText(this.getAttribute('data-address'))
-                                    .then(() => {
-                                        // Show success feedback
-                                        const tooltip = bootstrap.Tooltip.getInstance(this);
-                                        if (tooltip) {
-                                            tooltip.dispose();
-                                        }
-                                        this.setAttribute('data-bs-original-title', 'Copied!');
-                                        const newTooltip = new bootstrap.Tooltip(this);
-                                        newTooltip.show();
-
-                                        // Reset after 2 seconds
-                                        setTimeout(() => {
-                                            this.setAttribute('data-bs-original-title', 'Copy Address');
-                                            newTooltip.dispose();
-                                        }, 2000);
-                                    });
-                            });
-                        }
-                    }
-
-                    // Update token symbol
-                    const symbolElement = card.querySelector('.token-symbol');
-                    if (symbolElement) {
-                        symbolElement.textContent = token.symbol || '-';
-                    }
-
-                    // Handle ERC20 balance vs ERC721 token ID display
-                    const balanceElement = card.querySelector('.token-balance');
-                    const balanceLabelElement = card.querySelector('.erc20-balance-label');
-                    const tokenIdElement = card.querySelector('.token-id');
-                    const tokenIdLabelElement = card.querySelector('.erc721-tokenid-label');
-
-                    if (isERC721) {
-                        // For ERC721, show token ID instead of balance
-                        if (balanceElement) balanceElement.classList.add('d-none');
-                        if (balanceLabelElement) balanceLabelElement.classList.add('d-none');
-                        if (tokenIdElement) {
-                            tokenIdElement.classList.remove('d-none');
-                            // If a specific tokenId was provided, use that
-                            tokenIdElement.textContent = specificTokenId || token.tokenId || token.firstTokenId || 'N/A';
-                        }
-                        if (tokenIdLabelElement) tokenIdLabelElement.classList.remove('d-none');
-                        
-                        // If we're rendering a specific token ID, we may need to fetch its specific metadata
-                        if (specificTokenId && specificTokenId !== token.tokenId) {
-                            try {
-                                // Create contract instance
-                                const contractInstance = new web3.eth.Contract(erc721, token.address);
-                                
-                                // Get this token's specific metadata
-                                const [tokenImage, tokenMetadata] = await getTokenURIAndMetadata(contractInstance, specificTokenId);
-                                
-                                // Update image if available
-                                if (tokenImage && imgElement) {
-                                    imgElement.src = await normalizeTokenURI(tokenImage);
-                                    imgElement.alt = token.name || 'Token';
-                                }
-                                
-                                // Update any token-specific metadata if needed
-                                if (tokenMetadata) {
-                                    // You could add more specific metadata display here
-                                }
-                            } catch (error) {
-                                console.warn('Failed to get specific token metadata:', error);
-                            }
-                        }
-                    } else {
-                        // For ERC20, show balance
-                        if (tokenIdElement) tokenIdElement.classList.add('d-none');
-                        if (tokenIdLabelElement) tokenIdLabelElement.classList.add('d-none');
-                        if (balanceElement) {
-                            balanceElement.classList.remove('d-none');
-                            balanceElement.textContent = token.balance || '0';
-                        }
-                        if (balanceLabelElement) balanceLabelElement.classList.remove('d-none');
-                    }
-
-                    // Metadata will be displayed on another page
-
-                    // Set up the view details button to link to an explorer based on the token type
-                    const viewBtn = card.querySelector('.token-view-btn');
-                    if (viewBtn && token.address) {
-                        // Get current network provider URL to determine which explorer to use
-                        const providerUrl = web3.currentProvider.clientUrl || '';
-                        let explorerUrl = 'https://etherscan.io'; // Default to Ethereum mainnet
-                        
-                        // Use appropriate explorer based on provider URL
-                        if (providerUrl.includes('sepolia.infura.io')) {
-                            explorerUrl = 'https://sepolia.etherscan.io';
-                        } else if (providerUrl.includes('optimism-mainnet.infura.io')) {
-                            explorerUrl = 'https://optimistic.etherscan.io';
-                        } else if (providerUrl.includes('polygon-mainnet.infura.io') || 
-                                   providerUrl.includes('polygon-rpc')) {
-                            explorerUrl = 'https://polygonscan.com';
-                        } else if (providerUrl.includes('avalanche-mainnet.infura.io') || 
-                                   providerUrl.includes('avalanche')) {
-                            explorerUrl = 'https://snowtrace.io';
-                        } else if (providerUrl.includes('arbitrum-mainnet.infura.io')) {
-                            explorerUrl = 'https://arbiscan.io';
-                        } else if (providerUrl.includes('goerli.infura.io')) {
-                            explorerUrl = 'https://goerli.etherscan.io';
-                        } else if (providerUrl.includes('base-mainnet.infura.io')) {
-                            explorerUrl = 'https://basescan.org';
-                        }
-                        
-                        // Set up the URL
-                        viewBtn.href = `${explorerUrl}/token/${token.address}`;
-                    } 
+                    <!--end::Status-->
                     
-                    // Set up the transfer token button to open the transfer modal
-                    const transferBtn = card.querySelector('.transfer-token-btn');
-                    if (transferBtn && token.address) {
-                        transferBtn.addEventListener('click', function() {
-                            // Find the transfer modal (kt_modal_2) - works whether in nft.html or index.html
-                            const transferModal = document.getElementById('kt_modal_2') || 
-                                parent.document.getElementById('kt_modal_2');
-                            
-                            if (transferModal) {
-                                // Set token image in the modal
-                                const tokenImageElement = transferModal.querySelector('#tokenModalImage');
-                                if (tokenImageElement) {
-                                    // Get image from card or metadata
-                                    const cardImage = card.querySelector('.token-image');
-                                    if (cardImage && cardImage.src) {
-                                        tokenImageElement.src = cardImage.src;
-                                    } else if (token.metadata && token.metadata.image) {
-                                        tokenImageElement.src = token.metadata.image;
-                                    } else {
-                                        // Use default placeholder if no image available
-                                        tokenImageElement.src = '../media/misc/placeholder-image.jpg';
+                    <!--begin::Search-->
+                    <div class="d-flex align-items-center position-relative">
+                        <span class="svg-icon svg-icon-3 position-absolute ms-3">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="currentColor"></rect>
+                                <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="currentColor"></path>
+                            </svg>
+                        </span>
+                        <input type="text" class="form-control form-control-sm form-control-solid ps-10 token-search" placeholder="Search Token">
+                    </div>
+                    <!--end::Search-->
+                </div>
+                <!--end::Controls-->
+            </div>
+        `;
+        rowDiv.appendChild(headerDiv);
+
+        // Loop through active_tokens and create cards
+        for (let i = 0; i < active_tokens.length; i++) {
+            const token = await getTokenMetadata(active_tokens[i]);
+            const isERC721 = token.type === 'ERC-721';
+            
+            // For ERC721 tokens with multiple tokenIds, create a card for each tokenId
+            if (isERC721 && token.balance > 1 && token.tokenIds && token.tokenIds.length > 0) {
+                // Create a card for each token ID
+                for (let j = 0; j < token.tokenIds.length; j++) {
+                    const tokenId = token.tokenIds[j];
+                    await createTokenCard(token, rowDiv, tokenId);
+                }
+            } else {
+                // Create a single card for this token
+                await createTokenCard(token, rowDiv);
+            }
+        }
+        
+        // Function to create a token card
+        async function createTokenCard(token, parentElement, specificTokenId = null) {
+            // Create column for card
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-md-6 col-lg-4 col-xl-4'; // Exactly 3 per row
+            parentElement.appendChild(colDiv);
+
+            // Create card from template
+            const cardHtml = token_card;
+            colDiv.innerHTML = cardHtml;
+
+            // Get the card element
+            const card = colDiv.firstElementChild;
+
+            if (card) {
+                const isERC721 = token.type === 'ERC-721';
+
+                // Update token name and type badge color
+                const nameElement = card.querySelector('.token-name');
+                if (nameElement) {
+                    nameElement.textContent = token.name || 'Unknown Token';
+                }
+
+                // Update token type and ribbon color
+                const typeElement = card.querySelector('.token-type');
+                const ribbonElement = card.querySelector('.token-type-ribbon');
+                if (typeElement && token.type) {
+                    typeElement.textContent = token.type;
+
+                    // Change ribbon color based on token type
+                    if (ribbonElement) {
+                        if (isERC721) {
+                            ribbonElement.classList.remove('bg-primary');
+                            ribbonElement.classList.add('bg-success');
+                        }
+                    }
+                }
+
+                // Update image if available
+                const imgElement = card.querySelector('.token-image');
+                if (imgElement) {
+                    if (token.image) {
+                        imgElement.src = await normalizeTokenURI(token.image);
+                        imgElement.alt = token.name || 'Token';
+                    } else {
+                        // Default placeholder illustration for tokens without images
+                        imgElement.src = './media/illustrations/sigma-1/5.png';
+                        imgElement.alt = 'Token Placeholder';
+                    }
+                }
+
+                // Update token address with truncated version and full version in tooltip
+                const addressElement = card.querySelector('.token-address');
+                if (addressElement && token.address) {
+                    const fullAddress = token.address;
+                    const truncatedAddress = fullAddress.substring(0, 6) + '...' + fullAddress.substring(fullAddress.length - 4);
+                    addressElement.textContent = truncatedAddress;
+                    addressElement.setAttribute('title', fullAddress);
+
+                    // Set up copy button
+                    const copyBtn = card.querySelector('.copy-address-btn');
+                    if (copyBtn) {
+                        copyBtn.setAttribute('data-address', fullAddress);
+                        copyBtn.addEventListener('click', function () {
+                            navigator.clipboard.writeText(this.getAttribute('data-address'))
+                                .then(() => {
+                                    // Show success feedback
+                                    const tooltip = bootstrap.Tooltip.getInstance(this);
+                                    if (tooltip) {
+                                        tooltip.dispose();
                                     }
-                                }
-                                
-                                // Pre-fill the contract address field
-                                const addressInput = transferModal.querySelector('#toAddress');
-                                if (addressInput) {
-                                    // Keep the current value if it exists
-                                }
-                                
-                                // Get token contract address
-                                const contractAddressInput = transferModal.querySelector('#contractAddress');
-                                if (contractAddressInput) {
-                                    contractAddressInput.value = token.address;
-                                }
-                                
-                                // For ERC721 tokens, include the token ID and show/hide appropriate fields
-                                const erc721Fields = transferModal.querySelectorAll('.erc721-only');
-                                const erc20Fields = transferModal.querySelectorAll('.erc20-only');
-                                
-                                if (token.type === 'ERC-721') {
-                                    // Show ERC-721 specific fields and hide ERC-20 fields
-                                    erc721Fields.forEach(field => field.classList.remove('d-none'));
-                                    erc20Fields.forEach(field => field.classList.add('d-none'));
-                                    
-                                    const tokenIdInput = transferModal.querySelector('#tokenId');
-                                    if (tokenIdInput) {
-                                        // If this card represents a specific token ID, use that
-                                        const cardTokenId = card.getAttribute('data-token-id') || 
-                                            token.tokenId || token.firstTokenId || '';
-                                        tokenIdInput.value = cardTokenId;
-                                    }
-                                    
-                                    // Set amount to 1 for NFTs
-                                    const amountInput = transferModal.querySelector('#amount');
-                                    if (amountInput) {
-                                        amountInput.value = '1';
-                                        // Disable the amount field for NFTs
-                                        amountInput.disabled = true;
-                                    }
-                                } else {
-                                    // Show ERC-20 specific fields and hide ERC-721 fields
-                                    erc721Fields.forEach(field => field.classList.add('d-none'));
-                                    erc20Fields.forEach(field => field.classList.remove('d-none'));
-                                    
-                                    // Enable amount field for ERC-20 tokens
-                                    const amountInput = transferModal.querySelector('#amount');
-                                    if (amountInput) {
-                                        amountInput.value = '';
-                                        amountInput.disabled = false;
-                                        // Optionally set a default amount or leave blank
-                                    }
-                                }
-                                
-                                // Show the modal
-                                const modal = new bootstrap.Modal(transferModal);
-                                modal.show();
-                            } else {
-                                // Fallback if modal not found - redirect to index.html with parameters
-                                window.location.href = '/index.html?openModal=transfer&tokenAddress=' + 
-                                    encodeURIComponent(token.address) + 
-                                    (token.tokenId ? '&tokenId=' + encodeURIComponent(token.tokenId) : '');
-                            }
+                                    this.setAttribute('data-bs-original-title', 'Copied!');
+                                    const newTooltip = new bootstrap.Tooltip(this);
+                                    newTooltip.show();
+
+                                    // Reset after 2 seconds
+                                    setTimeout(() => {
+                                        this.setAttribute('data-bs-original-title', 'Copy Address');
+                                        newTooltip.dispose();
+                                    }, 2000);
+                                });
                         });
                     }
+                }
+
+                // Update token symbol
+                const symbolElement = card.querySelector('.token-symbol');
+                if (symbolElement) {
+                    symbolElement.textContent = token.symbol || '-';
+                }
+
+                // Handle ERC20 balance vs ERC721 token ID display
+                const balanceElement = card.querySelector('.token-balance');
+                const balanceLabelElement = card.querySelector('.erc20-balance-label');
+                const tokenIdElement = card.querySelector('.token-id');
+                const tokenIdLabelElement = card.querySelector('.erc721-tokenid-label');
+
+                if (isERC721) {
+                    // For ERC721, show token ID instead of balance
+                    if (balanceElement) balanceElement.classList.add('d-none');
+                    if (balanceLabelElement) balanceLabelElement.classList.add('d-none');
+                    if (tokenIdElement) {
+                        tokenIdElement.classList.remove('d-none');
+                        // If a specific tokenId was provided, use that
+                        tokenIdElement.textContent = specificTokenId || token.tokenId || token.firstTokenId || 'N/A';
+                    }
+                    if (tokenIdLabelElement) tokenIdLabelElement.classList.remove('d-none');
                     
-                    // Store token ID as data attribute for later use
-                    if (isERC721 && specificTokenId) {
-                        card.setAttribute('data-token-id', specificTokenId);
+                    // If we're rendering a specific token ID, we may need to fetch its specific metadata
+                    if (specificTokenId && specificTokenId !== token.tokenId) {
+                        try {
+                            // Create contract instance
+                            const contractInstance = new web3.eth.Contract(erc721, token.address);
+                            
+                            // Get this token's specific metadata
+                            const [tokenImage, tokenMetadata] = await getTokenURIAndMetadata(contractInstance, specificTokenId);
+                            
+                            // Update image if available
+                            if (tokenImage && imgElement) {
+                                imgElement.src = await normalizeTokenURI(tokenImage);
+                                imgElement.alt = token.name || 'Token';
+                            }
+                            
+                            // Update any token-specific metadata if needed
+                            if (tokenMetadata) {
+                                // You could add more specific metadata display here
+                            }
+                        } catch (error) {
+                            console.warn('Failed to get specific token metadata:', error);
+                        }
+                    }
+                } else {
+                    // For ERC20, show balance
+                    if (tokenIdElement) tokenIdElement.classList.add('d-none');
+                    if (tokenIdLabelElement) tokenIdLabelElement.classList.add('d-none');
+                    if (balanceElement) {
+                        balanceElement.classList.remove('d-none');
+                        balanceElement.textContent = token.balance || '0';
+                    }
+                    if (balanceLabelElement) balanceLabelElement.classList.remove('d-none');
+                }
+
+                // Metadata will be displayed on another page
+
+                // Set up the view details button to link to an explorer based on the token type
+                const viewBtn = card.querySelector('.token-view-btn');
+                if (viewBtn && token.address) {
+                    // Get current network provider URL to determine which explorer to use
+                    const providerUrl = web3.currentProvider.clientUrl || '';
+                    let explorerUrl = 'https://etherscan.io'; // Default to Ethereum mainnet
+                        
+                    // Use appropriate explorer based on provider URL
+                    if (providerUrl.includes('sepolia.infura.io')) {
+                        explorerUrl = 'https://sepolia.etherscan.io';
+                    } else if (providerUrl.includes('optimism-mainnet.infura.io')) {
+                        explorerUrl = 'https://optimistic.etherscan.io';
+                    } else if (providerUrl.includes('polygon-mainnet.infura.io') || 
+                               providerUrl.includes('polygon-rpc')) {
+                        explorerUrl = 'https://polygonscan.com';
+                    } else if (providerUrl.includes('avalanche-mainnet.infura.io') || 
+                               providerUrl.includes('avalanche')) {
+                        explorerUrl = 'https://snowtrace.io';
+                    } else if (providerUrl.includes('arbitrum-mainnet.infura.io')) {
+                        explorerUrl = 'https://arbiscan.io';
+                    } else if (providerUrl.includes('goerli.infura.io')) {
+                        explorerUrl = 'https://goerli.etherscan.io';
+                    } else if (providerUrl.includes('base-mainnet.infura.io')) {
+                        explorerUrl = 'https://basescan.org';
                     }
                     
-                    // Add card to column
-                    colDiv.appendChild(card);
+                    // Set up the URL
+                    viewBtn.href = `${explorerUrl}/token/${token.address}`;
+                } 
+                
+                // Set up the transfer token button to open the transfer modal
+                const transferBtn = card.querySelector('.transfer-token-btn');
+                if (transferBtn && token.address) {
+                    transferBtn.addEventListener('click', function() {
+                        // Find the transfer modal (kt_modal_2) - works whether in nft.html or index.html
+                        const transferModal = document.getElementById('kt_modal_2') || 
+                            parent.document.getElementById('kt_modal_2');
+                        
+                        if (transferModal) {
+                            // Set token image in the modal
+                            const tokenImageElement = transferModal.querySelector('#tokenModalImage');
+                            if (tokenImageElement) {
+                                // Get image from card or metadata
+                                const cardImage = card.querySelector('.token-image');
+                                if (cardImage && cardImage.src) {
+                                    tokenImageElement.src = cardImage.src;
+                                } else if (token.metadata && token.metadata.image) {
+                                    tokenImageElement.src = token.metadata.image;
+                                } else {
+                                    // Use default placeholder if no image available
+                                    tokenImageElement.src = '../media/misc/placeholder-image.jpg';
+                                }
+                            }
+                            
+                            // Pre-fill the contract address field
+                            const addressInput = transferModal.querySelector('#toAddress');
+                            if (addressInput) {
+                                // Keep the current value if it exists
+                            }
+                            
+                            // Get token contract address
+                            const contractAddressInput = transferModal.querySelector('#contractAddress');
+                            if (contractAddressInput) {
+                                contractAddressInput.value = token.address;
+                            }
+                            
+                            // For ERC721 tokens, include the token ID and show/hide appropriate fields
+                            const erc721Fields = transferModal.querySelectorAll('.erc721-only');
+                            const erc20Fields = transferModal.querySelectorAll('.erc20-only');
+                            
+                            if (token.type === 'ERC-721') {
+                                // Show ERC-721 specific fields and hide ERC-20 fields
+                                erc721Fields.forEach(field => field.classList.remove('d-none'));
+                                erc20Fields.forEach(field => field.classList.add('d-none'));
+                                
+                                const tokenIdInput = transferModal.querySelector('#tokenId');
+                                if (tokenIdInput) {
+                                    // If this card represents a specific token ID, use that
+                                    const cardTokenId = card.getAttribute('data-token-id') || 
+                                        token.tokenId || token.firstTokenId || '';
+                                    tokenIdInput.value = cardTokenId;
+                                }
+                                
+                                // Set amount to 1 for NFTs
+                                const amountInput = transferModal.querySelector('#amount');
+                                if (amountInput) {
+                                    amountInput.value = '1';
+                                    // Disable the amount field for NFTs
+                                    amountInput.disabled = true;
+                                }
+                            } else {
+                                // Show ERC-20 specific fields and hide ERC-721 fields
+                                erc721Fields.forEach(field => field.classList.add('d-none'));
+                                erc20Fields.forEach(field => field.classList.remove('d-none'));
+                                
+                                // Enable amount field for ERC-20 tokens
+                                const amountInput = transferModal.querySelector('#amount');
+                                if (amountInput) {
+                                    amountInput.value = '';
+                                    amountInput.disabled = false;
+                                    // Optionally set a default amount or leave blank
+                                }
+                            }
+                            
+                            // Show the modal
+                            const modal = new bootstrap.Modal(transferModal);
+                            modal.show();
+                        } else {
+                            // Fallback if modal not found - redirect to index.html with parameters
+                            window.location.href = '/index.html?openModal=transfer&tokenAddress=' + 
+                                encodeURIComponent(token.address) + 
+                                (token.tokenId ? '&tokenId=' + encodeURIComponent(token.tokenId) : '');
+                        }
+                    });
                 }
+                
+                // Store token ID as data attribute for later use
+                if (isERC721 && specificTokenId) {
+                    card.setAttribute('data-token-id', specificTokenId);
+                }
+                    
+                // Add card to column
+                colDiv.appendChild(card);
             }
+        }
 
-            // Initialize tooltips
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Setup token type filtering
+        const typeSelector = document.querySelector('.token-type-select');
+        if (typeSelector) {
+            typeSelector.addEventListener('change', function () {
+                filterTokens();
             });
+        }
 
-            // Setup token type filtering
-            const typeSelector = document.querySelector('.token-type-select');
-            if (typeSelector) {
-                typeSelector.addEventListener('change', function () {
-                    filterTokens();
-                });
-            }
-
-            // Setup token search
-            const searchInput = document.querySelector('.token-search');
-            if (searchInput) {
-                searchInput.addEventListener('keyup', function () {
-                    filterTokens();
-                });
-            }
+        // Setup token search
+        const searchInput = document.querySelector('.token-search');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function () {
+                filterTokens();
+            });
         }
     } catch (error) {
         console.error('Error displaying tokens:', error);
     }
-};
+}
 
 // Function to filter tokens based on type and search query
 function filterTokens() {
@@ -1326,22 +1328,4 @@ async function getTokenURIAndMetadata(contract, tokenId) {
     }
 }
 
-// Execute check_balance and display_tokens when the page loads
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log('NFT page loaded, initializing token display...');
-    try {
-        // First run check_balance (using contract address from localStorage)
-        if (localStorage.contract) {
-            await check_balance(localStorage.contract, 'all');
-            console.log('Balance check completed');
-        } else {
-            console.warn('No contract address found in localStorage');
-        }
-        
-        // Then display tokens
-        await display_tokens();
-        console.log('Token display completed');
-    } catch (error) {
-        console.error('Error initializing NFT display:', error);
-    }
-});
+

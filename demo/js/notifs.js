@@ -19,7 +19,7 @@ async function processNotifications(promise, container) {
 
 
             notElement.innerHTML = `
-    <a href="./views/txn.html?${tx.id}" class="menu-link px-4 py-3">
+    <a href="/demo/views/txn.html?${tx.id}" class="menu-link px-4 py-3">
         <div class="symbol symbol-35px">
             <span class="symbol-label bg-light-warning">
                 <!--begin::Svg Icon | path: icons/duotune/communication/com004.svg-->
