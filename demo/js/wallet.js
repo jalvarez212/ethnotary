@@ -395,55 +395,75 @@ async function connectBinance() {
 
 async function connectWallet() {
         try {
-            wallet = wallet.request({ method: 'eth_requestAccounts' }).then(response => {
+            // Check if window.ethereum is available (generic wallet provider)
+            if (typeof window.ethereum !== 'undefined') {
+                wallet = window.ethereum;
+                
+                // Request accounts
+                const response = await wallet.request({ method: 'eth_requestAccounts' });
                 const accounts = response;
                 selectAddress = accounts[0];
                 console.log(`User's address is ${accounts[0]}`);
-                console.log(response)
-                selectAddress = this.selectAddress
-
+                console.log(response);
+                
                 // Optionally, have the default account set for web3.js
-                web3.eth.defaultAccount = accounts[0]
+                web3.eth.defaultAccount = accounts[0];
                 localStorage.setItem('connectedWallet', accounts[0]);
-
-
-            })
-            console.log('Connected account:', accounts[0]);
-
-            // Store the connected account in localStorage
-            //localStorage.setItem('connectedAccount', accounts[0]);
-
-            const chainId = await wallet.request({ method: 'eth_chainId' });
-            const matchedNetwork = chainIdLookup[chainId];
-            if (matchedNetwork?.rpcUrl) {
-                updateWeb3Provider(matchedNetwork.rpcUrl); // or new Web3(provider)
-                console.log(`Connected to network: ${matchedNetwork.name}`);
+                
+                console.log('Connected account:', accounts[0]);
+                
+                // Get chain ID and update provider
+                const chainId = await wallet.request({ method: 'eth_chainId' });
+                rawChainId = chainId; // Set the rawChainId variable
+                const matchedNetwork = chainIdLookup[chainId];
+                if (matchedNetwork?.rpcUrl) {
+                    updateWeb3Provider(matchedNetwork.rpcUrl);
+                    console.log(`Connected to network: ${matchedNetwork.name}`);
+                } else {
+                    console.warn("Unsupported or unknown network:", chainId);
+                    // Optionally fall back to a default, or show a modal
+                }
+                
+                // Set up event listeners and save wallet info
+                watchWalletChanges(wallet);
+                localStorage.setItem('lastChain', chainId);
+                localStorage.setItem('lastWallet', 'other');
+                detectNetworkChange(wallet);
+                
+                hideWallets();
+                
+                console.log("Detected Chain ID:", chainId);
+                return { success: true, address: accounts[0] };
             } else {
-                console.warn("Unsupported or unknown network:", chainId);
-                // Optionally fall back to a default, or show a modal
+                throw new Error('No Ethereum provider found');
             }
-
-            watchWalletChanges(wallet);
-
-            localStorage.setItem('lastChain', rawChainId);
-            localStorage.setItem('lastWallet', 'other');
-            detectNetworkChange(wallet);
-
-            hideWallets();
-
-            console.log("Detected Chain ID:", rawChainId);
         } catch (error) {
-            console.error('User denied account access or there was an issue:', error);
+            console.error('Initial wallet connection failed, trying MetaMask as fallback:', error);
             
-            // Show a more informative message for the generic wallet connection
-            // Since this is a catch-all function, we can provide general wallet information
-            if (typeof window.ethereum === 'undefined') {
-                // No wallet detected at all - direct to Ethereum's wallet finder page
-                window.open('https://ethereum.org/en/wallets/find-wallet/', '_blank');
+            try {
+                // Try connecting with MetaMask as a fallback
+                console.log('Attempting to connect with MetaMask as fallback...');
+                const metaMaskResult = await connectMetaMask();
+                
+                // If MetaMask connection was successful, return that result
+                if (metaMaskResult && metaMaskResult.success) {
+                    console.log('Successfully connected with MetaMask fallback');
+                    return metaMaskResult;
+                } else {
+                    throw new Error('MetaMask fallback connection failed');
+                }
+            } catch (metaMaskError) {
+                console.error('MetaMask fallback also failed:', metaMaskError);
+                
+                // Show a more informative message for the generic wallet connection
+                if (typeof window.ethereum === 'undefined') {
+                    // No wallet detected at all - direct to Ethereum's wallet finder page
+                    window.open('https://ethereum.org/en/wallets/find-wallet/', '_blank');
+                }
+                // If user denies access or other error, just keep the error in console
+                return { success: false, error: error.message };
             }
-            // If user denies access or other error, just keep the error in console
         }
- 
 }
 
 
