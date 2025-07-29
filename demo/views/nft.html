@@ -345,16 +345,83 @@ function showModal() {
 	// Function to check wallet connection and update notification button
 	function updateWalletConnectionStatus() {
 		const activitiesToggle = document.getElementById('kt_activities_toggle');
-
+		const userMenuToggle = document.getElementById('kt_header_user_menu_toggle');
+		
 		// Check if wallet is connected
 		if (typeof wallet !== 'undefined' && wallet !== null && wallet !== '') {
 			// Wallet is connected - add primary class
 			activitiesToggle.classList.remove('btn-light-danger', 'pulse-danger');
 			activitiesToggle.classList.add('btn-light-primary', 'pulse-primary');
+			
+			// Remove pulse-danger from user menu toggle if it exists
+			if (userMenuToggle) {
+				userMenuToggle.classList.remove('pulse-danger');
+				
+				// Remove the pulse-ring span if it exists
+				const pulseRing = userMenuToggle.querySelector('.pulse-ring');
+				if (pulseRing) {
+					pulseRing.remove();
+				}
+			}
 		} else {
 			// Wallet is not connected - add danger class
 			activitiesToggle.classList.remove('btn-light-primary', 'pulse-primary');
 			activitiesToggle.classList.add('btn-light-danger', 'pulse-danger');
+			
+			// Add pulse-danger to user menu toggle
+			if (userMenuToggle) {
+				userMenuToggle.classList.add('pulse-danger');
+				
+				// Add the pulse-ring span if it doesn't exist
+				if (!userMenuToggle.querySelector('.pulse-ring')) {
+					const pulseRing = document.createElement('span');
+					pulseRing.className = 'pulse-ring';
+					userMenuToggle.appendChild(pulseRing);
+				}
+				
+				// Ensure the pulse animates from the center
+				if (!userMenuToggle.style.transformOrigin) {
+					userMenuToggle.style.transformOrigin = 'center';
+				}
+			}
+		}
+		
+		// Add CSS for pulse effect if needed
+		if (userMenuToggle && !userMenuToggle._debugStyleAdded) {
+			// Create a style element to add custom pulse animation
+			const style = document.createElement('style');
+			style.textContent = `
+				.pulse-danger {
+					animation: pulse-danger-animation 2s infinite;
+					transform-origin: center;
+					position: relative;
+				}
+				.pulse-danger .pulse-ring {
+					display: block;
+					border-radius: 50%;
+					height: 45px;
+					width: 45px;
+					position: absolute;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+					animation: pulse-ring-animation 2s ease-out infinite;
+					background-color: #f1416c;
+					opacity: 0;
+					z-index: -1;
+				}
+				@keyframes pulse-danger-animation {
+					0% { transform: scale(1); }
+					50% { transform: scale(1.05); }
+					100% { transform: scale(1); }
+				}
+				@keyframes pulse-ring-animation {
+					0% { transform: translate(-50%, -50%) scale(0.33); opacity: 1; }
+					80%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+				}
+			`;
+			document.head.appendChild(style);
+			userMenuToggle._debugStyleAdded = true;
 		}
 	}
 
